@@ -23,9 +23,9 @@ class configStorage
 
     public function getProcessesConfig($serverId)
     {
-        $criteria = [
+        $criteria = $this->mapper()->convertDataFromForm([
             processMapper::FIELD__SERVER => $serverId
-        ];
+        ]);
 
         $cursor = $this->mapper()->getAllBy($criteria);
 
