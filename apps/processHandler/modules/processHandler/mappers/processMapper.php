@@ -35,6 +35,7 @@ class processMapper
     const FIELD__INSTANCES = 'instances';
     const FIELD__WORK_DIR = 'work_dir';
     const FIELD__SERVER = 'server';
+    const FIELD__TAGS = 'tags';
 
     const MODE__ONE_RUN = 'one_run';
     const MODE__REPEATABLY = 'repeatably';
@@ -183,6 +184,25 @@ class processMapper
                 'formType' => 'text',
                 'validator' => [],
                 'relations' => [],
+                'options' => [
+                    'required' => false,
+                    'unique' => false,
+                ],
+            ],
+            self::FIELD__TAGS => [
+                'getter' => 'getTags',
+                'setter' => 'setTags',
+                'role' => [
+                    self::ROLE__FULLTEXT_SEARCH => true,
+                ],
+                'name' => 'Tags',
+                'description' => 'Tags',
+                'type' => 'string[]',
+                'formType' => 'multitext',
+                'validator' => [
+                ],
+                'relations' => [
+                ],
                 'options' => [
                     'required' => false,
                     'unique' => false,

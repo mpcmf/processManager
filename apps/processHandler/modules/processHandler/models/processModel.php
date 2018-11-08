@@ -36,6 +36,8 @@ use mpcmf\system\pattern\singleton;
  * @method $this getWorkDir() Work dir
  * @method integer getInstances() Instances
  * @method $this setInstances(int $value) Instances
+ * @method array getTags() Tags
+ * @method $this setTags(array $value) Tags
  *
  * @method $this setHost(string $value) Server's address where will be started process
  * @method string getHost() Server's address where will be started process
