@@ -5,6 +5,7 @@ namespace mpcmf\apps\processHandler\libraries\processManager;
 use mpcmf\apps\processHandler\libraries\processManager\config\configStorage;
 use mpcmf\modules\processHandler\mappers\processMapper;
 use mpcmf\modules\processHandler\models\processModel;
+use React\EventLoop\LoopInterface;
 
 class processHandler
 {
@@ -53,10 +54,14 @@ class processHandler
 
     protected $currentConfig = [];
 
+    protected $loop;
+
     /**
-     * @var string|\MongoId
+     * @var server
      */
-    protected $serverId;
+    protected $server;
+
+    protected $mainCyclePeriodTime = 1;
 
     /** @var array|processModel[]  */
     protected $processPool = [
@@ -70,20 +75,28 @@ class processHandler
 //        ]
     ];
 
-    public function __construct(configStorage $configStorage)
+    public function __construct(configStorage $configStorage, LoopInterface $loop)
     {
         $this->configStorage = $configStorage;
+        $this->loop = $loop;
     }
 
-    /**
-     * @param string|\MongoId $serverId
-     */
-    public function setServerId($serverId)
+    public function start()
     {
-        $this->serverId = $serverId;
+        $this->server = new server($this->loop);
+        $this->server->runPing();
+        $this->loop->addPeriodicTimer($this->mainCyclePeriodTime, function () {
+            $this->mainCycle();
+        });
     }
 
-    public function management()
+    protected function mainCycle()
+    {
+        $this->updateConfig();
+        $this->management();
+    }
+
+    protected function management()
     {
         /** @var array|processModel[] $process */
         foreach ($this->processPool as $id => &$process) {
@@ -177,9 +190,9 @@ class processHandler
         return $this->states[$status];
     }
 
-    public function updateConfig()
+    protected function updateConfig()
     {
-        $newConfig = $this->configStorage->getProcessesConfig($this->serverId);
+        $newConfig = $this->configStorage->getProcessesConfig($this->server->serverId);
         $changes = $this->compareConfig($newConfig);
 
         $this->processingChanges($changes);

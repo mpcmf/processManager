@@ -5,12 +5,10 @@ namespace mpcmf\apps\processHandler\libraries\processManager;
 use mpcmf\modules\processHandler\mappers\serverMapper;
 use mpcmf\modules\processHandler\models\serverModel;
 use mpcmf\system\exceptions\mpcmfException;
+use React\EventLoop\LoopInterface;
 
 class server
 {
-
-    /** @var processHandler */
-    protected $processHandler;
 
     protected $hostname;
 
@@ -18,12 +16,22 @@ class server
     protected $serverModel;
 
     protected $pingEvery = 60;
-    protected $lastPing = 0;
+    protected $loop;
 
-    public function __construct(processHandler $processHandler)
+    public $serverId;
+
+    public function __construct(LoopInterface $loop)
     {
-        $this->processHandler = $processHandler;
+        $this->loop = $loop;
         $this->hostname = gethostname();
+        $this->register();
+    }
+
+    public function runPing()
+    {
+        $this->loop->addPeriodicTimer($this->pingEvery, function () {
+            $this->ping();
+        });
     }
 
     protected function register()
@@ -50,7 +58,7 @@ class server
             ]);
             $this->mapper()->save($this->serverModel);
         }
-        $this->processHandler->setServerId($this->serverModel->getIdValue());
+        $this->serverId = $this->serverModel->getIdValue();
         $this->ping();
 
         return true;
@@ -70,18 +78,6 @@ class server
         $this->serverModel->setRamUsage($this->getRamUsage());
 
         $this->mapper()->save($this->serverModel, serverMapper::SAVE__MODE_CHANGES_ONLY);
-    }
-
-    public function mainCycle()
-    {
-        $now = time();
-        if ($this->lastPing < $now) {
-            $this->ping();
-            $this->lastPing = $now + $this->pingEvery;
-        }
-
-        $this->processHandler->updateConfig();
-        $this->processHandler->management();
     }
 
     protected function mapper()

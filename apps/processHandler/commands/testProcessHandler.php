@@ -7,6 +7,7 @@ use mpcmf\apps\processHandler\libraries\processManager\processHandler;
 use mpcmf\apps\processHandler\libraries\processManager\server;
 use mpcmf\system\application\consoleCommandBase;
 
+use React\EventLoop\Factory;
 use Symfony\Component\Console\Input\InputInterface;
 
 use Symfony\Component\Console\Output\OutputInterface;
@@ -31,12 +32,13 @@ class testProcessHandler
 
     protected function handle(InputInterface $input, OutputInterface $output)
     {
+
+        $loop = Factory::create();
+
         $configStorage = new configStorage();
-        $ph = new processHandler($configStorage);
-        $server = new server($ph);
-        for (;;) {
-            $server->mainCycle();
-            sleep(1);
-        }
+        $ph = new processHandler($configStorage, $loop);
+        $ph->start();
+
+        $loop->run();
     }
 }
