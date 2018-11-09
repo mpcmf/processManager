@@ -178,7 +178,7 @@ class processHandler
             }
 
             foreach ($process['instances'] as $instance) {
-                $instanceStatus = $instance->check();
+                $instanceStatus = $instance->getStatus();
                 if ($prio[$instanceStatus] > $prio[$status]) {
                     $status = $instanceStatus;
                 }
@@ -297,7 +297,7 @@ class processHandler
 
         /** @var process $instance */
         foreach ($process['instances'] as $id => $instance) {
-            $status = $instance->check();
+            $status = $instance->getStatus();
             if ($status === process::STATUS__STOPPED || $status === process::STATUS__EXITED) {
                 var_dump('$unset');
                 unset($process['instances'][$id]);
@@ -327,9 +327,8 @@ class processHandler
                 }
             case processMapper::MODE__REPEATABLY:
                 while (count($process['instances']) < $maxInstances) {
-                    $instance = new process($config->getCommand(), $config->getWorkDir());
+                    $instance = new process($this->loop, $config->getCommand(), $config->getWorkDir());
                     $instance->run();
-                    $instance->check();
 
                     $process['instances'][] = $instance;
                     usleep(10000);

@@ -2,6 +2,10 @@
 
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
+use React\EventLoop\LoopInterface;
+use React\Stream\ReadableResourceStream;
+use React\Stream\WritableResourceStream;
+
 class process
 {
 
@@ -34,6 +38,8 @@ class process
 
     protected $receivedSignal;
 
+    protected $loop;
+
     protected $descriptors = [
         0 => ['pipe', 'r'],
         1 => ['pipe', 'w'],
@@ -47,13 +53,33 @@ class process
 
     protected $processDescriptor;
 
-    public function __construct($command, $workDir = null)
+    /**
+     * @var $stdin WritableResourceStream
+     */
+    protected $stdin;
+
+    /**
+     * @var $stdout ReadableResourceStream
+     */
+    protected $stdout;
+
+    /**
+     * @var $stderr ReadableResourceStream
+     */
+    protected $stderr;
+
+    protected $stdOutLogFiles = [];
+    protected $stdErrorLogFiles = [];
+    protected $checkEvery = 1;
+
+    public function __construct(LoopInterface $loop, $command, $workDir = null)
     {
         $this->command = $command;
         $this->workDir = $workDir;
+        $this->loop = $loop;
     }
 
-    public function check()
+    protected function check()
     {
         switch ($this->status) {
             case self::STATUS__RUNNING:
@@ -98,6 +124,11 @@ class process
 
     protected function start()
     {
+        if ($this->status === self::STATUS__RUNNING) {
+            error_log('Process already run!');
+
+            return;
+        }
         error_log('Starting process');
 
         $this->exitCode = 0;
@@ -109,12 +140,53 @@ class process
             $this->status = self::STATUS__RUNNING;
             $this->pid = $processStatus['pid'];
             $this->exitCode = -1;
-        } else {
-            $this->status = self::STATUS__EXITED;
-            $this->pid = -1;
+            $this->loop->addPeriodicTimer($this->checkEvery, function ($timer) {
+                $this->check();
+                if ($this->status === self::STATUS__STOPPED) {
+                    $this->loop->cancelTimer($timer);
+                }
+            });
+            $this->initStreams();
 
-            $this->exitCode = $processStatus['exitcode'];
+            return;
         }
+
+        $this->status = self::STATUS__EXITED;
+        $this->pid = -1;
+        $this->exitCode = $processStatus['exitcode'];
+    }
+
+    protected function initStreams()
+    {
+        $this->stdin  = new WritableResourceStream($this->pipes[0], $this->loop);
+        $this->stdout = new ReadableResourceStream($this->pipes[1], $this->loop);
+        $this->stdout->on('data', function ($data) {
+            foreach ($this->stdOutLogFiles as $logFile) {
+                file_put_contents($logFile, $data, FILE_APPEND);
+            }
+        });
+        $this->stderr = new ReadableResourceStream($this->pipes[2], $this->loop);
+        $this->stderr->on('data', function ($data) {
+            foreach ($this->stdErrorLogFiles as $logFile) {
+                file_put_contents($logFile, $data, FILE_APPEND);
+            }
+        });
+    }
+
+    public function addStdOutLogFile($filePath)
+    {
+        $this->stdOutLogFiles[$filePath] = $filePath;
+
+        return true;
+    }
+
+    public function removeStdOutLogFile($filePath)
+    {
+        if (isset($this->stdOutLogFiles[$filePath])) {
+            unset($this->stdOutLogFiles[$filePath]);
+        }
+
+        return true;
     }
 
     protected function kill()
@@ -161,16 +233,19 @@ class process
     public function run()
     {
         $this->status = self::STATUS__RUN;
+        $this->check();
     }
 
     public function restart()
     {
         $this->status = self::STATUS__RESTART;
+        $this->check();
     }
 
     public function stop()
     {
         $this->status = self::STATUS__STOP;
+        $this->check();
     }
 
     public function getChildPids($pid = null)

@@ -53,7 +53,8 @@ class childCreator
         $attempts = 100;
         do {
             for ($i = 0; $i<10000000; $i++) {}
-//            error_log($i);
+            error_log($i);
+            var_dump($i);
         } while (--$attempts > 0);
     }
 
