@@ -198,7 +198,7 @@ class process
 
     public function addStdErrorLogFile($filePath)
     {
-        $this->stdOutLogFiles[$filePath] = $filePath;
+        $this->stdErrorLogFiles[$filePath] = $filePath;
 
         return true;
     }
@@ -212,8 +212,8 @@ class process
 
     public function removeStdErrorLogFile($filePath)
     {
-        if (isset($this->stdOutLogFiles[$filePath])) {
-            unset($this->stdOutLogFiles[$filePath]);
+        if (isset($this->stdErrorLogFiles[$filePath])) {
+            unset($this->stdErrorLogFiles[$filePath]);
         }
 
         return true;
