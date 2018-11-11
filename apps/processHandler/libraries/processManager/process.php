@@ -180,7 +180,37 @@ class process
         return true;
     }
 
+    public function setStdOutLogFiles(array $filesPaths)
+    {
+        $this->stdOutLogFiles = array_combine($filesPaths, $filesPaths);
+
+        return true;
+    }
+
     public function removeStdOutLogFile($filePath)
+    {
+        if (isset($this->stdOutLogFiles[$filePath])) {
+            unset($this->stdOutLogFiles[$filePath]);
+        }
+
+        return true;
+    }
+
+    public function addStdErrorLogFile($filePath)
+    {
+        $this->stdOutLogFiles[$filePath] = $filePath;
+
+        return true;
+    }
+
+    public function setStdErrorLogFiles(array $filesPaths)
+    {
+        $this->stdErrorLogFiles = array_combine($filesPaths, $filesPaths);
+
+        return true;
+    }
+
+    public function removeStdErrorLogFile($filePath)
     {
         if (isset($this->stdOutLogFiles[$filePath])) {
             unset($this->stdOutLogFiles[$filePath]);

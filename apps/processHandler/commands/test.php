@@ -28,10 +28,9 @@ class test
     protected function handle(InputInterface $input, OutputInterface $output)
     {
 
-//        $process = new process('bin/mpcmf apps/processHandler/console.php botChildCreator', '/opt/mpcmf');
 
         $loop = Factory::create();
-        $process = new process($loop, 'bin/mpcmf apps/processHandler/console.php childCreator', '/opt/mpcmf');
+        $process = new process($loop, 'bin/mpcmf apps/processHandler/console.php childCreator', '/opt/src/processManager');
         $process->addStdOutLogFile('/tmp/some_log');
         $process->run();
 

@@ -38,6 +38,10 @@ use mpcmf\system\pattern\singleton;
  * @method $this setInstances(int $value) Instances
  * @method array getTags() Tags
  * @method $this setTags(array $value) Tags
+ * @method array getStdOutPaths() Paths
+ * @method $this setStdOutPaths(array $value) Paths
+ * @method array getStdErrorPaths() Paths
+ * @method $this setStdErrorPaths(array $value) Paths
  *
  * @method $this setHost(string $value) Server's address where will be started process
  * @method string getHost() Server's address where will be started process

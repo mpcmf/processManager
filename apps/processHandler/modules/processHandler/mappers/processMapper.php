@@ -36,6 +36,8 @@ class processMapper
     const FIELD__WORK_DIR = 'work_dir';
     const FIELD__SERVER = 'server';
     const FIELD__TAGS = 'tags';
+    const FIELD__STD_OUT = 'std_out';
+    const FIELD__STD_ERROR = 'std_error';
 
     const MODE__ONE_RUN = 'one_run';
     const MODE__REPEATABLY = 'repeatably';
@@ -197,6 +199,40 @@ class processMapper
                 ],
                 'name' => 'Tags',
                 'description' => 'Tags',
+                'type' => 'string[]',
+                'formType' => 'multitext',
+                'validator' => [
+                ],
+                'relations' => [
+                ],
+                'options' => [
+                    'required' => false,
+                    'unique' => false,
+                ],
+            ],
+            self::FIELD__STD_OUT => [
+                'getter' => 'getStdOutPaths',
+                'setter' => 'setStdOutPaths',
+                'role' => [],
+                'name' => 'StdOut',
+                'description' => 'Std out log file path',
+                'type' => 'string[]',
+                'formType' => 'multitext',
+                'validator' => [
+                ],
+                'relations' => [
+                ],
+                'options' => [
+                    'required' => false,
+                    'unique' => false,
+                ],
+            ],
+            self::FIELD__STD_ERROR => [
+                'getter' => 'getStdErrorPaths',
+                'setter' => 'setStdErrorPaths',
+                'role' => [],
+                'name' => 'StdError',
+                'description' => 'Std error log file path',
                 'type' => 'string[]',
                 'formType' => 'multitext',
                 'validator' => [

@@ -307,6 +307,7 @@ class processHandler
 
     protected function run($id)
     {
+        $this->setLogFiles($id);
         $process =& $this->processPool[$id];
         /** @var processModel $config */
         $config =& $process['config'];
@@ -335,6 +336,22 @@ class processHandler
                 }
 
                 break;
+        }
+    }
+
+    protected function setLogFiles($id)
+    {
+        $process =& $this->processPool[$id];
+        /** @var processModel $config */
+        $config =& $process['config'];
+
+        $stdErrorPaths = $config->getStdErrorPaths();
+        $stdOutPaths = $config->getStdOutPaths();
+
+        /** @var process $instance */
+        foreach ($process['instances'] as $instance) {
+            $instance->setStdErrorLogFiles($stdErrorPaths);
+            $instance->setStdOutLogFiles($stdOutPaths);
         }
     }
 
