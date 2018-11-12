@@ -2,6 +2,8 @@
 
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
+use mpcmf\system\configuration\config;
+use mpcmf\system\net\reactCurl;
 use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
 use React\Stream\WritableResourceStream;
@@ -70,10 +72,18 @@ class process
 
     protected $stdOutLogFiles = [];
     protected $stdErrorLogFiles = [];
+    protected $stdOutWsChannelIds = [];
+    protected $stdErrorWsChannelIds = [];
+    protected $webSocketServerPublishEndPoint;
+    protected $enabledWs = false;
     protected $checkEvery = 1;
 
     public function __construct(LoopInterface $loop, $command, $workDir = null)
     {
+        $config = config::getConfig(__CLASS__);
+        $this->enabledWs = $config['web_sockets']['enabled'];
+        $this->webSocketServerPublishEndPoint = $config['web_sockets']['web_socket_server_publish_end_point'];
+
         $this->command = $command;
         $this->workDir = $workDir;
         $this->loop = $loop;
@@ -158,17 +168,37 @@ class process
 
     protected function initStreams()
     {
+        static $curl;
+
+        if ($curl === null) {
+            $curl = new reactCurl($this->loop);
+            $curl->setSleep(0, 0, false);
+            $curl->setMaxRequest(100);
+        }
+
         $this->stdin  = new WritableResourceStream($this->pipes[0], $this->loop);
         $this->stdout = new ReadableResourceStream($this->pipes[1], $this->loop);
-        $this->stdout->on('data', function ($data) {
+        $this->stdout->on('data', function ($data) use ($curl) {
             foreach ($this->stdOutLogFiles as $logFile) {
                 file_put_contents($logFile, $data, FILE_APPEND);
             }
+            if ($this->enabledWs) {
+                foreach ($this->stdOutWsChannelIds as $channelId) {
+                    $curl->prepareTask("{$this->webSocketServerPublishEndPoint}?id={$channelId}", 'POST', $data);
+                    $curl->run();
+                }
+            }
         });
         $this->stderr = new ReadableResourceStream($this->pipes[2], $this->loop);
-        $this->stderr->on('data', function ($data) {
+        $this->stderr->on('data', function ($data) use ($curl) {
             foreach ($this->stdErrorLogFiles as $logFile) {
                 file_put_contents($logFile, $data, FILE_APPEND);
+            }
+            if ($this->enabledWs) {
+                foreach ($this->stdErrorWsChannelIds as $channelId) {
+                    $curl->prepareTask("{$this->webSocketServerPublishEndPoint}?id={$channelId}", 'POST', $data);
+                    $curl->run();
+                }
             }
         });
     }
@@ -214,6 +244,52 @@ class process
     {
         if (isset($this->stdErrorLogFiles[$filePath])) {
             unset($this->stdErrorLogFiles[$filePath]);
+        }
+
+        return true;
+    }
+
+    public function addStdOutWsChannelId($channelId)
+    {
+        $this->stdOutWsChannelIds[$channelId] = $channelId;
+
+        return true;
+    }
+
+    public function setStdOutWsChannelIds(array $channelIds)
+    {
+        $this->stdOutWsChannelIds = array_combine($channelIds, $channelIds);
+
+        return true;
+    }
+
+    public function removeStdOutWsChannelId($channelId)
+    {
+        if (isset($this->stdOutWsChannelIds[$channelId])) {
+            unset($this->stdOutWsChannelIds[$channelId]);
+        }
+
+        return true;
+    }
+
+    public function addStdErrorWsChannelId($channelId)
+    {
+        $this->stdErrorWsChannelIds[$channelId] = $channelId;
+
+        return true;
+    }
+
+    public function setStdErrorWsChannelIds(array $channelIds)
+    {
+        $this->stdErrorWsChannelIds = array_combine($channelIds, $channelIds);
+
+        return true;
+    }
+
+    public function removeStdErrorWsChannelId($channelId)
+    {
+        if (isset($this->stdErrorWsChannelIds[$channelId])) {
+            unset($this->stdErrorWsChannelIds[$channelId]);
         }
 
         return true;
