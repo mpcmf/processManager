@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+declare(ticks=30000);
+
 namespace mpcmf\bin;
 
 use mpcmf\system\application\applicationInstance;
