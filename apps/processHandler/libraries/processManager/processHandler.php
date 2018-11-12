@@ -175,6 +175,8 @@ class processHandler
                 $status = process::STATUS__RESTARTING;
             } elseif ($wantedState === self::STATE__STOPPING) {
                 $status = process::STATUS__STOPPING;
+            } elseif ($wantedState === self::STATE__STOP) {
+                $status = process::STATUS__STOP;
             }
 
             foreach ($process['instances'] as $instance) {
