@@ -1,6 +1,7 @@
 <?php
 namespace mpcmf\modules\processHandler\mappers;
 
+use mpcmf\apps\processHandler\libraries\processManager\processHandler;
 use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\system\pattern\singleton;
 
@@ -123,7 +124,29 @@ class processMapper
                 'description' => 'State',
                 'type' => 'string',
                 'formType' => 'text',
-                'validator' => [],
+                'validator' => [
+                    [
+                        'type' => 'type.check',
+                        'data' => [
+                            'type' => 'string'
+                        ]
+                    ],
+                    [
+                        'type' => 'string.byRegex',
+                        'data' => [
+                            'pattern' => '/^(' . processHandler::STATE__NEW . '|'
+                                . processHandler::STATE__RUN . '|'
+                                . processHandler::STATE__RUNNING . '|'
+                                . processHandler::STATE__STOP . '|'
+                                . processHandler::STATE__STOPPING .'|'
+                                . processHandler::STATE__STOPPED .'|'
+                                . processHandler::STATE__RESTART .'|'
+                                . processHandler::STATE__RESTARTING .'|'
+                                . processHandler::STATE__REMOVE .'|'
+                                . processHandler::STATE__REMOVING .')$/'
+                        ]
+                    ]
+                ],
                 'relations' => [],
                 'options' => [
                     'required' => true,
@@ -138,7 +161,25 @@ class processMapper
                 'description' => 'Mode',
                 'type' => 'string',
                 'formType' => 'text',
-                'validator' => [],
+                'validator' => [
+                    [
+                        'type' => 'type.check',
+                        'data' => [
+                            'type' => 'string'
+                        ]
+                    ],
+                    [
+                        'type' => 'string.byRegex',
+                        'data' => [
+                            'pattern' => '/^('
+                                . self::MODE__REPEATABLY . '|'
+                                . self::MODE__ONE_RUN . '|'
+                                . self::MODE__PERIODIC . '|'
+                                . self::MODE__TIMER . '|'
+                                . self::MODE__CRON .')$/'
+                        ]
+                    ]
+                ],
                 'relations' => [],
                 'options' => [
                     'required' => true,
