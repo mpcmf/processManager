@@ -100,6 +100,7 @@ class process
             case self::STATUS__RUN:
                 $this->start();
                 break;
+            case self::STATUS__EXITED:
             case self::STATUS__STOP:
                 $this->kill();
                 break;
