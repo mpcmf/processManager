@@ -102,7 +102,7 @@ class processHandler
         foreach ($this->processPool as $id => &$process) {
             $this->refresh($id);
             $currentState = $this->checkState($id, $process['config']->getState());
-            var_dump("Current state: {$currentState}");
+            error_log("{$process['config']->getCommand()}: {$currentState}");
             switch ($process['config']->getState()) {
                 case self::STATE__NEW:
                 case self::STATE__RUN:
@@ -159,7 +159,7 @@ class processHandler
             }
         }
         $this->syncConfig();
-        var_dump('Result state: ' . reset($this->processPool)['config']->getState());
+        error_log('Result state: ' . reset($this->processPool)['config']->getState());
     }
 
     protected function checkState($id, $wantedState)

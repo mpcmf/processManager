@@ -3,7 +3,6 @@
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
 use mpcmf\system\configuration\config;
-use mpcmf\system\helper\io\log;
 use mpcmf\system\helper\service\signalHandler;
 use mpcmf\system\net\reactCurl;
 use React\EventLoop\LoopInterface;
@@ -12,8 +11,6 @@ use React\Stream\WritableResourceStream;
 
 class process
 {
-    use log;
-
     const STATUS__NONE = 'none';
 
     const STATUS__RUN = 'run';
@@ -118,7 +115,7 @@ class process
 
     protected function checkStatus()
     {
-        error_log('Check process status...');
+        MPCMF_DEBUG && error_log('Check process status...');
 
         $processStatus = proc_get_status($this->processDescriptor);
 
@@ -384,7 +381,7 @@ class process
     {
         switch ($_signal) {
             case SIGTERM:
-                self::log()->addInfo("Killing {$this->command}. Pid: {$this->pid}", [__METHOD__]);
+                error_log("Killing {$this->command}. Pid: {$this->pid}");
                 $this->kill();
                 break;
         }
