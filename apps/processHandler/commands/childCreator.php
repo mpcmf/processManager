@@ -4,6 +4,7 @@ namespace mpcmf\apps\processHandler\commands;
 
 use mpcmf\system\application\consoleCommandBase;
 use mpcmf\system\threads\thread;
+use mpcmf\system\threads\threadPool;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -27,52 +28,39 @@ class childCreator
     protected function handle(InputInterface $input, OutputInterface $output)
     {
 
-        $thread = new thread([$this, 'dummyThread']);
-        $thread->start();
-        $threadPool[] = $thread;
 
-//        $thread = new thread([$this, 'threadWithThread']);
-//        $thread->start();
-//        $threadPool[] = $thread;
+        $tp = new threadPool();
+        $tp->setMaxQueue(0);
+        $tp->setMaxThreads(2);
 
-        /** @var thread $thread */
-        while (count($threadPool) > 0) {
-            foreach ($threadPool as $id => $thread) {
-                if (!$thread->isAlive()) {
-                    $thread->kill();
-                    unset($threadPool[$id]);
-                }
+        while ($tp->refresh()) {
+            if ($tp->getPoolCount() < $tp->getMaxThreads()) {
+                self::log()->addInfo('Starting worker...');
+                $tp->add([$this, 'dummyThread']);
             }
-            usleep(10000);
+            usleep(100);
         }
     }
 
     public function dummyThread()
     {
-//        error_log('DT' . posix_getpid());
-        $attempts = 100;
-        do {
-            for ($i = 0; $i<10000000; $i++) {}
-            error_log($i);
-            var_dump($i);
-        } while (--$attempts > 0);
-    }
+        //        error_log('DT' . posix_getpid());
+        $tp = new threadPool();
+        $tp->setMaxQueue(0);
+        $tp->setMaxThreads(10);
 
-    public function threadWithThread()
-    {
-//        error_log('MT' . posix_getpid());
-        $thread = new thread([$this, 'dummyThread']);
-        $thread->start();
-
-        while ($thread->isAlive()) {
-            usleep(10000);
+        while ($tp->refresh()) {
+            if ($tp->getPoolCount() < $tp->getMaxThreads()) {
+                self::log()->addInfo('Starting worker...');
+                $tp->add([$this, 'testSleep']);
+            }
+            usleep(100);
         }
-
-        $thread->kill();
     }
 
-    public function __destruct()
+    public function testSleep()
     {
-//        error_log('DESTRUCT!!!');
+        sleep(1000);
     }
+
 }
