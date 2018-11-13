@@ -299,29 +299,20 @@ class process
 
     protected function kill()
     {
-//        $childPids = $this->getChildPids();
-//        $childPids[] = $this->getPid();
-
-        proc_terminate($this->processDescriptor, SIGTERM);
+        if (is_resource($this->processDescriptor)) {
+            proc_terminate($this->processDescriptor, SIGTERM);
+        }
         error_log('proc terminated');
 
-//        foreach ($childPids as $childPid) {
-//            error_log("Term child {$childPid}");
-//            posix_kill($childPid, SIGTERM);
-//        }
-//
-//        sleep(1);
-//
-//        foreach ($childPids as $childPid) {
-//            error_log("Kill child {$childPid}");
-//            posix_kill($childPid, SIGKILL);
-//        }
-
         foreach ($this->pipes as $pipe) {
-            fclose($pipe);
+            if (is_resource($pipe)) {
+                fclose($pipe);
+            }
         }
         error_log('pipes closed');
-        proc_close($this->processDescriptor);
+        if (is_resource($this->processDescriptor)) {
+            proc_close($this->processDescriptor);
+        }
         error_log('pd closed');
 
         $this->status = self::STATUS__STOPPED;
