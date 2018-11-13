@@ -3,6 +3,8 @@
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
 use mpcmf\system\configuration\config;
+use mpcmf\system\helper\io\log;
+use mpcmf\system\helper\service\signalHandler;
 use mpcmf\system\net\reactCurl;
 use React\EventLoop\LoopInterface;
 use React\Stream\ReadableResourceStream;
@@ -10,6 +12,7 @@ use React\Stream\WritableResourceStream;
 
 class process
 {
+    use log;
 
     const STATUS__NONE = 'none';
 
@@ -80,6 +83,8 @@ class process
 
     public function __construct(LoopInterface $loop, $command, $workDir = null)
     {
+        $signalHandler = signalHandler::getInstance();
+        $signalHandler->addHandler(SIGTERM, [$this, 'signalHandler']);
         $config = config::getConfig(__CLASS__);
         $this->enabledWs = $config['web_sockets']['enabled'];
         $this->webSocketServerPublishEndPoint = $config['web_sockets']['web_socket_server_publish_end_point'];
@@ -368,5 +373,20 @@ class process
 //        }
 
         return $pids;
+    }
+
+    /**
+     * signal handler
+     *
+     * @param integer $_signal
+     */
+    public function signalHandler($_signal = SIGTERM)
+    {
+        switch ($_signal) {
+            case SIGTERM:
+                self::log()->addInfo("Killing {$this->command}. Pid: {$this->pid}", [__METHOD__]);
+                $this->kill();
+                break;
+        }
     }
 }
