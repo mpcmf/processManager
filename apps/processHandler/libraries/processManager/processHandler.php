@@ -98,6 +98,12 @@ class processHandler
 
     protected function management()
     {
+        if (empty($this->processPool)) {
+            error_log('Empty processes pool!');
+
+            return;
+        }
+
         /** @var array|processModel[] $process */
         foreach ($this->processPool as $id => &$process) {
             $this->refresh($id);
