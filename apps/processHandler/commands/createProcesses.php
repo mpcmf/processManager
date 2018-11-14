@@ -66,8 +66,10 @@ class createProcesses
             do {
                 $input = trim(readline("{$fieldName}: "));
                 try {
-                    if ($mapField['type'] === 'string' || $mapField['type'] === 'int') {
+                    if ($mapField['type'] === 'string') {
                         $model->{$mapField['setter']}($input);
+                    } elseif ($mapField['type'] === 'int') {
+                        $model->{$mapField['setter']}((int) $input);
                     } elseif ($mapField['type'] === 'string[]') {
                         $model->{$mapField['setter']}([$input]);
                     }

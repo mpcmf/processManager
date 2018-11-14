@@ -328,7 +328,7 @@ class processHandler
                     $config->setState($currentState);
                     break;
                 }
-            case processMapper::MODE__REPEATABLY:
+            case processMapper::MODE__REPEATABLE:
                 while (count($process['instances']) < $maxInstances) {
                     $instance = new process($this->loop, $config->getCommand(), $config->getWorkDir());
                     $instance->run();

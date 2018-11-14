@@ -43,7 +43,7 @@ class processMapper
     const FIELD__STD_ERROR_WS_CHANNEL_ID = 'std_error_ws_channel_id';
 
     const MODE__ONE_RUN = 'one_run';
-    const MODE__REPEATABLY = 'repeatably';
+    const MODE__REPEATABLE = 'repeatable';
     const MODE__PERIODIC = 'periodic';
     const MODE__TIMER = 'timer';
     const MODE__CRON = 'cron';
@@ -172,7 +172,7 @@ class processMapper
                         'type' => 'string.byRegex',
                         'data' => [
                             'pattern' => '/^('
-                                . self::MODE__REPEATABLY . '|'
+                                . self::MODE__REPEATABLE . '|'
                                 . self::MODE__ONE_RUN . '|'
                                 . self::MODE__PERIODIC . '|'
                                 . self::MODE__TIMER . '|'
@@ -330,7 +330,14 @@ class processMapper
                 'description' => 'Instances',
                 'type' => 'int',
                 'formType' => 'text',
-                'validator' => [],
+                'validator' => [
+                    [
+                        'type' => 'type.check',
+                        'data' => [
+                            'type' => 'int'
+                        ]
+                    ]
+                ],
                 'relations' => [],
                 'options' => [
                     'required' => true,
