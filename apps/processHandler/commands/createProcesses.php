@@ -83,7 +83,9 @@ class createProcesses
 
         $processMapper->save($model);
 
+        echo "---------------------------\n";
         echo "Process saved successfully!\n";
+        echo "---------------------------\n";
 
         $createAnotherProcess = \cli\menu(['yes' => 'yes', 'exit' => 'exit'], 'yes', 'Do you want create another process?');
 
