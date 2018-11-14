@@ -30,6 +30,8 @@ use mpcmf\system\pattern\singleton;
  * @method $this setState($value) State
  * @method string getMode() Mode
  * @method $this setMode(string $value) Mode
+ * @method string getServer() Mode
+ * @method $this setServer(string $value) Mode
  * @method string getCommand() Command
  * @method $this setCommand(string $value) Command
  * @method string setWorkDir(string $value) Work dir

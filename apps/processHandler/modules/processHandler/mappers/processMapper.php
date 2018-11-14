@@ -230,7 +230,7 @@ class processMapper
                 'validator' => [],
                 'relations' => [],
                 'options' => [
-                    'required' => false,
+                    'required' => true,
                     'unique' => false,
                 ],
             ],
@@ -333,7 +333,7 @@ class processMapper
                 'validator' => [],
                 'relations' => [],
                 'options' => [
-                    'required' => false,
+                    'required' => true,
                     'unique' => false,
                 ],
             ],
