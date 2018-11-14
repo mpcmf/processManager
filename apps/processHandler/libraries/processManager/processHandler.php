@@ -240,6 +240,9 @@ class processHandler
 
             if ($processModel->getState() === self::STATE__STOP && $process['config']->getState() === self::STATE__RUNNING) {
                 $changedStates['stop'][$id] = $processModel;
+            } if ($processModel->getState() === self::STATE__RUNNING && $processModel->getInstances() !== $process['config']->getInstances()) {
+                $processModel->setState(process::STATUS__RESTART);
+                $changedStates['restart'][$id] = $processModel;
             } elseif ($processModel->getState() === self::STATE__RUN && $process['config']->getState() === self::STATE__STOPPED) {
                 $changedStates['run'][$id] = $processModel;
             } elseif ($processModel->getState() === self::STATE__RESTART && $process['config']->getState() === self::STATE__RUNNING) {
