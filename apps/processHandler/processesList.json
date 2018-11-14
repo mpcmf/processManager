@@ -3,7 +3,7 @@
     "name" : "TestChildCreator",
     "description" : "Testing for new processHandler",
     "state" : "stopped",
-    "mode" : "repeatably",
+    "mode" : "repeatable",
     "last_update" : 1542117190,
     "command" : "bin/mpcmf apps/processHandler/console.php childCreator",
     "work_dir" : "/opt/src/processManager",
