@@ -145,6 +145,7 @@ class processHandler
                     break;
 
                 case self::STATE__RESTARTING:
+                case self::STATE__RESTART:
                     if ($currentState === self::STATE__STOPPED) {
                         $process['config']->setState(self::STATE__RUN);
                         $process['last_started'] = null;
@@ -177,7 +178,7 @@ class processHandler
         if (count($process['instances']) > 0) {
             if ($wantedState === self::STATE__RUNNING || $wantedState === self::STATE__RUN) {
                 $status = process::STATUS__RUNNING;
-            } elseif ($wantedState === self::STATE__RESTARTING) {
+            } elseif ($wantedState === self::STATE__RESTARTING || $wantedState === self::STATE__RESTART) {
                 $status = process::STATUS__RESTARTING;
             } elseif ($wantedState === self::STATE__STOPPING) {
                 $status = process::STATUS__STOPPING;
