@@ -24,11 +24,8 @@ class childCreator
         // TODO: Implement defineArguments() method.
     }
 
-
     protected function handle(InputInterface $input, OutputInterface $output)
     {
-
-
         $tp = new threadPool();
         $tp->setMaxQueue(0);
         $tp->setMaxThreads(2);
@@ -62,5 +59,4 @@ class childCreator
     {
         sleep(1000);
     }
-
 }
