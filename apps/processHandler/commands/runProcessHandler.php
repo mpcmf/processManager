@@ -4,7 +4,6 @@ namespace mpcmf\apps\processHandler\commands;
 
 use mpcmf\apps\processHandler\libraries\processManager\config\configStorage;
 use mpcmf\apps\processHandler\libraries\processManager\processHandler;
-use mpcmf\apps\processHandler\libraries\processManager\server;
 use mpcmf\system\application\consoleCommandBase;
 
 use React\EventLoop\Factory;
@@ -16,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * @author Gadel Raymanov <raymanovg@gmail.com>
  */
-class testProcessHandler
+class runProcessHandler
     extends consoleCommandBase
 {
     /**
@@ -26,13 +25,12 @@ class testProcessHandler
      */
     protected function defineArguments()
     {
-        // TODO: Implement defineArguments() method.
+
     }
 
 
     protected function handle(InputInterface $input, OutputInterface $output)
     {
-
         $loop = Factory::create();
 
         $configStorage = new configStorage();
