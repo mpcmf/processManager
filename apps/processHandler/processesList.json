@@ -1,12 +1,12 @@
 [
   {
-    "name" : "TestChildCreator",
+    "name" : "Test",
     "description" : "Testing for new processHandler",
     "state" : "stopped",
     "mode" : "repeatable",
     "last_update" : 1542117190,
-    "command" : "bin/mpcmf apps/processHandler/console.php childCreator",
-    "work_dir" : "/opt/src/processManager",
+    "command" : "ping google.com",
+    "work_dir" : "/opt/processManager",
     "tags" : [
       "test"
     ],
