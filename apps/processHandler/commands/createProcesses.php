@@ -59,12 +59,23 @@ class createProcesses
         $map = $processMapper->getMap();
 
         foreach ($map as $fieldName => $mapField) {
-            if (($enterAllFields && !$mapField['options']['required']) || $fieldName === processMapper::FIELD__SERVER || $fieldName === processMapper::FIELD___ID) {
+            if (($enterAllFields && !$mapField['options']['required']) || $fieldName === processMapper::FIELD__SERVER || $fieldName === processMapper::FIELD___ID || $fieldName === processMapper::FIELD__LAST_UPDATE) {
                 continue;
             }
 
             do {
                 $input = trim(readline("{$fieldName}: "));
+                if (!$mapField['options']['required'] && empty($input)) {
+                    break;
+                }
+
+                if ($mapField['options']['required'] && empty($input)) {
+                    error_log('Empty input!');
+                    $success = false;
+
+                    continue;
+                }
+
                 try {
                     if ($mapField['type'] === 'string') {
                         $model->{$mapField['setter']}($input);
