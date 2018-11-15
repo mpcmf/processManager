@@ -26,8 +26,7 @@
         "mpcmf/mpcmf-core": "dev-master",
         "mpcmf/mpcmf-console": "dev-master",
         "react/event-loop": "v0.4.3",
-        "evenement/evenement": "^2.1",
-        "react/stream": "^1.0"
+        "react/stream": "^0.4"
     },
     "autoload": {
         "psr-4": {

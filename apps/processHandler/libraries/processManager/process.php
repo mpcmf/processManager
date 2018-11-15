@@ -6,8 +6,7 @@ use mpcmf\system\configuration\config;
 use mpcmf\system\helper\service\signalHandler;
 use mpcmf\system\net\reactCurl;
 use React\EventLoop\LoopInterface;
-use React\Stream\ReadableResourceStream;
-use React\Stream\WritableResourceStream;
+use React\Stream\Stream;
 
 class process
 {
@@ -56,17 +55,12 @@ class process
     protected $processDescriptor;
 
     /**
-     * @var $stdin WritableResourceStream
-     */
-    protected $stdin;
-
-    /**
-     * @var $stdout ReadableResourceStream
+     * @var $stdout Stream
      */
     protected $stdout;
 
     /**
-     * @var $stderr ReadableResourceStream
+     * @var $stderr Stream
      */
     protected $stderr;
 
@@ -178,9 +172,7 @@ class process
             $curl->setSleep(0, 0, false);
             $curl->setMaxRequest(100);
         }
-
-        $this->stdin  = new WritableResourceStream($this->pipes[0], $this->loop);
-        $this->stdout = new ReadableResourceStream($this->pipes[1], $this->loop);
+        $this->stdout = new Stream($this->pipes[1], $this->loop);
         $this->stdout->on('data', function ($data) use ($curl) {
             foreach ($this->stdOutLogFiles as $logFile) {
                 file_put_contents($logFile, $data, FILE_APPEND);
@@ -192,7 +184,7 @@ class process
                 }
             }
         });
-        $this->stderr = new ReadableResourceStream($this->pipes[2], $this->loop);
+        $this->stderr = new Stream($this->pipes[2], $this->loop);
         $this->stderr->on('data', function ($data) use ($curl) {
             foreach ($this->stdErrorLogFiles as $logFile) {
                 file_put_contents($logFile, $data, FILE_APPEND);
