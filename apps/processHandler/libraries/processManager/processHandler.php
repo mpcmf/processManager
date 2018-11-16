@@ -323,11 +323,11 @@ class processHandler
         $process =& $this->processPool[$id];
 
         /** @var process $instance */
-        foreach ($process['instances'] as $id => $instance) {
+        foreach ($process['instances'] as $instanceId => $instance) {
             $status = $instance->getStatus();
             if ($status === process::STATUS__STOPPED || $status === process::STATUS__EXITED) {
                 var_dump('$unset');
-                unset($process['instances'][$id]);
+                unset($process['instances'][$instanceId]);
             }
         }
     }
