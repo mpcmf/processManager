@@ -201,7 +201,12 @@ class processHandler
 
     protected function updateConfig()
     {
-        $newConfig = $this->configStorage->getProcessesConfig($this->server->serverId);
+        try {
+            $newConfig = $this->configStorage->getProcessesConfig($this->server->serverId);
+        } catch (\Exception $exception) {
+            error_log("[Exception] on getting config from db {$exception->getMessage()}");
+            $newConfig = [];
+        }
         $changes = $this->compareConfig($newConfig);
 
         $this->processingChanges($changes);
@@ -212,7 +217,11 @@ class processHandler
     {
         /** @var processModel[] $process */
         foreach ($this->processPool as $id => $process) {
-            $this->configStorage->saveConfig($process['config']);
+            try {
+                $this->configStorage->saveConfig($process['config']);
+            } catch (\Exception $exception) {
+                error_log("[Exception] on syncing config! {$exception->getMessage()}");
+            }
         }
     }
 
