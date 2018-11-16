@@ -238,6 +238,12 @@ class processHandler
             /** @var array|processModel[] $process */
             $process =& $this->processPool[$id];
 
+            //set new streams from db
+            $process['config']->setStdOutPaths($processModel->getStdOutPaths());
+            $process['config']->setStdErrorPaths($processModel->getStdErrorPaths());
+            $process['config']->setStdOutWsChannelIds($processModel->getStdErrorWsChannelIds());
+            $process['config']->setStdErrorWsChannelIds($processModel->getStdErrorWsChannelIds());
+
             if ($processModel->getState() === self::STATE__STOP && $process['config']->getState() === self::STATE__RUNNING) {
                 $changedStates['stop'][$id] = $processModel;
             } if ($processModel->getState() === self::STATE__RUNNING && $processModel->getInstances() !== $process['config']->getInstances()) {
