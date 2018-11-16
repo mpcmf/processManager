@@ -40,6 +40,10 @@ class configStorage
     public function saveConfig(processModel $process)
     {
         $process->setLastUpdate(time());
-        $this->mapper()->save($process);
+        try {
+            $this->mapper()->save($process);
+        } catch (\Exception $exception) {
+            error_log(" [Exception] on saving config {$exception->getMessage()}");
+        }
     }
 }

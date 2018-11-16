@@ -1,6 +1,7 @@
 <?php
 namespace mpcmf\modules\processHandler\mappers;
 
+use mpcmf\apps\processHandler\libraries\processManager\process;
 use mpcmf\apps\processHandler\libraries\processManager\processHandler;
 use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\system\pattern\singleton;
@@ -134,16 +135,15 @@ class processMapper
                     [
                         'type' => 'string.byRegex',
                         'data' => [
-                            'pattern' => '/^(' . processHandler::STATE__NEW . '|'
-                                . processHandler::STATE__RUN . '|'
-                                . processHandler::STATE__RUNNING . '|'
-                                . processHandler::STATE__STOP . '|'
-                                . processHandler::STATE__STOPPING .'|'
-                                . processHandler::STATE__STOPPED .'|'
-                                . processHandler::STATE__RESTART .'|'
-                                . processHandler::STATE__RESTARTING .'|'
-                                . processHandler::STATE__REMOVE .'|'
-                                . processHandler::STATE__REMOVING .')$/'
+                            'pattern' => '/^(' . process::STATUS__NONE . '|'
+                                . process::STATUS__RUN . '|'
+                                . process::STATUS__RUNNING . '|'
+                                . process::STATUS__STOP . '|'
+                                . process::STATUS__STOPPING .'|'
+                                . process::STATUS__STOPPED .'|'
+                                . process::STATUS__RESTART .'|'
+                                . process::STATUS__RESTARTING .'|'
+                                . process::STATUS__EXITED .')$/'
                         ]
                     ]
                 ],
