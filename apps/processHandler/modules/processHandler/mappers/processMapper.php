@@ -355,7 +355,17 @@ class processMapper
                 'description' => 'Server\'s address where will be started process',
                 'type' => 'string',
                 'formType' => 'select',
-                'validator' => [],
+                'validator' => [
+                    [
+                        'type' => 'string.byLength',
+                        'data' => [
+                            'length' => [
+                                'min' => 24,
+                                'max' => 24
+                            ]
+                        ]
+                    ]
+                ],
                 'relations' => [
                     'creator' => [
                         'getter' => 'getServerModel',
