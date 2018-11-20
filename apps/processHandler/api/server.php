@@ -12,11 +12,12 @@ class server
 
     public function getByByHost($host)
     {
-        $result = $this->mapper->getBy([serverMapper::FIELD__HOST => $host])->export();
+        $result = array_values($this->getByByCriteria([serverMapper::FIELD__HOST => $host]));
+        if (!isset($result[0])) {
+            return [];
+        }
 
-        $result['_id'] = (string) $result['_id'];
-
-        return $result;
+        return $result[0];
     }
 
     /**

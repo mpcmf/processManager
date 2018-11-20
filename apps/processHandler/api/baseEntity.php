@@ -8,7 +8,6 @@ use mpcmf\system\validator\exception\validatorException;
 
 abstract class baseEntity
 {
-
     /**
      * @var $mapper mapperBase
      */
@@ -24,13 +23,12 @@ abstract class baseEntity
         $this->mapper = $this->getMapper();
     }
 
-    public function getList($offset = 0, $limit = 100)
+    public function getList($offset = 0, $limit = 100, $fields = [], $sort = [])
     {
-        $cursor = $this->mapper->getAllBy([])->limit($limit)->skip($offset);
+        $cursor = $this->mapper->getAllBy([], $fields, $sort)->limit($limit)->skip($offset);
 
         return $this->cursorToArray($cursor);
     }
-
 
     public function add(array $server = [])
     {
@@ -62,11 +60,16 @@ abstract class baseEntity
         }
 
         $convertedFields = $this->mapper->convertDataFromForm($fieldsToUpdate);
-
-
         $this->mapper->updateById($fieldsToUpdate['_id'], $convertedFields);
 
         return true;
+    }
+
+    protected function getByByCriteria(array $criteria, array $fields = [], array $sort = [])
+    {
+        $exportedData = $this->mapper->getAllBy($criteria, $fields, $sort)->export();
+
+        return $this->cursorToArray($exportedData);
     }
 
     protected function getErrorMessage($errors)
