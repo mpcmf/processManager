@@ -23,7 +23,7 @@ abstract class baseEntity
         $this->mapper = $this->getMapper();
     }
 
-    public function getList($offset = 0, $limit = 100, $fields = [], $sort = [])
+    public function getList($offset = 0, $limit = 100, array $fields = [], array $sort = [])
     {
         $cursor = $this->mapper->getAllBy([], $fields, $sort)->limit($limit)->skip($offset);
 
@@ -73,9 +73,9 @@ abstract class baseEntity
         return $item;
     }
 
-    protected function getByByCriteria(array $criteria, array $fields = [], array $sort = [])
+    protected function getByCriteria(array $criteria, $offset = 0, $limit = 100, array $fields = [], array $sort = [])
     {
-        $exportedData = $this->mapper->getAllBy($criteria, $fields, $sort)->export();
+        $exportedData = $this->mapper->getAllBy($criteria, $fields, $sort)->limit($limit)->skip($offset);
 
         return $this->cursorToArray($exportedData);
     }

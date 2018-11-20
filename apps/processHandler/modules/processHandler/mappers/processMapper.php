@@ -190,6 +190,7 @@ class processMapper
                 'getter' => 'getLastUpdate',
                 'setter' => 'setLastUpdate',
                 'role' => [
+                    self::ROLE__SORTABLE => true
                 ],
                 'name' => 'Last update',
                 'description' => 'Last update',

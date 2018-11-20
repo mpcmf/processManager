@@ -12,7 +12,7 @@ class server
 
     public function getByByHost($host)
     {
-        $result = array_values($this->getByByCriteria([serverMapper::FIELD__HOST => $host]));
+        $result = array_values($this->getByCriteria([serverMapper::FIELD__HOST => $host]));
         if (!isset($result[0])) {
             return [];
         }
@@ -22,7 +22,7 @@ class server
 
     public function getByByName($name)
     {
-        return $this->getByByCriteria([serverMapper::FIELD__NAME => $name]);
+        return $this->getByCriteria([serverMapper::FIELD__NAME => $name]);
     }
 
     /**
