@@ -4,10 +4,22 @@
  * @date   : 11/16/12 5:11 PM
  */
 
+use mpcmf\modules\processHandler\mappers\serverMapper;
+
 \mpcmf\system\configuration\config::setConfig(__FILE__, [
     'storage' => [
         'configSection' => 'localhost',
         'db' => 'processHandler',
-        'collection' => 'server'
+        'collection' => 'server',
+        'indices' => [
+            [
+                'keys' => [
+                    serverMapper::FIELD__HOST => 1
+                ],
+                'options' => [
+                    'unique' => true
+                ]
+            ]
+        ]
     ]
 ]);

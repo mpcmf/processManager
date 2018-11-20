@@ -3,6 +3,7 @@ namespace mpcmf\modules\processHandler\mappers;
 
 
 use mpcmf\modules\moduleBase\mappers\mapperBase;
+use mpcmf\system\configuration\config;
 use mpcmf\system\pattern\singleton;
 
 /**
@@ -35,6 +36,11 @@ class serverMapper
     const FIELD__CPU_USAGE = 'cpu_usage';
     const FIELD__RAM_USAGE = 'ram_usage';
 
+    public function __construct()
+    {
+        parent::__construct();
+        $this->checkIndexes();
+    }
 
     public function getPublicName()
     {
@@ -198,5 +204,12 @@ class serverMapper
                 ],
             ],
         ];
+    }
+
+    public function checkIndexes()
+    {
+        $storageConfig = config::getConfig(__CLASS__)['storage'];
+
+        $this->storage()->checkIndexes($storageConfig['db'], $storageConfig['collection'], $storageConfig['indices']);
     }
 }
