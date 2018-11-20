@@ -65,6 +65,14 @@ abstract class baseEntity
         return true;
     }
 
+    public function getById($id)
+    {
+        $item = $this->mapper->getById($id)->export();
+        $item['_id'] = (string) $item['_id'];
+
+        return $item;
+    }
+
     protected function getByByCriteria(array $criteria, array $fields = [], array $sort = [])
     {
         $exportedData = $this->mapper->getAllBy($criteria, $fields, $sort)->export();
