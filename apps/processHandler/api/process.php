@@ -37,6 +37,22 @@ class process
         ], $offset, $limit, $fields, $sort);
     }
 
+    public function setLogFiles($ids, $logFiles)
+    {
+        return $this->update($ids, [
+            processMapper::FIELD__STD_ERROR => $logFiles,
+            processMapper::FIELD__STD_OUT => $logFiles
+        ]);
+    }
+
+    public function setWsChannelIds($ids, $channelIds)
+    {
+        return $this->update($ids, [
+            processMapper::FIELD__STD_OUT_WS_CHANNEL_ID => $channelIds,
+            processMapper::FIELD__STD_ERROR_WS_CHANNEL_ID => $channelIds
+        ]);
+    }
+
     /**
      * @param modelCursor $cursor
      *
