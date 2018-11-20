@@ -3,6 +3,7 @@
 namespace mpcmf\apps\processHandler\api;
 
 use mpcmf\modules\moduleBase\mappers\mapperBase;
+use mpcmf\modules\moduleBase\models\modelCursor;
 use mpcmf\system\validator\exception\validatorException;
 
 
@@ -18,6 +19,14 @@ abstract class baseEntity
      */
     abstract protected function getMapper();
 
+    /**
+     * @param modelCursor $cursor
+     *
+     * @return mixed
+     * @throws \mpcmf\modules\moduleBase\exceptions\modelException
+     */
+    abstract protected function cursorToArray(modelCursor $cursor);
+
     public function __construct()
     {
         $this->mapper = $this->getMapper();
@@ -25,9 +34,11 @@ abstract class baseEntity
 
     public function getList($offset = 0, $limit = 100, array $fields = [], array $sort = [])
     {
-        $cursor = $this->mapper->getAllBy([], $fields, $sort)->limit($limit)->skip($offset);
+        $modelCursor = $this->mapper->getAllBy([], $fields, $sort);
+        $modelCursor->limit($limit);
+        $modelCursor->skip($offset);
 
-        return $this->cursorToArray($cursor);
+        return $this->cursorToArray($modelCursor);
     }
 
     public function add(array $server = [])
@@ -46,12 +57,8 @@ abstract class baseEntity
         return true;
     }
 
-    public function update(array $fieldsToUpdate = [])
+    public function update($ids, array $fieldsToUpdate = [])
     {
-        if (empty($fieldsToUpdate['_id'])) {
-            throw new validatorException('Empty _id field!');
-        }
-
         $model = $this->mapper->getModel();
         $validationResult = $model::validate($fieldsToUpdate, true);
 
@@ -60,7 +67,7 @@ abstract class baseEntity
         }
 
         $convertedFields = $this->mapper->convertDataFromForm($fieldsToUpdate);
-        $this->mapper->updateById($fieldsToUpdate['_id'], $convertedFields);
+        $this->mapper->updateAllByIds($ids, $convertedFields);
 
         return true;
     }
@@ -75,9 +82,11 @@ abstract class baseEntity
 
     protected function getByCriteria(array $criteria, $offset = 0, $limit = 100, array $fields = [], array $sort = [])
     {
-        $exportedData = $this->mapper->getAllBy($criteria, $fields, $sort)->limit($limit)->skip($offset);
+        $modelCursor = $this->mapper->getAllBy($criteria, $fields, $sort);
+        $modelCursor->limit($limit);
+        $modelCursor->skip($offset);
 
-        return $this->cursorToArray($exportedData);
+        return $this->cursorToArray($modelCursor);
     }
 
     protected function getErrorMessage($errors)
@@ -88,16 +97,5 @@ abstract class baseEntity
         }
 
         return $errorMessage;
-    }
-
-    protected function cursorToArray($cursor)
-    {
-        $result = [];
-        foreach ($cursor as $item) {
-            $item['_id'] = (string) $item['_id'];
-            $result[$item['_id']] = $item;
-        }
-
-        return $result;
     }
 }

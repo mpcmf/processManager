@@ -3,6 +3,7 @@
 namespace mpcmf\apps\processHandler\api;
 
 use mpcmf\modules\moduleBase\mappers\mapperBase;
+use mpcmf\modules\moduleBase\models\modelCursor;
 use mpcmf\modules\processHandler\mappers\processMapper;
 
 class process
@@ -39,5 +40,26 @@ class process
                 '$in' => $tags
             ]
         ], $offset, $limit, $fields, $sort);
+    }
+
+    /**
+     * @param modelCursor $cursor
+     *
+     * @return array|mixed
+     * @throws \mpcmf\modules\moduleBase\exceptions\modelException
+     */
+    protected function cursorToArray(modelCursor $cursor)
+    {
+        $result = [];
+        foreach ($cursor as $item) {
+            $data = $item->export();
+            $data['_id'] = (string) $item->getIdValue();
+            $server = $item->getServerModel()->export();
+            $server['_id'] = (string) $server['_id'];
+            $data['server'] = $server;
+            $result[] = $data;
+        }
+
+        return $result;
     }
 }
