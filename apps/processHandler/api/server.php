@@ -46,7 +46,7 @@ class server
         foreach ($cursor as $item) {
             $data = $item->export();
             $data['_id'] = (string) $item->getIdValue();
-            $result[] = $data;
+            $result[$data['_id']] = $data;
         }
 
         return $result;

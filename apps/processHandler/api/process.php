@@ -20,12 +20,7 @@ class process
 
     public function getByName($name)
     {
-        $result = array_values($this->getByCriteria([processMapper::FIELD__NAME => $name]));
-        if (!isset($result[0])) {
-            return [];
-        }
-
-        return $result[0];
+        return $this->getByCriteria([processMapper::FIELD__NAME => $name]);
     }
 
     public function getByState($state, $offset = 0, $limit = 100, array $fields = [], array $sort = [])
@@ -57,7 +52,7 @@ class process
             $server = $item->getServerModel()->export();
             $server['_id'] = (string) $server['_id'];
             $data['server'] = $server;
-            $result[] = $data;
+            $result[$data['_id']] = $data;
         }
 
         return $result;
