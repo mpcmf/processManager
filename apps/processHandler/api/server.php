@@ -10,7 +10,7 @@ class server
     extends baseEntity
 {
 
-    public function getByByHost($host)
+    public function getByHost($host)
     {
         $result = array_values($this->getByCriteria([serverMapper::FIELD__HOST => $host]));
         if (!isset($result[0])) {
@@ -20,7 +20,7 @@ class server
         return $result[0];
     }
 
-    public function getByByName($name)
+    public function getByName($name)
     {
         return $this->getByCriteria([serverMapper::FIELD__NAME => $name]);
     }
