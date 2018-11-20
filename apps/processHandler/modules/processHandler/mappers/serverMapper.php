@@ -80,7 +80,7 @@ class serverMapper
                 'relations' => [],
                 'options' => [
                     'required' => false,
-                    'unique' => true,
+                    'unique' => false,
                 ],
             ],
             self::FIELD__HOST => [

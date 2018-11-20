@@ -20,6 +20,11 @@ class server
         return $result[0];
     }
 
+    public function getByByName($name)
+    {
+        return $this->getByByCriteria([serverMapper::FIELD__NAME => $name]);
+    }
+
     /**
      * @return mapperBase
      */
