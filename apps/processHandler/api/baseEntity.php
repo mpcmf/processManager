@@ -41,16 +41,16 @@ abstract class baseEntity
         return $this->cursorToArray($modelCursor);
     }
 
-    public function add(array $server = [])
+    public function add(array $entity = [])
     {
         $model = $this->mapper->getModel();
 
-        $validationResult = $model::validate($server);
+        $validationResult = $model::validate($entity);
         if (!empty($validationResult['errors'])) {
             throw new validatorException($this->getErrorMessage($validationResult['errors']));
         }
 
-        $model = $model::fromArray($server);
+        $model = $model::fromArray($entity);
 
         $this->mapper->save($model);
 
