@@ -120,6 +120,7 @@ class serverMapper
                 'getter' => 'getLA',
                 'setter' => 'setLA',
                 'role' => [
+                    self::ROLE__SORTABLE => true
                 ],
                 'name' => 'Load average',
                 'description' => 'LA',
