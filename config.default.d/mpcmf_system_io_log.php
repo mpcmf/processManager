@@ -2,10 +2,11 @@
 
 use Monolog\Logger;
 use mpcmf\system\configuration\config;
+use mpcmf\system\configuration\environment;
 
 $path = '/tmp/mpcmf.log';
 
-$defaultLevel = Logger::INFO;
+$defaultLevel = Logger::DEBUG;
 config::setConfig(__FILE__, [
     'default' => [
         'name' => 'BaseLog',
@@ -23,3 +24,24 @@ config::setConfig(__FILE__, [
         'level' => $defaultLevel
     ],
 ]);
+
+$productionLevel = MPCMF_DEBUG ? Logger::DEBUG : Logger::INFO;
+config::setConfig(__FILE__, [
+    'default' => [
+        'name' => 'BaseLog',
+        'path' => "{$path}/mpcmf.log",
+        'level' => $productionLevel
+    ],
+    'applicationBase' => [
+        'name' => 'ApplicationLog',
+        'path' => "{$path}/mpcmf.log",
+        'level' => $productionLevel
+    ],
+    'controllerBase' => [
+        'name' => 'ControllerLog',
+        'path' => "{$path}/mpcmf.log",
+        'level' => $productionLevel
+    ],
+], environment::ENV_PRODUCTION);
+
+MPCMF_DEBUG && config::setConfigByEnvironment(__FILE__, environment::ENV_PRODUCTION);
