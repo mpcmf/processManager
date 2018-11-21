@@ -53,6 +53,11 @@ class process
         ]);
     }
 
+    public function getByServerId($serverId, $offset = 0, $limit = 100, array $fields = [], array $sort = [])
+    {
+        return $this->getByCriteria([processMapper::FIELD__SERVER => $serverId], $offset, $limit, $fields, $sort);
+    }
+
     /**
      * @param modelCursor $cursor
      *
