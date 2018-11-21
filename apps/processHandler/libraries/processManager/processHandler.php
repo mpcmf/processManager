@@ -252,6 +252,7 @@ class processHandler
             $process['config']->setStdErrorPaths($processModel->getStdErrorPaths());
             $process['config']->setStdOutWsChannelIds($processModel->getStdErrorWsChannelIds());
             $process['config']->setStdErrorWsChannelIds($processModel->getStdErrorWsChannelIds());
+            $process['config']->setCommand($processModel->getCommand());
 
             if ($processModel->getState() === self::STATE__STOP && $process['config']->getState() === self::STATE__RUNNING) {
                 $changedStates['stop'][$id] = $processModel;
