@@ -3,7 +3,6 @@
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
 use mpcmf\system\configuration\config;
-use mpcmf\system\helper\service\signalHandler;
 use mpcmf\system\net\reactCurl;
 use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
@@ -28,6 +27,8 @@ class process
      * @var int
      */
     protected $pid = -1;
+
+    protected $gid;
 
     protected $command;
 
@@ -74,8 +75,6 @@ class process
 
     public function __construct(LoopInterface $loop, $command, $workDir = null)
     {
-        $signalHandler = signalHandler::getInstance();
-        $signalHandler->addHandler(SIGTERM, [$this, 'signalHandler']);
         $config = config::getConfig(__CLASS__);
         $this->enabledWs = $config['web_sockets']['enabled'];
         $this->webSocketServerPublishEndPoint = $config['web_sockets']['web_socket_server_publish_end_point'];
@@ -146,6 +145,8 @@ class process
             error_log("Process running with pid [{$processStatus['pid']}]!");
             $this->status = self::STATUS__RUNNING;
             $this->pid = $processStatus['pid'];
+            posix_setpgid($processStatus['pid'], $processStatus['pid']);
+            $this->gid = $processStatus['pid'];
             $this->exitCode = -1;
             $this->loop->addPeriodicTimer($this->checkEvery, function ($timer) {
                 $this->check();
@@ -292,6 +293,10 @@ class process
 
     protected function kill()
     {
+        if ($this->status === self::STATUS__STOPPING) {
+            return;
+        }
+
         if (is_resource($this->processDescriptor)) {
             proc_terminate($this->processDescriptor, SIGTERM);
         }
@@ -308,8 +313,27 @@ class process
         }
         error_log('pd closed');
 
-        $this->status = self::STATUS__STOPPED;
-        $this->pid = -1;
+        $this->status = self::STATUS__STOPPING;
+        posix_kill(-$this->gid, SIGTERM);
+        $this->loop->addPeriodicTimer(1, function ($timer) {
+            static $attempts = 20;
+
+            $stopped = false;
+            error_log("Sent -15 to group {$this->gid}");
+            if (!posix_kill(-$this->gid, SIGTERM)) {
+                $stopped = true;
+            }
+            if (!$stopped && --$attempts === 0) {
+                posix_kill(-$this->gid, SIGKILL);
+                error_log("Sent -9 to group {$this->gid}");
+                $stopped = true;
+            }
+            if ($stopped) {
+                $this->status = self::STATUS__STOPPED;
+                $this->pid = -1;
+                $this->loop->cancelTimer($timer);
+            }
+        });
     }
 
     public function getStatus()
@@ -354,20 +378,5 @@ class process
 //        }
 
         return $pids;
-    }
-
-    /**
-     * signal handler
-     *
-     * @param integer $_signal
-     */
-    public function signalHandler($_signal = SIGTERM)
-    {
-        switch ($_signal) {
-            case SIGTERM:
-                error_log("Killing {$this->command}. Pid: {$this->pid}");
-                $this->kill();
-                break;
-        }
     }
 }

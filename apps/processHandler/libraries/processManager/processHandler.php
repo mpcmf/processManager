@@ -75,10 +75,14 @@ class processHandler
 //        ]
     ];
 
+    protected $stopAll = false;
+
     public function __construct(configStorage $configStorage, LoopInterface $loop)
     {
         $this->configStorage = $configStorage;
         $this->loop = $loop;
+        pcntl_signal(SIGTERM, [$this, 'signalHandler']);
+        pcntl_signal(SIGINT, [$this, 'signalHandler']);
     }
 
     public function start()
@@ -92,6 +96,7 @@ class processHandler
 
     protected function mainCycle()
     {
+        pcntl_signal_dispatch();
         $this->updateConfig();
         $this->management();
     }
@@ -355,7 +360,7 @@ class processHandler
                     break;
                 }
             case processMapper::MODE__REPEATABLE:
-                while (count($process['instances']) < $maxInstances) {
+                while (count($process['instances']) < $maxInstances && $this->stopAll === false) {
                     $instance = new process($this->loop, $config->getCommand(), $config->getWorkDir());
                     $instance->run();
 
@@ -387,6 +392,39 @@ class processHandler
         }
     }
 
+    protected function stopProcessHandler()
+    {
+        foreach ($this->processPool as $process) {
+            /** @var process $instance */
+            foreach ($process['instances'] as $instance) {
+                $instance->stop();
+            }
+        }
+        $this->stopAll = true;
+
+        $this->loop->addPeriodicTimer(1, function () {
+            if (!$this->isAllStopped()) {
+                error_log('Waiting stopping all processes...');
+                return;
+            }
+            exit("All processes stopped! Exit!\n");
+        });
+    }
+
+    protected function isAllStopped()
+    {
+        foreach ($this->processPool as $process) {
+            /** @var process $instance */
+            foreach ($process['instances'] as $instance) {
+                if ($instance->getStatus() !== process::STATUS__STOPPED) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
     protected function stop($id)
     {
         $process =& $this->processPool[$id];
@@ -404,6 +442,25 @@ class processHandler
         /** @var process $instance */
         foreach ($process['instances'] as $instance) {
             $instance->restart();
+        }
+    }
+
+    /**
+     * signal handler
+     *
+     * @param integer $_signal
+     */
+    public function signalHandler($_signal = SIGTERM)
+    {
+        switch ($_signal) {
+            case SIGTERM:
+                error_log('SigTerm!');
+                $this->stopProcessHandler();
+                break;
+            case SIGINT:
+                error_log('SigInt!');
+                $this->stopProcessHandler();
+                break;
         }
     }
 }
