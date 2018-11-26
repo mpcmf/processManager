@@ -252,16 +252,20 @@ class processHandler
             /** @var array|processModel[] $process */
             $process =& $this->processPool[$id];
 
-            //set new streams from db
+            //set config from db
             $process['config']->setStdOutPaths($processModel->getStdOutPaths());
             $process['config']->setStdErrorPaths($processModel->getStdErrorPaths());
             $process['config']->setStdOutWsChannelIds($processModel->getStdErrorWsChannelIds());
             $process['config']->setStdErrorWsChannelIds($processModel->getStdErrorWsChannelIds());
             $process['config']->setCommand($processModel->getCommand());
+            $process['config']->setWorkDir($processModel->getWorkDir());
+            $process['config']->setDescription($processModel->getDescription());
+            $process['config']->setMode($processModel->getMode());
+            $process['config']->setTags($processModel->getTags());
 
             if ($processModel->getState() === self::STATE__STOP && $process['config']->getState() === self::STATE__RUNNING) {
                 $changedStates['stop'][$id] = $processModel;
-            } if ($processModel->getState() === self::STATE__RUNNING && $processModel->getInstances() !== $process['config']->getInstances()) {
+            } elseif ($processModel->getState() === self::STATE__RUNNING && $processModel->getInstances() !== $process['config']->getInstances()) {
                 $processModel->setState(process::STATUS__RESTART);
                 $changedStates['restart'][$id] = $processModel;
             } elseif ($processModel->getState() === self::STATE__RUN && $process['config']->getState() === self::STATE__STOPPED) {
@@ -269,6 +273,7 @@ class processHandler
             } elseif ($processModel->getState() === self::STATE__RESTART && $process['config']->getState() === self::STATE__RUNNING) {
                 $changedStates['restart'][$id] = $processModel;
             }
+            $process['config']->setInstances($processModel->getInstances());
 
             unset($process);
         }
