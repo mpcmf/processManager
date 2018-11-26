@@ -23,6 +23,7 @@ class processHandler
 
     const STATE__REMOVE = 'remove';
     const STATE__REMOVING = 'removing';
+    const STATE__READY_TO_REMOVE_FROM_DB = 'ready_to_remove_from_db';
 
     protected $statusesPriority = [
         process::STATUS__STOP,
@@ -134,7 +135,7 @@ class processHandler
 
                 case self::STATE__REMOVING:
                     if ($currentState === self::STATE__STOPPED) {
-                        unset($this->processPool[$id]);
+                        $process['config']->setState(self::STATE__READY_TO_REMOVE_FROM_DB);
                     } else {
                         MPCMF_DEBUG && error_log("Process {$id} waiting for remove...");
                     }
@@ -189,6 +190,8 @@ class processHandler
                 $status = process::STATUS__STOPPING;
             } elseif ($wantedState === self::STATE__STOP) {
                 $status = process::STATUS__STOP;
+            } elseif ($wantedState === self::STATE__REMOVE || $wantedState === self::STATE__REMOVING) {
+                $status = process::STATUS__STOPPING;
             }
 
             foreach ($process['instances'] as $instance) {
@@ -223,6 +226,11 @@ class processHandler
         /** @var processModel[] $process */
         foreach ($this->processPool as $id => $process) {
             try {
+                if ($process['config']->getState() === self::STATE__READY_TO_REMOVE_FROM_DB) {
+                    $this->configStorage->removeConfig($process['config']);
+                    unset($this->processPool[$id]);
+                    continue;
+                }
                 $this->configStorage->saveConfig($process['config']);
             } catch (\Exception $exception) {
                 error_log("[Exception] on syncing config! {$exception->getMessage()}");
@@ -272,6 +280,8 @@ class processHandler
                 $changedStates['run'][$id] = $processModel;
             } elseif ($processModel->getState() === self::STATE__RESTART && $process['config']->getState() === self::STATE__RUNNING) {
                 $changedStates['restart'][$id] = $processModel;
+            } elseif ($processModel->getState() === self::STATE__REMOVE) {
+                $changedStates['remove'][$id] = $processModel;
             }
             $process['config']->setInstances($processModel->getInstances());
 

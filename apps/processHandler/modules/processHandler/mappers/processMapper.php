@@ -143,6 +143,7 @@ class processMapper
                                 . processHandler::STATE__RESTART .'|'
                                 . processHandler::STATE__RESTARTING .'|'
                                 . processHandler::STATE__REMOVE .'|'
+                                . processHandler::STATE__READY_TO_REMOVE_FROM_DB .'|'
                                 . processHandler::STATE__REMOVING .')$/'
                         ]
                     ]

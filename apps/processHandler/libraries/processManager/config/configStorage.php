@@ -7,8 +7,6 @@ use mpcmf\modules\processHandler\models\processModel;
 
 class configStorage
 {
-    /** @var processModel[] */
-    protected $config = [];
 
     protected function mapper()
     {
@@ -29,17 +27,23 @@ class configStorage
 
         $cursor = $this->mapper()->getAllBy($criteria);
 
+        $config = [];
         /** @var processModel $item */
         foreach ($cursor as $item) {
-            $this->config[(string) $item->getIdValue()] = $item;
+            $config[(string) $item->getIdValue()] = $item;
         }
 
-        return $this->config;
+        return $config;
     }
 
     public function saveConfig(processModel $process)
     {
         $process->setLastUpdate(time());
         $this->mapper()->save($process);
+    }
+
+    public function removeConfig(processModel $process)
+    {
+        $this->mapper()->remove($process);
     }
 }
