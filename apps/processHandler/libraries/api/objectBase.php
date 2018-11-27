@@ -1,6 +1,6 @@
 <?php
 
-namespace mpcmf\apps\processHandler\api;
+namespace mpcmf\apps\processHandler\libraries\api;
 
 use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\modules\moduleBase\models\modelCursor;

@@ -1,6 +1,6 @@
 <?php
 
-namespace mpcmf\apps\processHandler\api;
+namespace mpcmf\apps\processHandler\libraries\api;
 
 use mpcmf\apps\processHandler\libraries\processManager\processHandler;
 use mpcmf\modules\moduleBase\mappers\mapperBase;

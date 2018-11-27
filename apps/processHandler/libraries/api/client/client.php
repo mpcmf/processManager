@@ -1,6 +1,6 @@
 <?php
 
-namespace mpcmf\apps\processHandler\api\client;
+namespace mpcmf\apps\processHandler\libraries\api\client;
 
 interface client
 {
