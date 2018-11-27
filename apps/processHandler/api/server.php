@@ -3,12 +3,11 @@
 namespace mpcmf\apps\processHandler\api;
 
 use mpcmf\modules\moduleBase\mappers\mapperBase;
-use mpcmf\modules\moduleBase\models\modelCursor;
 use mpcmf\modules\processHandler\mappers\serverMapper;
 
 
 class server
-    extends baseEntity
+    extends objectBase
 {
 
     public function getByHost($host)
@@ -34,21 +33,8 @@ class server
         return serverMapper::getInstance();
     }
 
-    /**
-     * @param modelCursor $cursor
-     *
-     * @return array|mixed
-     * @throws \mpcmf\modules\moduleBase\exceptions\modelException
-     */
-    protected function cursorToArray(modelCursor $cursor)
+    public function delete($ids)
     {
-        $result = [];
-        foreach ($cursor as $item) {
-            $data = $item->export();
-            $data['_id'] = (string) $item->getIdValue();
-            $result[$data['_id']] = $data;
-        }
-
-        return $result;
+        return $this->mapper->removeAllByIds($ids);
     }
 }

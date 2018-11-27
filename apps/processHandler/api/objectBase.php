@@ -6,8 +6,7 @@ use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\modules\moduleBase\models\modelCursor;
 use mpcmf\system\validator\exception\validatorException;
 
-
-abstract class baseEntity
+abstract class objectBase
 {
     /**
      * @var $mapper mapperBase
@@ -18,14 +17,6 @@ abstract class baseEntity
      * @return mapperBase
      */
     abstract protected function getMapper();
-
-    /**
-     * @param modelCursor $cursor
-     *
-     * @return mixed
-     * @throws \mpcmf\modules\moduleBase\exceptions\modelException
-     */
-    abstract protected function cursorToArray(modelCursor $cursor);
 
     public function __construct()
     {
@@ -97,5 +88,23 @@ abstract class baseEntity
         }
 
         return $errorMessage;
+    }
+
+    /**
+     * @param modelCursor $cursor
+     *
+     * @return array|mixed
+     * @throws \mpcmf\modules\moduleBase\exceptions\modelException
+     */
+    protected function cursorToArray(modelCursor $cursor)
+    {
+        $result = [];
+        foreach ($cursor as $item) {
+            $data = $item->export();
+            $data['_id'] = (string) $item->getIdValue();
+            $result[$data['_id']] = $data;
+        }
+
+        return $result;
     }
 }

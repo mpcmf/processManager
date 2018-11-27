@@ -2,12 +2,12 @@
 
 namespace mpcmf\apps\processHandler\api;
 
+use mpcmf\apps\processHandler\libraries\processManager\processHandler;
 use mpcmf\modules\moduleBase\mappers\mapperBase;
-use mpcmf\modules\moduleBase\models\modelCursor;
 use mpcmf\modules\processHandler\mappers\processMapper;
 
 class process
-    extends baseEntity
+    extends objectBase
 {
 
     /**
@@ -58,24 +58,8 @@ class process
         return $this->getByCriteria([processMapper::FIELD__SERVER => $serverId], $offset, $limit, $fields, $sort);
     }
 
-    /**
-     * @param modelCursor $cursor
-     *
-     * @return array|mixed
-     * @throws \mpcmf\modules\moduleBase\exceptions\modelException
-     */
-    protected function cursorToArray(modelCursor $cursor)
+    public function delete($ids)
     {
-        $result = [];
-        foreach ($cursor as $item) {
-            $data = $item->export();
-            $data['_id'] = (string) $item->getIdValue();
-            $server = $item->getServerModel()->export();
-            $server['_id'] = (string) $server['_id'];
-            $data['server'] = $server;
-            $result[$data['_id']] = $data;
-        }
-
-        return $result;
+        return $this->update($ids, [processMapper::FIELD__STATE => processHandler::STATE__REMOVE]);
     }
 }
