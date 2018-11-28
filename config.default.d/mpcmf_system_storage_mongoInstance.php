@@ -6,8 +6,15 @@
  */
 
 use mpcmf\system\configuration\config;
+use mpcmf\system\configuration\environment;
 
 config::setConfig(__FILE__, [
+    'default' => [
+        'uri' => 'mongodb://localhost',
+        'options' => [
+            'connect' => true,
+        ]
+    ],
     'localhost' => [
         'uri' => 'mongodb://localhost',
         'options' => [
@@ -15,3 +22,18 @@ config::setConfig(__FILE__, [
         ]
     ]
 ]);
+
+config::setConfig(__FILE__, [
+    'default' => [
+        'uri' => 'mongodb://localhost',
+        'options' => [
+            'connect' => true,
+        ]
+    ],
+    'localhost' => [
+        'uri' => 'mongodb://localhost',
+        'options' => [
+            'connect' => true,
+        ]
+    ]
+], environment::ENV_PRODUCTION);

@@ -25,7 +25,7 @@ config::setConfig(__FILE__, [
     ],
 ]);
 
-$productionLevel = MPCMF_DEBUG ? Logger::DEBUG : Logger::INFO;
+$productionLevel = MPCMF_DEBUG ? Logger::DEBUG : Logger::NOTICE;
 config::setConfig(__FILE__, [
     'default' => [
         'name' => 'BaseLog',
