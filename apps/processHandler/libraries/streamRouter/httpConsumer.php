@@ -25,7 +25,6 @@ class httpConsumer
             $curl->setMaxRequest(100);
         }
         $curl->prepareTask($this->destination, 'POST', $data);
-        error_log("Pushing to {$this->destination}");
         $curl->run();
     }
 }
