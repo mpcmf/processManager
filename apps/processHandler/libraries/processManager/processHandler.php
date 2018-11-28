@@ -62,7 +62,7 @@ class processHandler
      */
     protected $server;
 
-    protected $mainCyclePeriodTime = 1;
+    protected $mainCyclePeriodTime = 2;
 
     /** @var array|processModel[]  */
     protected $processPool = [

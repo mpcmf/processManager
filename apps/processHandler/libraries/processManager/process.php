@@ -68,7 +68,7 @@ class process
     protected $stdOut = [];
     protected $stdError = [];
     protected $enabledWs = false;
-    protected $checkEvery = 1;
+    protected $checkEvery = 2;
 
     protected $stdOutStreamRouter;
     protected $stdErrorStreamRouter;
