@@ -28,20 +28,5 @@ class test
     protected function handle(InputInterface $input, OutputInterface $output)
     {
 
-
-        $loop = Factory::create();
-        $process = new process($loop, 'bin/mpcmf apps/processHandler/console.php childCreator', '/opt/src/processManager');
-        $process->addStdOutLogFile('/tmp/some_log');
-        $process->run();
-
-        $loop->addTimer(5, function () use ($process) {
-           $process->addStdOutLogFile('/tmp/some_log2');
-        });
-
-        $loop->addTimer(10, function () use ($process) {
-           $process->removeStdOutLogFile('/tmp/some_log2');
-        });
-        $loop->run();
-
     }
 }
