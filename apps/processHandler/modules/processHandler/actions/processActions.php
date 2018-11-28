@@ -47,7 +47,6 @@ class processActions
     public function bind()
     {
 
-
-}
+    }
 
 }
