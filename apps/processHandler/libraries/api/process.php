@@ -45,14 +45,6 @@ class process
         ]);
     }
 
-    public function setWsChannelIds($ids, $channelIds)
-    {
-        return $this->update($ids, [
-            processMapper::FIELD__STD_OUT_WS_CHANNEL_ID => $channelIds,
-            processMapper::FIELD__STD_ERROR_WS_CHANNEL_ID => $channelIds
-        ]);
-    }
-
     public function getByServerId($serverId, $offset = 0, $limit = 100, array $fields = [], array $sort = [])
     {
         return $this->getByCriteria([processMapper::FIELD__SERVER => $serverId], $offset, $limit, $fields, $sort);

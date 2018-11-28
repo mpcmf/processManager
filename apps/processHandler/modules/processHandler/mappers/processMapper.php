@@ -39,8 +39,6 @@ class processMapper
     const FIELD__TAGS = 'tags';
     const FIELD__STD_OUT = 'std_out';
     const FIELD__STD_ERROR = 'std_error';
-    const FIELD__STD_OUT_WS_CHANNEL_ID = 'std_out_ws_channel_id';
-    const FIELD__STD_ERROR_WS_CHANNEL_ID = 'std_error_ws_channel_id';
 
     const MODE__ONE_RUN = 'one_run';
     const MODE__REPEATABLE = 'repeatable';
@@ -278,40 +276,6 @@ class processMapper
                 'role' => [],
                 'name' => 'StdError',
                 'description' => 'Std error log file path',
-                'type' => 'string[]',
-                'formType' => 'multitext',
-                'validator' => [
-                ],
-                'relations' => [
-                ],
-                'options' => [
-                    'required' => false,
-                    'unique' => false,
-                ],
-            ],
-            self::FIELD__STD_OUT_WS_CHANNEL_ID => [
-                'getter' => 'getStdOutWsChannelIds',
-                'setter' => 'setStdOutWsChannelIds',
-                'role' => [],
-                'name' => 'StdOutWsChannelId',
-                'description' => 'Std out web socket channel id',
-                'type' => 'string[]',
-                'formType' => 'multitext',
-                'validator' => [
-                ],
-                'relations' => [
-                ],
-                'options' => [
-                    'required' => false,
-                    'unique' => false,
-                ],
-            ],
-            self::FIELD__STD_ERROR_WS_CHANNEL_ID => [
-                'getter' => 'getStdErrorWsChannelIds',
-                'setter' => 'setStdErrorWsChannelIds',
-                'role' => [],
-                'name' => 'StdErrorWsChannelId',
-                'description' => 'Std error web socket channel id',
                 'type' => 'string[]',
                 'formType' => 'multitext',
                 'validator' => [

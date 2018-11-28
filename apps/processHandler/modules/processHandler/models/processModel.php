@@ -44,11 +44,6 @@ use mpcmf\system\pattern\singleton;
  * @method $this setStdOutPaths(array $value) Paths
  * @method array getStdErrorPaths() Paths
  * @method $this setStdErrorPaths(array $value) Paths
- * @method array getStdOutWsChannelIds() Channel ids
- * @method $this setStdOutWsChannelIds(array $value) Channel ids
- * @method array getStdErrorWsChannelIds() Channel ids
- * @method $this setStdErrorWsChannelIds(array $value) Channel ids
- *
  * @method $this setHost(string $value) Server's address where will be started process
  * @method string getHost() Server's address where will be started process
  */

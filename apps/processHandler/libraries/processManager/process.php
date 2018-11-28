@@ -2,8 +2,8 @@
 
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
+use mpcmf\apps\processHandler\libraries\streamRouter\streamRouter;
 use mpcmf\system\configuration\config;
-use mpcmf\system\net\reactCurl;
 use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
 
@@ -65,23 +65,21 @@ class process
      */
     protected $stderr;
 
-    protected $stdOutLogFiles = [];
-    protected $stdErrorLogFiles = [];
-    protected $stdOutWsChannelIds = [];
-    protected $stdErrorWsChannelIds = [];
-    protected $webSocketServerPublishEndPoint;
+    protected $stdOut = [];
+    protected $stdError = [];
     protected $enabledWs = false;
     protected $checkEvery = 1;
 
+    protected $stdOutStreamRouter;
+    protected $stdErrorStreamRouter;
+
     public function __construct(LoopInterface $loop, $command, $workDir = null)
     {
-        $config = config::getConfig(__CLASS__);
-        $this->enabledWs = $config['web_sockets']['enabled'];
-        $this->webSocketServerPublishEndPoint = $config['web_sockets']['web_socket_server_publish_end_point'];
-
         $this->command = $command;
         $this->workDir = $workDir;
         $this->loop = $loop;
+        $this->stdOutStreamRouter = new streamRouter($loop);
+        $this->stdErrorStreamRouter = new streamRouter($loop);
     }
 
     protected function check()
@@ -166,129 +164,38 @@ class process
 
     protected function initStreams()
     {
-        static $curl;
-
-        if ($curl === null) {
-            $curl = new reactCurl($this->loop);
-            $curl->setSleep(0, 0, false);
-            $curl->setMaxRequest(100);
-        }
-        $this->stdout = new Stream($this->pipes[1], $this->loop);
-        $this->stdout->on('data', function ($data) use ($curl) {
-            foreach ($this->stdOutLogFiles as $logFile) {
-                file_put_contents($logFile, $data, FILE_APPEND);
-            }
-            if ($this->enabledWs) {
-                foreach ($this->stdOutWsChannelIds as $channelId) {
-                    $curl->prepareTask("{$this->webSocketServerPublishEndPoint}?id={$channelId}", 'POST', $data);
-                    $curl->run();
-                }
-            }
-        });
-        $this->stderr = new Stream($this->pipes[2], $this->loop);
-        $this->stderr->on('data', function ($data) use ($curl) {
-            foreach ($this->stdErrorLogFiles as $logFile) {
-                file_put_contents($logFile, $data, FILE_APPEND);
-            }
-            if ($this->enabledWs) {
-                foreach ($this->stdErrorWsChannelIds as $channelId) {
-                    $curl->prepareTask("{$this->webSocketServerPublishEndPoint}?id={$channelId}", 'POST', $data);
-                    $curl->run();
-                }
-            }
-        });
+        $this->stdOutStreamRouter->run($this->pipes[1]);
+        $this->stdErrorStreamRouter->run($this->pipes[2]);
     }
 
-    public function addStdOutLogFile($filePath)
+    public function addStdOut($destination)
     {
-        $this->stdOutLogFiles[$filePath] = $filePath;
-
-        return true;
+        return $this->stdOutStreamRouter->addConsumer($destination);
     }
 
-    public function setStdOutLogFiles(array $filesPaths)
+    public function setStdOut(array $destinations)
     {
-        $this->stdOutLogFiles = array_combine($filesPaths, $filesPaths);
-
-        return true;
+        return $this->stdOutStreamRouter->setConsumers($destinations);
     }
 
-    public function removeStdOutLogFile($filePath)
+    public function removeStdOut($destination)
     {
-        if (isset($this->stdOutLogFiles[$filePath])) {
-            unset($this->stdOutLogFiles[$filePath]);
-        }
-
-        return true;
+        return $this->stdOutStreamRouter->removeConsumer($destination);
     }
 
-    public function addStdErrorLogFile($filePath)
+    public function addStdError($destination)
     {
-        $this->stdErrorLogFiles[$filePath] = $filePath;
-
-        return true;
+        return $this->stdErrorStreamRouter->addConsumer($destination);
     }
 
-    public function setStdErrorLogFiles(array $filesPaths)
+    public function setStdError(array $destinations)
     {
-        $this->stdErrorLogFiles = array_combine($filesPaths, $filesPaths);
-
-        return true;
+        return $this->stdErrorStreamRouter->setConsumers($destinations);
     }
 
-    public function removeStdErrorLogFile($filePath)
+    public function removeStdError($destination)
     {
-        if (isset($this->stdErrorLogFiles[$filePath])) {
-            unset($this->stdErrorLogFiles[$filePath]);
-        }
-
-        return true;
-    }
-
-    public function addStdOutWsChannelId($channelId)
-    {
-        $this->stdOutWsChannelIds[$channelId] = $channelId;
-
-        return true;
-    }
-
-    public function setStdOutWsChannelIds(array $channelIds)
-    {
-        $this->stdOutWsChannelIds = array_combine($channelIds, $channelIds);
-
-        return true;
-    }
-
-    public function removeStdOutWsChannelId($channelId)
-    {
-        if (isset($this->stdOutWsChannelIds[$channelId])) {
-            unset($this->stdOutWsChannelIds[$channelId]);
-        }
-
-        return true;
-    }
-
-    public function addStdErrorWsChannelId($channelId)
-    {
-        $this->stdErrorWsChannelIds[$channelId] = $channelId;
-
-        return true;
-    }
-
-    public function setStdErrorWsChannelIds(array $channelIds)
-    {
-        $this->stdErrorWsChannelIds = array_combine($channelIds, $channelIds);
-
-        return true;
-    }
-
-    public function removeStdErrorWsChannelId($channelId)
-    {
-        if (isset($this->stdErrorWsChannelIds[$channelId])) {
-            unset($this->stdErrorWsChannelIds[$channelId]);
-        }
-
-        return true;
+        return $this->stdErrorStreamRouter->removeConsumer($destination);
     }
 
     protected function kill()

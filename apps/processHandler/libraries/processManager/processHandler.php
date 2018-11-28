@@ -263,8 +263,6 @@ class processHandler
             //set config from db
             $process['config']->setStdOutPaths($processModel->getStdOutPaths());
             $process['config']->setStdErrorPaths($processModel->getStdErrorPaths());
-            $process['config']->setStdOutWsChannelIds($processModel->getStdErrorWsChannelIds());
-            $process['config']->setStdErrorWsChannelIds($processModel->getStdErrorWsChannelIds());
             $process['config']->setCommand($processModel->getCommand());
             $process['config']->setWorkDir($processModel->getWorkDir());
             $process['config']->setDescription($processModel->getDescription());
@@ -395,15 +393,11 @@ class processHandler
 
         $stdErrorPaths = $config->getStdErrorPaths();
         $stdOutPaths = $config->getStdOutPaths();
-        $stdErrorWsChannelIds = $config->getStdErrorWsChannelIds();
-        $stdOutWsChannelIds = $config->getStdOutWsChannelIds();
 
         /** @var process $instance */
         foreach ($process['instances'] as $instance) {
-            $instance->setStdErrorLogFiles($stdErrorPaths);
-            $instance->setStdOutLogFiles($stdOutPaths);
-            $instance->setStdErrorWsChannelIds($stdErrorWsChannelIds);
-            $instance->setStdOutWsChannelIds($stdOutWsChannelIds);
+            $instance->setStdError($stdErrorPaths);
+            $instance->setStdOut($stdOutPaths);
         }
     }
 
