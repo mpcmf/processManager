@@ -3,13 +3,14 @@
 namespace mpcmf\apps\processHandler\libraries\streamRouter;
 
 use mpcmf\system\net\reactCurl;
+use React\EventLoop\LoopInterface;
 
 class httpConsumer
     extends consumerBase
 {
     protected $loop;
 
-    public function __construct($destination, $loop)
+    public function __construct($destination, LoopInterface $loop)
     {
         parent::__construct($destination);
         $this->loop = $loop;
