@@ -1,7 +1,8 @@
 <?php
 
-namespace mpcmf\apps\processHandler\libraries\api;
+namespace mpcmf\apps\processHandler\libraries\api\objects;
 
+use mpcmf\apps\processHandler\libraries\api\helper;
 use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\modules\moduleBase\models\modelCursor;
 use mpcmf\system\validator\exception\validatorException;
@@ -23,8 +24,13 @@ abstract class objectBase
         $this->mapper = $this->getMapper();
     }
 
-    public function getList($offset = null, $limit = 100, array $fields = [], array $sort = [])
+    public function getList($params)
     {
+        $offset = helper::getParam('offset', $params, helper::TYPE_INT, null);
+        $limit = helper::getParam('limit', $params, helper::TYPE_INT, 100);
+        $fields = helper::getParam('fields', $params, helper::TYPE_ARRAY, []);
+        $sort = helper::getParam('sort', $params, helper::TYPE_ARRAY, []);
+
         $modelCursor = $this->mapper->getAllBy([], $fields, $sort);
         $modelCursor->limit($limit);
         if (is_int($offset) && $offset > 0) {
@@ -35,24 +41,28 @@ abstract class objectBase
         return $this->cursorToArray($modelCursor);
     }
 
-    public function add(array $entity = [])
+    public function add($params)
     {
+        $object = helper::getParam('object', $params, helper::TYPE_ARRAY, []);
         $model = $this->mapper->getModel();
 
-        $validationResult = $model::validate($entity);
+        $validationResult = $model::validate($object);
         if (!empty($validationResult['errors'])) {
             throw new validatorException($this->getErrorMessage($validationResult['errors']));
         }
 
-        $model = $model::fromArray($entity);
+        $model = $model::fromArray($object);
 
         $this->mapper->save($model);
 
         return true;
     }
 
-    public function update($ids, array $fieldsToUpdate = [])
+    public function update($params)
     {
+        $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
+        $fieldsToUpdate = helper::getParam('fields_to_update', $params, helper::TYPE_ARRAY);
+
         $model = $this->mapper->getModel();
         $validationResult = $model::validate($fieldsToUpdate, true);
 
@@ -66,8 +76,9 @@ abstract class objectBase
         return true;
     }
 
-    public function getById($id)
+    public function getById($params)
     {
+        $id = helper::getParam('id', $params, helper::TYPE_STRING);
         $item = $this->mapper->getById($id)->export();
         $item['_id'] = (string) $item['_id'];
 
