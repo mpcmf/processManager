@@ -23,12 +23,12 @@ class process
         return $this->getByCriteria([processMapper::FIELD__NAME => $name]);
     }
 
-    public function getByState($state, $offset = 0, $limit = 100, array $fields = [], array $sort = [])
+    public function getByState($state, $offset = null, $limit = 100, array $fields = [], array $sort = [])
     {
         return $this->getByCriteria([processMapper::FIELD__STATE => $state], $offset, $limit, $fields, $sort);
     }
 
-    public function getByTags($tags, $offset = 0, $limit = 100, array $fields = [], array $sort = [])
+    public function getByTags($tags, $offset = null, $limit = 100, array $fields = [], array $sort = [])
     {
         return $this->getByCriteria([
             processMapper::FIELD__TAGS => [
@@ -45,7 +45,7 @@ class process
         ]);
     }
 
-    public function getByServerId($serverId, $offset = 0, $limit = 100, array $fields = [], array $sort = [])
+    public function getByServerId($serverId, $offset = null, $limit = 100, array $fields = [], array $sort = [])
     {
         return $this->getByCriteria([processMapper::FIELD__SERVER => $serverId], $offset, $limit, $fields, $sort);
     }

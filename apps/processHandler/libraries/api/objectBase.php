@@ -23,11 +23,14 @@ abstract class objectBase
         $this->mapper = $this->getMapper();
     }
 
-    public function getList($offset = 0, $limit = 100, array $fields = [], array $sort = [])
+    public function getList($offset = null, $limit = 100, array $fields = [], array $sort = [])
     {
         $modelCursor = $this->mapper->getAllBy([], $fields, $sort);
         $modelCursor->limit($limit);
-        $modelCursor->skip($offset);
+        if (is_int($offset) && $offset > 0) {
+            $modelCursor->skip($offset);
+        }
+
 
         return $this->cursorToArray($modelCursor);
     }
@@ -71,11 +74,13 @@ abstract class objectBase
         return $item;
     }
 
-    protected function getByCriteria(array $criteria, $offset = 0, $limit = 100, array $fields = [], array $sort = [])
+    protected function getByCriteria(array $criteria, $offset = null, $limit = 100, array $fields = [], array $sort = [])
     {
         $modelCursor = $this->mapper->getAllBy($criteria, $fields, $sort);
         $modelCursor->limit($limit);
-        $modelCursor->skip($offset);
+        if (is_int($offset) && $offset > 0) {
+            $modelCursor->skip($offset);
+        }
 
         return $this->cursorToArray($modelCursor);
     }
