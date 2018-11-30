@@ -2,6 +2,8 @@
 
 namespace mpcmf\apps\processHandler\commands\processHandler;
 
+use mpcmf\apps\processHandler\libraries\api\client\apiClient;
+use mpcmf\apps\processHandler\libraries\api\client\native;
 use mpcmf\system\application\consoleCommandBase;
 use React\EventLoop\Factory;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,6 +29,8 @@ class test
 
     protected function handle(InputInterface $input, OutputInterface $output)
     {
+        $nativeClient = apiClient::factory();
+        var_dump($nativeClient->call('process', 'getList'));
 
     }
 }
