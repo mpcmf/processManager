@@ -109,16 +109,15 @@ abstract class objectBase
     /**
      * @param modelCursor $cursor
      *
-     * @return array|mixed
-     * @throws \mpcmf\modules\moduleBase\exceptions\modelException
+     * @return array
      */
     protected function cursorToArray(modelCursor $cursor)
     {
         $result = [];
-        foreach ($cursor as $item) {
-            $data = $item->export();
-            $data['_id'] = (string) $item->getIdValue();
-            $result[$data['_id']] = $data;
+        $data = $cursor->export();
+        foreach ($data as $item) {
+            $item['_id'] = (string) $item['_id'];
+            $result[$item['_id']] = $item;
         }
 
         return $result;
