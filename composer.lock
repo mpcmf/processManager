@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ce6e2c172374080a0e0fd45e83dd12e3",
+    "content-hash": "5b95c187b8012c66020d24fa871ba72e",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -70,6 +70,50 @@
                 "mongodb"
             ],
             "time": "2018-11-25T09:25:39+00:00"
+        },
+        {
+            "name": "codedungeon/php-cli-colors",
+            "version": "1.10.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mikeerickson/php-cli-colors.git",
+                "reference": "5649ef76ec0c9ed626e95bf40fdfaf4b8efcf79b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mikeerickson/php-cli-colors/zipball/5649ef76ec0c9ed626e95bf40fdfaf4b8efcf79b",
+                "reference": "5649ef76ec0c9ed626e95bf40fdfaf4b8efcf79b",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=5.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Codedungeon\\PHPCliColors\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mike Erickson",
+                    "email": "codedungeon@gmail.com"
+                }
+            ],
+            "description": "PHP Package for using color output in CLI commands",
+            "homepage": "https://github.com/mikeerickson/php-cli-colors",
+            "keywords": [
+                "color",
+                "colors",
+                "composer",
+                "package",
+                "php"
+            ],
+            "time": "2018-05-17T01:34:14+00:00"
         },
         {
             "name": "evenement/evenement",
@@ -384,12 +428,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "bb3771b9483435227770a670a5d6312c62edbeed"
+                "reference": "a335f6f1a564f43d2c63f2eeeca381e6c78f9006"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/bb3771b9483435227770a670a5d6312c62edbeed",
-                "reference": "bb3771b9483435227770a670a5d6312c62edbeed",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/a335f6f1a564f43d2c63f2eeeca381e6c78f9006",
+                "reference": "a335f6f1a564f43d2c63f2eeeca381e6c78f9006",
                 "shasum": ""
             },
             "require": {
@@ -454,7 +498,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2018-11-13T20:35:15+00:00"
+            "time": "2018-11-30T07:43:17+00:00"
         },
         {
             "name": "mpcmf/mpcmf-console",
