@@ -2,6 +2,8 @@
 
 namespace mpcmf\apps\processHandler\libraries\cliMenu;
 
+use Codedungeon\PHPCliColors\Color;
+
 require_once __DIR__ . '/controlItem.php';
 
 class itemFilter
@@ -28,19 +30,32 @@ class itemFilter
     protected function filter(menu $menu, $controlItem)
     {
         $input = trim(readline("/"));
-        if (!empty($input)) {
-            $menu->setHeaderInfo("{$controlItem->getTitle()}:[{$input}]");
-        } else {
-            $menu->resetHeaderInfo();
-        }
 
         $items = $menu->getMenuItems();
+        $matched = false;
         /** @var menuItem $menuItem */
         foreach ($items as $key => $menuItem) {
             $menuItem->enable();
-            if ($this->checkCondition($menuItem, $input)) {
+            if (!$this->checkCondition($menuItem, $input)) {
                 $menuItem->disable();
+                continue;
             }
+            $matched = true;
+        }
+
+        if (!$matched) {
+            foreach ($items as $key => $menuItem) {
+                $menuItem->enable();
+            }
+        }
+
+        if (!empty($input)) {
+            if (!$matched) {
+                $input = Color::RED . $input . Color::RESET;
+            }
+            $menu->setHeaderInfo("{$controlItem->getTitle()}:[{$input}]");
+        } else {
+            $menu->resetHeaderInfo();
         }
 
     }
