@@ -36,8 +36,9 @@ class itemFilter
         /** @var menuItem $menuItem */
         foreach ($items as $key => $menuItem) {
             $menuItem->enable();
-            if (!$this->checkCondition($menuItem, $input)) {
+            if (!empty($input) && !$this->checkCondition($menuItem, $input)) {
                 $menuItem->disable();
+                $menuItem->setSelected(false);
                 continue;
             }
             $matched = true;

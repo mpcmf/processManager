@@ -55,7 +55,7 @@ class menu
                 continue;
             }
             if ($this->cursor === $key) {
-                echo Color::LIGHT_BLUE . $menuItem->getTitle() . Color::RESET .  PHP_EOL;
+                echo Color::bg_cyan() . $menuItem->getTitle() . Color::RESET .  PHP_EOL;
                 continue;
             }
             if ($menuItem->isSelected()) {

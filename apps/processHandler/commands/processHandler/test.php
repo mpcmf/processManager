@@ -8,7 +8,9 @@ use mpcmf\apps\processHandler\libraries\cliMenu\itemFilter;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\selectAllControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processMenuControlItem;
 use mpcmf\system\application\consoleCommandBase;
 use React\EventLoop\Factory;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,11 +49,13 @@ class test
             $menuMain->addItem(new menuItem($server['_id'], $server,$server['host']));
         }
 
-        $menuMain->addControlItem(new itemFilter(terminal::KEY_F9, 'F9', 'FilterByName'));
+        $menuMain->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
+
+
+        $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'Select all'));
         $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $parentMenu, $menuControlItem) use ($apiClient) {
             $menuItem = $parentMenu->getCurrentItem();
             $serverId = $menuItem->getValue()['_id'];
-
             $processList = $apiClient->call('process', 'getByServerId', ['server_id' => $serverId])['data'];
 
             $parentMenu->close();
@@ -60,39 +64,20 @@ class test
                 $menu->addItem(new menuItem($process['_id'], $process, $process['name']));
             }
 
-            $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $parentMenu, $menuControlItem) use ($parentMenu) {
+            $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
+                $currentMenu->close();
                 $parentMenu->open();
             }));
-            $menu->addControlItem(new menuControlItem(terminal::KEY_F7, 'F7', 'start', function (menu $parentMenu, $menuControlItem) use ($apiClient) {
-                $menuItems = $parentMenu->getMenuItems();
-                foreach ($menuItems as  $item) {
-                    if (!$item->isSelected()) {
-                        continue;
-                    }
-                    echo "starting {$item->getValue()['name']}";
-                    sleep(1);
-                }
-            }));
-            $menu->addControlItem(new menuControlItem(terminal::KEY_F8, 'F8', 'restart', function (menu $parentMenu, $menuControlItem) {
-                $menuItems = $parentMenu->getMenuItems();
-                foreach ($menuItems as  $item) {
-                    if (!$item->isSelected()) {
-                        continue;
-                    }
-                    echo "restarting {$item->getValue()['name']}";
-                    sleep(1);
-                }
-            }));
-            $menu->addControlItem(new menuControlItem(terminal::KEY_F9, 'F9', 'stop', function (menu $parentMenu, $menuControlItem) {
-                $menuItems = $parentMenu->getMenuItems();
-                foreach ($menuItems as  $item) {
-                    if (!$item->isSelected()) {
-                        continue;
-                    }
-                    echo "stopping {$item->getValue()['name']}";
-                    sleep(1);
-                }
-            }));
+
+            $menu->addControlItem(new itemFilter(terminal::KEY_F2, 'F2', 'FilterByCommand', 'command'));
+            $menu->addControlItem(new itemFilter(terminal::KEY_F3, 'F3', 'FilterByState', 'state'));
+            $menu->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'name'));
+            $menu->addControlItem(new itemFilter(terminal::KEY_F5, 'F5', 'FilterByTag', 'tags'));
+            $menu->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'Select all'));
+            $menu->addControlItem(new processMenuControlItem(terminal::KEY_F7, 'F7', 'start', 'start', 'running'));
+            $menu->addControlItem(new processMenuControlItem(terminal::KEY_F8, 'F8', 'restart', 'restart', 'running'));
+            $menu->addControlItem(new processMenuControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
+
 
             $menu->open();
         }));

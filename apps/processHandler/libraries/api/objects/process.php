@@ -3,6 +3,7 @@
 namespace mpcmf\apps\processHandler\libraries\api\objects;
 
 use mpcmf\apps\processHandler\libraries\api\helper;
+use mpcmf\apps\processHandler\libraries\processManager\process as processStarter;
 use mpcmf\apps\processHandler\libraries\processManager\processHandler;
 use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\modules\processHandler\mappers\processMapper;
@@ -50,6 +51,42 @@ class process
                 '$in' => $tags
             ]
         ], $offset, $limit, $fields, $sort);
+    }
+
+    public function start($params)
+    {
+        $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
+
+        return $this->update([
+            'ids' => $ids,
+            'fields_to_update' => [
+                processMapper::FIELD__STATE => processStarter::STATUS__RUN
+            ]
+        ]);
+    }
+
+    public function stop($params)
+    {
+        $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
+
+        return $this->update([
+            'ids' => $ids,
+            'fields_to_update' => [
+                processMapper::FIELD__STATE => processStarter::STATUS__STOP
+            ]
+        ]);
+    }
+
+    public function restart($params)
+    {
+        $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
+
+        return $this->update([
+            'ids' => $ids,
+            'fields_to_update' => [
+                processMapper::FIELD__STATE => processStarter::STATUS__RESTART
+            ]
+        ]);
     }
 
     public function setLogFiles($params)

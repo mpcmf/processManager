@@ -85,6 +85,17 @@ abstract class objectBase
         return $item;
     }
 
+    public function getByIds($params)
+    {
+        $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
+        $mongoIds = [];
+        foreach ($ids as $id) {
+            $mongoIds[] = new \MongoId($id);
+        }
+
+        return $this->getByCriteria(['_id' => ['$in' => $mongoIds]]);
+    }
+
     protected function getByCriteria(array $criteria, $offset = null, $limit = 100, array $fields = [], array $sort = [])
     {
         $modelCursor = $this->mapper->getAllBy($criteria, $fields, $sort);

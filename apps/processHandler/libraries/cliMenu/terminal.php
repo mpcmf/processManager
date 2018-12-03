@@ -9,6 +9,8 @@ class terminal
     const KEY_LEFT = 68;
     const KEY_RIGHT = 67;
     const KEY_SPACE = 32;
+    const KEY_F2 = 81;
+    const KEY_F3 = 82;
     const KEY_F4 = 83;
     const KEY_F5 = 53;
     const KEY_F6 = 55;
