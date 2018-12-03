@@ -43,6 +43,9 @@ class processMenuControlItem
     {
         $apiClient = apiClient::factory();
         $menuItems = $serverListMenu->getMenuItems();
+        if (empty($menuItems)) {
+            return;
+        }
         $ids = [];
         foreach ($menuItems as $item) {
             if (!$item->isSelected()) {
