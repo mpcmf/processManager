@@ -118,6 +118,9 @@ class process
     {
         $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
 
+        //remove if process handler not running!
+        //return $this->mapper->removeAllByIds($ids);
+
         return $this->update([
             'ids' => $ids,
             'fields_to_update' => [processMapper::FIELD__STATE => processHandler::STATE__REMOVE]

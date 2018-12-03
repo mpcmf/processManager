@@ -39,10 +39,10 @@ class processMenuControlItem
         $this->actionOnSelectedItem($menu, $this);
     }
 
-    protected  function actionOnSelectedItem (menu $parentMenu, $menuControlItem)
+    protected  function actionOnSelectedItem (menu $serverListMenu, $menuControlItem)
     {
         $apiClient = apiClient::factory();
-        $menuItems = $parentMenu->getMenuItems();
+        $menuItems = $serverListMenu->getMenuItems();
         $ids = [];
         foreach ($menuItems as $item) {
             if (!$item->isSelected()) {
@@ -51,7 +51,7 @@ class processMenuControlItem
             $ids[] = $item->getValue()['_id'];
         }
         if (empty($ids)) {
-            $ids[] = $parentMenu->getCurrentItem()->getValue()['_id'];
+            $ids[] = $serverListMenu->getCurrentItem()->getValue()['_id'];
         }
         $result = $apiClient->call('process', $this->processMethod, ['ids' => $ids]);
 
@@ -65,7 +65,12 @@ class processMenuControlItem
 
         $attempts = 20;
         do {
-            $processes = $apiClient->call('process', 'getByIds', ['ids' => $ids])['data'];
+            $result = $apiClient->call('process', 'getByIds', ['ids' => $ids]);
+            if (!$result['status']) {
+                echo json_encode($result, 448);
+                sleep(5);
+            }
+            $processes = $result['data'];
             $processedCount = 0;
             foreach ($processes as $process) {
                 echo "{$process['name']} {$process['state']}\n";

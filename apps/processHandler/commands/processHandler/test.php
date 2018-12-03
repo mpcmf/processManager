@@ -10,7 +10,9 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\selectAllControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processEditControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processMenuControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processNewControllerItem;
 use mpcmf\system\application\consoleCommandBase;
 use React\EventLoop\Factory;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,15 +46,16 @@ class test
 
         $serversList = $apiClient->call('server', 'getList')['data'];
 
+        //server list menul
         $menuMain = new menu();
         foreach ($serversList as $server) {
             $menuMain->addItem(new menuItem($server['_id'], $server,$server['host']));
         }
-
         $menuMain->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
 
-
         $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'Select all'));
+
+        //process list menu
         $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $parentMenu, $menuControlItem) use ($apiClient) {
             $menuItem = $parentMenu->getCurrentItem();
             $serverId = $menuItem->getValue()['_id'];
@@ -77,6 +80,11 @@ class test
             $menu->addControlItem(new processMenuControlItem(terminal::KEY_F7, 'F7', 'start', 'start', 'running'));
             $menu->addControlItem(new processMenuControlItem(terminal::KEY_F8, 'F8', 'restart', 'restart', 'running'));
             $menu->addControlItem(new processMenuControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
+            $menu->addControlItem(new processMenuControlItem(terminal::KEY_DELETE, 'DEL', 'delete', 'delete', 'stopped'));
+
+            //process edit menul
+            $menu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));
+            $menu->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process', $serverId));
 
 
             $menu->open();

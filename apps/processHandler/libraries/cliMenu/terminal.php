@@ -16,8 +16,10 @@ class terminal
     const KEY_F6 = 55;
     const KEY_F7 = 56;
     const KEY_F8 = 57;
-    const KEY_F9 = 50;
+    const KEY_F9 = 48;
+    const KEY_F12 = 52;
     const KEY_ENTER = 10;
+    const KEY_DELETE = 51;
     const KEY_SLASH = 47;
     const KEY_UNKNOWN = 0;
 
@@ -43,7 +45,7 @@ class terminal
         if (27 === $key) {
             fgetc($stdin);
             $key = ord(fgetc($stdin));
-            if ($key === 49) {
+            if ($key === 49 || $key === 50) {
                 $key = ord(fgetc($stdin));
             }
         }

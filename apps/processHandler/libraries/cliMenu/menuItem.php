@@ -28,9 +28,24 @@ class menuItem
         return $this->value;
     }
 
+    public function setKey($key)
+    {
+        $this->key = $key;
+    }
+
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
+
     public function getTitle()
     {
         return $this->title;
+    }
+
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
     /**

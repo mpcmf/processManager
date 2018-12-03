@@ -1,0 +1,40 @@
+<?php
+
+namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
+
+use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\menu;
+use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
+
+class processEditControlItem
+    extends controlItem
+{
+
+    /**
+     * processEditControlItem constructor.
+     *
+     * @param $keyboardEventNumber
+     * @param $buttonName
+     * @param $title
+     */
+    public function __construct($keyboardEventNumber, $buttonName, $title)
+    {
+        $this->keyboardEventNumber = $keyboardEventNumber;
+        $this->buttonName = $buttonName;
+        $this->title = $title;
+    }
+
+    /**
+     * @param menuItem[]
+     */
+    public function execute(&$menu)
+    {
+        $this->actionOnSelectedItem($menu);
+    }
+
+    protected function actionOnSelectedItem (menu $processListMenu)
+    {
+        $processListMenu->close();
+        processEditMenu::createMenu($processListMenu->getCurrentItem(), $processListMenu);
+    }
+}

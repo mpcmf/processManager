@@ -53,9 +53,12 @@ abstract class objectBase
 
         $model = $model::fromArray($object);
 
-        $this->mapper->save($model);
+        $result = $this->mapper->save($model);
+        if (isset($result['upserted'])) {
+            $result['upserted'] = (string) $result['upserted'];
+        }
 
-        return true;
+        return $result;
     }
 
     public function update($params)
