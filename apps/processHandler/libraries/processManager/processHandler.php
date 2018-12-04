@@ -172,7 +172,6 @@ class processHandler
             }
         }
         $this->syncConfig();
-        error_log('Result state: ' . reset($this->processPool)['config']->getState());
     }
 
     protected function checkState($id, $wantedState)
