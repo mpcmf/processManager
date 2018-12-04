@@ -35,6 +35,11 @@ class processEditControlItem
     protected function actionOnSelectedItem (menu $processListMenu)
     {
         $processListMenu->close();
-        processEditMenu::createMenu($processListMenu->getCurrentItem(), $processListMenu);
+        $processItem = $processListMenu->getCurrentItem();
+        if (!$processItem) {
+            $processListMenu->open();
+            return;
+        }
+        processEditMenu::createMenu($processItem, $processListMenu);
     }
 }

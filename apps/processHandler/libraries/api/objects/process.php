@@ -118,8 +118,27 @@ class process
     {
         $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
 
-        //remove if process handler not running!
-        //return $this->mapper->removeAllByIds($ids);
+        $mongoIds = [];
+        foreach ($ids as $id) {
+            $mongoIds[] = new \MongoId($id);
+        }
+
+        //if process manager stopped remove processes from db
+        $processes = $this->getByCriteria(['_id' => ['$in' => $mongoIds]]);
+        $idsToRemove = [];
+        foreach ($processes as $process) {
+            if (!is_int($process['last_update']) || time() - 20 > $process['last_update']) {
+                $idsToRemove[] = $process['_id'];
+            }
+        }
+
+        if (!empty($idsToRemove)) {
+            $result = $this->mapper->removeAllByIds($idsToRemove);
+            $ids = array_diff($ids, $idsToRemove);
+            if (empty($ids)) {
+                return $result;
+            }
+        }
 
         return $this->update([
             'ids' => $ids,

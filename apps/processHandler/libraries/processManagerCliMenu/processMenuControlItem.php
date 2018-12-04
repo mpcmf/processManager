@@ -39,10 +39,10 @@ class processMenuControlItem
         $this->actionOnSelectedItem($menu, $this);
     }
 
-    protected  function actionOnSelectedItem (menu $serverListMenu, $menuControlItem)
+    protected  function actionOnSelectedItem (menu $processListMenu, $menuControlItem)
     {
         $apiClient = apiClient::factory();
-        $menuItems = $serverListMenu->getMenuItems();
+        $menuItems = $processListMenu->getMenuItems();
         if (empty($menuItems)) {
             return;
         }
@@ -54,7 +54,7 @@ class processMenuControlItem
             $ids[] = $item->getValue()['_id'];
         }
         if (empty($ids)) {
-            $ids[] = $serverListMenu->getCurrentItem()->getValue()['_id'];
+            $ids[] = $processListMenu->getCurrentItem()->getValue()['_id'];
         }
         $result = $apiClient->call('process', $this->processMethod, ['ids' => $ids]);
 
@@ -72,6 +72,7 @@ class processMenuControlItem
             if (!$result['status']) {
                 echo json_encode($result, 448);
                 sleep(5);
+                break;
             }
             $processes = $result['data'];
             $processedCount = 0;

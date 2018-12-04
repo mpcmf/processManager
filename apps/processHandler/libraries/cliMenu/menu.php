@@ -17,11 +17,8 @@ class menu
      * @var controlItem[]
      */
     protected $menuControlItems = [];
-
     protected $cursor = 0;
-
     protected $headerInfo = '';
-
 
     public function addItem(menuItem $menuItem)
     {
@@ -164,10 +161,13 @@ class menu
     }
 
     /**
-     * @return menuItem
+     * @return menuItem|bool
      */
     public function getCurrentItem()
     {
+        if (empty($this->menuItems)) {
+            return false;
+        }
         return $this->menuItems[$this->cursor];
     }
 

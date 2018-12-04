@@ -89,7 +89,17 @@ class processMapper
                 'description' => 'Name',
                 'type' => 'string',
                 'formType' => 'text',
-                'validator' => [],
+                'validator' => [
+                    [
+                        'type' => 'string.byLength',
+                        'data' => [
+                            'length' => [
+                                'min' => 2,
+                                'max' => PHP_INT_MAX
+                            ]
+                        ]
+                    ]
+                ],
                 'relations' => [],
                 'options' => [
                     'required' => true,
@@ -211,7 +221,18 @@ class processMapper
                 'description' => 'Command',
                 'type' => 'string',
                 'formType' => 'text',
-                'validator' => [],
+                'validator' => [
+                    [
+                        'type' => 'string.byLength',
+                        'data' => [
+                            'length' => [
+                                'min' => 2,
+                                'max' => PHP_INT_MAX
+
+                            ]
+                        ]
+                    ]
+                ],
                 'relations' => [],
                 'options' => [
                     'required' => true,
@@ -227,7 +248,17 @@ class processMapper
                 'description' => 'Work dir',
                 'type' => 'string',
                 'formType' => 'text',
-                'validator' => [],
+                'validator' => [
+                    [
+                        'type' => 'string.byLength',
+                        'data' => [
+                            'length' => [
+                                'min' => 1,
+                                'max' => PHP_INT_MAX
+                            ]
+                        ]
+                    ]
+                ],
                 'relations' => [],
                 'options' => [
                     'required' => true,
