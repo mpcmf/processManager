@@ -53,30 +53,44 @@ class test
         }
         $menuMain->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
 
-        $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'Select all'));
+        $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
 
         //process list menu
-        $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $parentMenu, $menuControlItem) use ($apiClient) {
-            $menuItem = $parentMenu->getCurrentItem();
-            $serverId = $menuItem->getValue()['_id'];
-            $processList = $apiClient->call('process', 'getByServerId', ['server_id' => $serverId])['data'];
-
-            $parentMenu->close();
-            $menu = new menu();
-            foreach ($processList as $process) {
-                $menu->addItem(new menuItem($process['_id'], $process, $process['name']));
+        $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $serverListMenu, $menuControlItem) use ($apiClient, $serversList) {
+            $serverItems = $serverListMenu->getMenuItems();
+            if (empty($serverItems)) {
+                return;
             }
 
-            $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
+            $serverIds = [];
+            foreach ($serverItems as $serverItem) {
+                if ($serverItem->isSelected()) {
+                    $serverIds[] = $serverItem->getValue()['_id'];
+                }
+            }
+            if (empty($serverIds)) {
+                $menuItem = $serverListMenu->getCurrentItem();
+                $serverIds[] = $menuItem->getValue()['_id'];
+            }
+
+            $processList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds])['data'];
+
+            $serverListMenu->close();
+            $menu = new menu();
+            foreach ($processList as $process) {
+                $menu->addItem(new menuItem($process['_id'], $process, "{$process['name']}                                      {$serversList[$process['server']]['host']}"));
+            }
+
+            $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($serverListMenu) {
                 $currentMenu->close();
-                $parentMenu->open();
+                $serverListMenu->open();
             }));
 
             $menu->addControlItem(new itemFilter(terminal::KEY_F2, 'F2', 'FilterByCommand', 'command'));
             $menu->addControlItem(new itemFilter(terminal::KEY_F3, 'F3', 'FilterByState', 'state'));
             $menu->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'name'));
             $menu->addControlItem(new itemFilter(terminal::KEY_F5, 'F5', 'FilterByTag', 'tags'));
-            $menu->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'Select all'));
+            $menu->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
             $menu->addControlItem(new processMenuControlItem(terminal::KEY_F7, 'F7', 'start', 'start', 'running'));
             $menu->addControlItem(new processMenuControlItem(terminal::KEY_F8, 'F8', 'restart', 'restart', 'running'));
             $menu->addControlItem(new processMenuControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
@@ -84,7 +98,10 @@ class test
 
             //process edit menul
             $menu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));
-            $menu->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process', $serverId));
+
+            if (count($serverIds) === 1) {
+                $menu->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process', $serverIds[0]));
+            }
 
 
             $menu->open();

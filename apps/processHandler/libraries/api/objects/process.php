@@ -114,6 +114,17 @@ class process
         return $this->getByCriteria([processMapper::FIELD__SERVER => $serverId], $offset, $limit, $fields, $sort);
     }
 
+    public function getByServerIds($params)
+    {
+        $serverIds = helper::getParam('server_ids', $params, helper::TYPE_ARRAY);
+        $offset = helper::getParam('offset', $params, helper::TYPE_INT, null);
+        $limit = helper::getParam('limit', $params, helper::TYPE_INT, 100);
+        $fields = helper::getParam('fields', $params, helper::TYPE_ARRAY, []);
+        $sort = helper::getParam('sort', $params, helper::TYPE_ARRAY, []);
+
+        return $this->getByCriteria([processMapper::FIELD__SERVER => ['$in' => $serverIds]], $offset, $limit, $fields, $sort);
+    }
+
     public function delete($params)
     {
         $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
