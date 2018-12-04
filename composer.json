@@ -32,7 +32,8 @@
     },
     "autoload": {
         "psr-4": {
-            "mpcmf\\apps\\": "apps/"
+            "mpcmf\\apps\\": "apps/",
+            "mpcmf\\modules\\": "apps/processHandler/modules"
         }
     }
 }
