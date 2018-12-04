@@ -84,7 +84,7 @@ class processMenuControlItem
             }
             if (count($processes) === $processedCount) {
                 echo "Successfully! \n";
-                sleep(4);
+                sleep(2);
                 break;
             }
             sleep(1);

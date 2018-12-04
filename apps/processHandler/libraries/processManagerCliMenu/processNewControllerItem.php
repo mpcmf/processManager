@@ -10,22 +10,18 @@ class processNewControllerItem
     extends controlItem
 {
 
-    protected $serverId;
-
     /**
      * processNewControllerItem constructor.
      *
      * @param $keyboardEventNumber
      * @param $buttonName
      * @param $title
-     * @param $serverId
      */
-    public function __construct($keyboardEventNumber, $buttonName, $title, $serverId)
+    public function __construct($keyboardEventNumber, $buttonName, $title)
     {
         $this->keyboardEventNumber = $keyboardEventNumber;
         $this->buttonName = $buttonName;
         $this->title = $title;
-        $this->serverId = $serverId;
     }
 
     /**
@@ -36,9 +32,9 @@ class processNewControllerItem
         $this->actionOnSelectedItem($menu);
     }
 
-    protected function actionOnSelectedItem (menu $processListMenu)
+    protected function actionOnSelectedItem (menu $serverListMenu)
     {
-        $processListMenu->close();
+        $serverListMenu->close();
         $processItem = new menuItem('', [
             'name' => '',
             'description' => '',
@@ -50,9 +46,9 @@ class processNewControllerItem
             'std_out' => [],
             'std_error' => [],
             'instances' => 1,
-            'server' => $this->serverId
+            'server' => $serverListMenu->getCurrentItem()->getValue()['_id']
         ], 'new process');
 
-        processEditMenu::createMenu($processItem, $processListMenu);
+        processEditMenu::createMenu($processItem, $serverListMenu);
     }
 }

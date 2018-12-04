@@ -43,6 +43,7 @@ class processHandlerAdmin
         $menuMain->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
 
         $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
+        $menuMain->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process', 'asdf'));
 
         //process list menu
         $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $serverListMenu, $menuControlItem) use ($apiClient, $serversList) {
@@ -87,10 +88,6 @@ class processHandlerAdmin
 
             //process edit menul
             $menu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));
-
-            if (count($serverIds) === 1) {
-                $menu->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process', $serverIds[0]));
-            }
 
 
             $menu->open();

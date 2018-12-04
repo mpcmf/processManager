@@ -18,12 +18,9 @@ class processEditMenu
         $process = $processItem->getValue();
         if (!empty($process['_id'])) {
             unset($process['last_update']);
-            unset($process['state']);
             $doNotDisplay = [
                 '_id' => '_id',
-                'last_update' => 'last_update',
-                'server' => 'server',
-                'state' => 'state'
+                'last_update' => 'last_update'
             ];
         }
         $menu = new menu();
@@ -152,13 +149,9 @@ class processEditMenu
                 $result = $apiClient->call('process', 'update', ['ids' => [$id], 'fields_to_update' => $process]);
             } else {
                 $result = $apiClient->call('process', 'add', ['object' => $process]);
-                if ($result['status'] && isset($result['data']['upserted'])) {
-                    $process['_id'] = $result['data']['upserted'];
-                    $processListMenu->addItem(new menuItem($process['_id'], $process, $process['name']));
-                }
             }
 
-            var_dump($result);sleep(5);
+            var_dump($result);sleep(3);
             $processEditMenu->close();
             $processListMenu->open();
         }));
