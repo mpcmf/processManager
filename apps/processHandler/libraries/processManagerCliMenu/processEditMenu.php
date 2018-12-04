@@ -44,14 +44,31 @@ class processEditMenu
             $item = $parentMenu->getCurrentItem();
             $itemValue = $item->getValue();
 
+            $input = null;
             //process array field edit menu
             if (is_array($itemValue)) {
-                $parentMenu->close();
-                $menu = new menu();
+                $arrayEditmenu = new menu();
                 foreach ($itemValue as $key => $value) {
-                    $menu->addItem(new menuItem($key, $value, $value));
+                    $arrayEditmenu->addItem(new menuItem($key, $value, $value));
                 }
-                $menu->addControlItem(new menuControlItem(terminal::KEY_F4, 'F4', 'remove:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
+
+                $arrayEditmenu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Done:', function (menu $currentMenu, $menuControlItem) use ($parentMenu, &$input) {
+                    //setting new array values
+                    $newItemValue = [];
+                    $arrayEditMenuItems = $currentMenu->getMenuItems();
+                    foreach ($arrayEditMenuItems as $arrayEditMenuItem) {
+                        if (!$arrayEditMenuItem->isEnabled()) {
+                            continue;
+                        }
+                        $newItemValue[] = $arrayEditMenuItem->getValue();
+                    }
+                    $input = $newItemValue;
+
+                    //close current menu and open parent
+                    $currentMenu->close();
+                }));
+
+                $arrayEditmenu->addControlItem(new menuControlItem(terminal::KEY_DELETE, 'Del', 'remove:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
                     $items = $currentMenu->getMenuItems();
                     $hasSelected = false;
                     foreach ($items as $item) {
@@ -64,7 +81,7 @@ class processEditMenu
                         $currentMenu->getCurrentItem()->disable();
                     }
                 }));
-                $menu->addControlItem(new menuControlItem(terminal::KEY_F5, 'F5', 'add:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
+                $arrayEditmenu->addControlItem(new menuControlItem(terminal::KEY_INSERT, 'Ins', 'add:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
                     $input = trim(readline("/"));
                     if (empty($input)) {
                         echo "Sorry, empty string! \n";
@@ -72,39 +89,54 @@ class processEditMenu
                     }
                     $currentMenu->addItem(new menuItem($input, $input, $input));
                 }));
-                $menu->addControlItem(new menuControlItem(terminal::KEY_F6, 'F6', 'Done:', function (menu $currentMenu, $menuControlItem) use ($parentMenu, $item) {
-                    //setting new array values
-                    $newItemValue = [];
-                    $arrayEditMenuItems = $currentMenu->getMenuItems();
-                    foreach ($arrayEditMenuItems as $arrayEditMenuItem) {
-                        if (!$arrayEditMenuItem->isEnabled()) {
-                            continue;
-                        }
-                        $newItemValue[] = $arrayEditMenuItem->getValue();
-                    }
-                    $item->setValue($newItemValue);
-                    $item->setTitle("{$item->getKey()}:" . json_encode($newItemValue, 448));
 
-                    //close current menu and open parent
+                $arrayEditmenu->open();
+            } elseif ($item->getKey() === 'mode' || $item->getKey() === 'state') {
+                $multipleSelectMenu = new menu();
+                if ($item->getKey() === 'mode') {
+                    $toSelect = [
+                        'one_run',
+                        'repeatable'
+                    ];
+                } else {
+                    $toSelect = [
+                        'run',
+                        'stop',
+                        'restart'
+                    ];
+                }
+
+                foreach ($toSelect as $key => $value) {
+                    $multipleSelectMenu->addItem(new menuItem($key, $value, $value));
+                }
+
+                $multipleSelectMenu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($item, &$input) {
+                    $input = $item->getValue();
                     $currentMenu->close();
-                    $parentMenu->open();
                 }));
 
-                $menu->open();
+                $multipleSelectMenu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Select', function (menu $currentMenu, $menuControlItem) use (&$input)  {
+                    $input = $currentMenu->getCurrentItem()->getValue();
+                    $currentMenu->close();
+                }));
+                $multipleSelectMenu->open();
+
             } else {
-                //process string field edit
                 $input = trim(readline("/"));
-                if (empty($input)) {
-                    echo "Sorry, empty string! \n";
-                    sleep(3);
-                    return;
-                }
-                if ($item->getKey() === 'instances') {
-                    $input = (int) $input;
-                }
-                $item->setValue($input);
-                $item->setTitle("{$item->getKey()}:{$input}");
             }
+
+            if (empty($input)) {
+                echo "Sorry, empty string! \n";
+                sleep(3);
+                return;
+            }
+            if ($item->getKey() === 'instances') {
+                $input = (int) $input;
+            }
+
+            $titleValue = is_array($input) ? json_encode($input, 448) : $input;
+            $item->setValue($input);
+            $item->setTitle("{$item->getKey()}:{$titleValue}");
 
         }));
 

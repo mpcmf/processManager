@@ -20,6 +20,7 @@ class terminal
     const KEY_F12 = 52;
     const KEY_ENTER = 10;
     const KEY_DELETE = 51;
+    const KEY_INSERT = 126;
     const KEY_SLASH = 47;
     const KEY_UNKNOWN = 0;
 
