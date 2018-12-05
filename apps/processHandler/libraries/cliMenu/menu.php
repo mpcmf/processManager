@@ -38,9 +38,9 @@ class menu
 
     public function refresh()
     {
-        $this->clean();
         $action = $this->onRefresh;
         if (is_callable($action)) {
+            $this->clean();
             $action();
         }
     }

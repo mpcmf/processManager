@@ -41,6 +41,5 @@ class processEditControlItem
             return;
         }
         processEditMenu::createMenu($processItem, $processListMenu);
-        $processListMenu->refresh();
     }
 }
