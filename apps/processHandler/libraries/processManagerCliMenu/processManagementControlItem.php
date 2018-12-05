@@ -6,7 +6,7 @@ use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 
-class processMenuControlItem
+class processManagementControlItem
     extends controlItem
 {
 

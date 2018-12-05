@@ -10,7 +10,7 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\selectAllControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processEditControlItem;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processMenuControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processManagementControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processNewControllerItem;
 use mpcmf\system\application\consoleCommandBase;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,7 +43,7 @@ class processHandlerAdmin
         $menuMain->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
 
         $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
-        $menuMain->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process', 'asdf'));
+        $menuMain->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process'));
 
         //process list menu
         $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $serverListMenu, $menuControlItem) use ($apiClient, $serversList) {
@@ -81,10 +81,10 @@ class processHandlerAdmin
             $menu->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'name'));
             $menu->addControlItem(new itemFilter(terminal::KEY_F5, 'F5', 'FilterByTag', 'tags'));
             $menu->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
-            $menu->addControlItem(new processMenuControlItem(terminal::KEY_F7, 'F7', 'start', 'start', 'running'));
-            $menu->addControlItem(new processMenuControlItem(terminal::KEY_F8, 'F8', 'restart', 'restart', 'running'));
-            $menu->addControlItem(new processMenuControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
-            $menu->addControlItem(new processMenuControlItem(terminal::KEY_DELETE, 'DEL', 'delete', 'delete', 'stopped'));
+            $menu->addControlItem(new processManagementControlItem(terminal::KEY_F7, 'F7', 'start', 'start', 'running'));
+            $menu->addControlItem(new processManagementControlItem(terminal::KEY_F8, 'F8', 'restart', 'restart', 'running'));
+            $menu->addControlItem(new processManagementControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
+            $menu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'DEL', 'delete', 'delete', 'stopped'));
 
             //process edit menul
             $menu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));

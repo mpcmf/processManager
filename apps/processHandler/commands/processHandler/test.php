@@ -11,7 +11,6 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\selectAllControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processEditControlItem;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processMenuControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processNewControllerItem;
 use mpcmf\system\application\consoleCommandBase;
 use React\EventLoop\Factory;
