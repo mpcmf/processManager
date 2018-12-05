@@ -65,18 +65,21 @@ class processHandlerAdmin
                 $serverIds[] = $menuItem->getValue()['_id'];
             }
 
-            $processList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds])['data'];
-
             $serverListMenu->close();
             $menu = new menu();
-            foreach ($processList as $process) {
-                $stateColor = Color::GREEN;
-                if ($process['state'] === 'stop' || $process['state'] === 'stopped') {
-                    $stateColor = Color::RED;
+            $menu->setOnRefresh(function () use ($menu, $serversList, $apiClient, $serverIds) {
+                $processList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds])['data'];
+                foreach ($processList as $process) {
+                    $stateColor = Color::GREEN;
+                    if ($process['state'] === 'stop' || $process['state'] === 'stopped') {
+                        $stateColor = Color::RED;
+                    }
+                    $state = $stateColor . " {$process['state']}" . Color::RESET;
+                    $menu->addItem(new menuItem($process['_id'], $process, helper::padding($process['name'], helper::padding($state, $serversList[$process['server']]['host'], 20), 100)));
                 }
-                $state = $stateColor . " {$process['state']}" . Color::RESET;
-                $menu->addItem(new menuItem($process['_id'], $process, helper::padding($process['name'], helper::padding($state, $serversList[$process['server']]['host'], 20), 100)));
-            }
+            });
+
+            $menu->refresh();
 
             $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($serverListMenu) {
                 $currentMenu->close();

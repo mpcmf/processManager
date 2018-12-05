@@ -69,6 +69,9 @@ class processManagementControlItem
         $attempts = 20;
         do {
             $result = $apiClient->call('process', 'getByIds', ['ids' => $ids]);
+            $processListMenu->setHeaderInfo('Waiting end of action...');
+            $processListMenu->refresh();
+            $processListMenu->reDraw();
             if (!$result['status']) {
                 echo json_encode($result, 448);
                 sleep(5);
@@ -77,17 +80,16 @@ class processManagementControlItem
             $processes = $result['data'];
             $processedCount = 0;
             foreach ($processes as $process) {
-                echo "{$process['name']} {$process['state']}\n";
                 if ($process['state'] === $this->expectedState) {
                     $processedCount++;
                 }
             }
             if (count($processes) === $processedCount) {
-                echo "Successfully! \n";
-                sleep(2);
                 break;
             }
             sleep(1);
         } while ($attempts--);
+
+        $processListMenu->resetHeaderInfo();
     }
 }

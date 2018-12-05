@@ -15,28 +15,32 @@ class processEditMenu
     public static function createMenu(menuItem $processItem, menu $processListMenu)
     {
         $apiClient = apiClient::factory();
-        $process = $processItem->getValue();
-        if (!empty($process['_id'])) {
-            unset($process['last_update']);
-            $doNotDisplay = [
-                '_id' => '_id',
-                'last_update' => 'last_update'
-            ];
-        }
         $menu = new menu();
+        $menu->setOnRefresh(function () use ($processItem, $menu) {
+            $process = $processItem->getValue();
+            if (!empty($process['_id'])) {
+                unset($process['last_update']);
+                $doNotDisplay = [
+                    '_id' => '_id',
+                    'last_update' => 'last_update'
+                ];
+            }
+            foreach ($process as $fieldName => $fieldValue) {
+                if (isset($doNotDisplay[$fieldName])) {
+                    continue;
+                }
+                $titleValue = is_array($fieldValue) ? json_encode($fieldValue, 448) : $fieldValue;
+                $menu->addItem(new menuItem($fieldName, $fieldValue, "{$fieldName}:{$titleValue}"));
+            }
+        });
+        $menu->refresh();
 
         $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($processListMenu) {
             $currentMenu->close();
+            $processListMenu->refresh();
             $processListMenu->open();
         }));
 
-        foreach ($process as $fieldName => $fieldValue) {
-            if (isset($doNotDisplay[$fieldName])) {
-                continue;
-            }
-            $titleValue = is_array($fieldValue) ? json_encode($fieldValue, 448) : $fieldValue;
-            $menu->addItem(new menuItem($fieldName, $fieldValue, "{$fieldName}:{$titleValue}"));
-        }
         $menu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Edit', function (menu $parentMenu, $menuControlItem)  {
             $item = $parentMenu->getCurrentItem();
             $itemValue = $item->getValue();
@@ -137,8 +141,9 @@ class processEditMenu
 
         }));
 
-        $menu->addControlItem(new menuControlItem(terminal::KEY_F6, 'F6', 'Save', function (menu $processEditMenu, $menuControlItem) use ($process, $apiClient, $processListMenu)  {
+        $menu->addControlItem(new menuControlItem(terminal::KEY_F6, 'F6', 'Save', function (menu $processEditMenu, $menuControlItem) use ($processItem, $apiClient, $processListMenu)  {
             $items = $processEditMenu->getMenuItems();
+            $process = $processItem->getValue();
             foreach ($items as $item) {
                 $process[$item->getKey()] = $item->getValue();
             }
@@ -153,6 +158,7 @@ class processEditMenu
 
             var_dump($result);sleep(3);
             $processEditMenu->close();
+            $processListMenu->refresh();
             $processListMenu->open();
         }));
 

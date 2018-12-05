@@ -19,11 +19,32 @@ class menu
     protected $menuControlItems = [];
     protected $cursor = 0;
     protected $headerInfo = '';
+    protected $onRefresh;
 
     public function addItem(menuItem $menuItem)
     {
         $this->menuItems[] = $menuItem;
     }
+
+    public function clean()
+    {
+        $this->menuItems = [];
+    }
+
+    public function setOnRefresh(callable $onRefresh)
+    {
+        $this->onRefresh = $onRefresh;
+    }
+
+    public function refresh()
+    {
+        $this->clean();
+        $action = $this->onRefresh;
+        if (is_callable($action)) {
+            $action();
+        }
+    }
+
     public function addControlItem(controlItem $menuControlItem)
     {
         $this->menuControlItems[] = $menuControlItem;
