@@ -2,6 +2,7 @@
 
 namespace mpcmf\apps\processHandler\commands\processHandler;
 
+use Codedungeon\PHPCliColors\Color;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
 use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\itemFilter;
@@ -69,7 +70,12 @@ class processHandlerAdmin
             $serverListMenu->close();
             $menu = new menu();
             foreach ($processList as $process) {
-                $menu->addItem(new menuItem($process['_id'], $process, helper::padding($process['name'], $serversList[$process['server']]['host'], 100)));
+                $stateColor = Color::GREEN;
+                if ($process['state'] === 'stop' || $process['state'] === 'stopped') {
+                    $stateColor = Color::RED;
+                }
+                $state = $stateColor . " {$process['state']}" . Color::RESET;
+                $menu->addItem(new menuItem($process['_id'], $process, helper::padding($process['name'], helper::padding($state, $serversList[$process['server']]['host'], 20), 100)));
             }
 
             $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($serverListMenu) {
