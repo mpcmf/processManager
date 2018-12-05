@@ -3,6 +3,7 @@
 namespace mpcmf\apps\processHandler\commands\processHandler;
 
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
+use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\itemFilter;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
@@ -68,7 +69,7 @@ class processHandlerAdmin
             $serverListMenu->close();
             $menu = new menu();
             foreach ($processList as $process) {
-                $menu->addItem(new menuItem($process['_id'], $process, "{$process['name']}                                      {$serversList[$process['server']]['host']}"));
+                $menu->addItem(new menuItem($process['_id'], $process, helper::padding($process['name'], $serversList[$process['server']]['host'], 100)));
             }
 
             $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($serverListMenu) {
