@@ -39,9 +39,9 @@ class executeCommand
         $this->addArgument('process_name', InputArgument::OPTIONAL, 'Process name');
 
         $this->addOption('hosts', null, InputOption::VALUE_OPTIONAL, 'Hosts separated by ,');
-        $this->addOption('tags', 't', InputOption::VALUE_OPTIONAL, 'Tags separated by ,');
-        $this->addOption('allHosts', 'ah', InputOption::VALUE_OPTIONAL, 'All hosts');
-        $this->addOption('allProcesses', 'ap', InputOption::VALUE_OPTIONAL, 'All processes');
+        $this->addOption('tags', null, InputOption::VALUE_OPTIONAL, 'Tags separated by ,');
+        $this->addOption('allHosts', null, InputOption::VALUE_OPTIONAL, 'All hosts');
+        $this->addOption('allProcesses', null, InputOption::VALUE_OPTIONAL, 'All processes');
         $this->addUsage('<command_to_execute> <process_name>');
     }
 
