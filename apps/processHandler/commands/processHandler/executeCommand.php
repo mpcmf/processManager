@@ -36,42 +36,61 @@ class executeCommand
     protected function defineArguments()
     {
         $this->addArgument('command_to_execute', InputArgument::REQUIRED, 'start|stop|restart');
-        $this->addArgument('process_name', InputArgument::REQUIRED, 'Process name');
-        $this->addArgument('hosts', InputArgument::OPTIONAL, 'host names separated by|');
+        $this->addArgument('process_name', InputArgument::OPTIONAL, 'Process name');
 
-        //$this->addOption('all', 'a', InputOption::VALUE_OPTIONAL, 'all processes', true);
+        $this->addOption('hosts', null, InputOption::VALUE_OPTIONAL, 'Hosts separated by ,');
+        $this->addOption('tags', 't', InputOption::VALUE_OPTIONAL, 'Tags separated by ,');
+        $this->addOption('allHosts', 'ah', InputOption::VALUE_OPTIONAL, 'All hosts');
+        $this->addOption('allProcesses', 'ap', InputOption::VALUE_OPTIONAL, 'All processes');
+        $this->addUsage('<command_to_execute> <process_name>');
     }
 
     protected function handle(InputInterface $input, OutputInterface $output)
     {
         $command = $input->getArgument('command_to_execute');
         $processName = $input->getArgument('process_name');
-        $hostsList = $input->getArgument('hosts');
 
-        $hosts = [];
-        if (!empty($hostsList)) {
-            $hosts = explode('|', $hostsList);
+        $tags = $input->getOption('tags');
+        $allHosts = $input->getOption('allHosts');
+        $allProcesses = $input->getOption('allProcesses');
+        $hostsList = $input->getOption('hosts');
+
+        if (empty($processName) && empty($tags) && empty($allProcesses)) {
+            echo "[{$this->getColoredText('ERROR')}] Please, pass argument <process name> or specify --tag=<tag> option or --allProcesses=1 \n";
+            exit;
         }
 
-        if (empty($hosts)) {
+        $tags = $tags ? explode(',', $tags) : [];
+
+        $apiClient = apiClient::factory();
+        $hosts = [];
+        $serverIds = [];
+        if ($allHosts) {
+            $result = $apiClient->call('server', 'getList', ['limit' => 200]);
+            foreach ($result['data'] as $server) {
+                $serverIds[] = $server['_id'];
+            }
+        } elseif (!empty($hostsList)) {
+            $hosts = explode(',', $hostsList);
+        } else {
             $hosts[] = gethostname();
         }
+
         $processMethod = $this->getProcessMethodByCommand($command);
         if (!$processMethod) {
             echo "Unknown command {$this->getColoredText($command)}!\n";
             exit;
         }
 
-        $apiClient = apiClient::factory();
-
-        $serverIds = [];
-        foreach ($hosts as $host) {
-            $response = $apiClient->call('server', 'getByHost', ['host' => $host]);
-            if (!isset($response['data']['_id'])) {
-                echo "Server not found by host {$this->getColoredText($host)}!\n";
-                exit;
+        if (empty($serverIds)) {
+            foreach ($hosts as $host) {
+                $response = $apiClient->call('server', 'getByHost', ['host' => $host]);
+                if (!isset($response['data']['_id'])) {
+                    echo "Server not found by host {$this->getColoredText($host)}!\n";
+                    exit;
+                }
+                $serverIds[] = $response['data']['_id'];
             }
-            $serverIds[] = $response['data']['_id'];
         }
 
 
@@ -84,7 +103,7 @@ class executeCommand
 
         $processIds = [];
         foreach ($processesList['data'] as $process) {
-            if ($process['name'] === $processName) {
+            if ($allProcesses || $process['name'] === $processName || !empty(array_intersect($tags, $process['tags']))) {
                 $processIds[] = $process['_id'];
             }
         }
@@ -97,6 +116,8 @@ class executeCommand
         $apiClient->call('process', $processMethod, ['ids' => $processIds]);
 
         $attempts = 20;
+        $processedNames = [];
+        $success = false;
         do {
             $result = $apiClient->call('process', 'getByIds', ['ids' => $processIds]);
             if (!$result['status']) {
@@ -109,17 +130,27 @@ class executeCommand
             foreach ($processes as $process) {
                 if ($process['state'] === self::$expectedStates[$processMethod]) {
                     $processedCount++;
+                    $processedNames[$process['name']] = $process['name'];
                 }
                 if ($process['state'] !== self::$processStates[$processMethod]) {
                     $notChangedStatusesCount++;
                 }
             }
             if (count($processes) === $processedCount) {
-                echo "[OK]\n";
-                exit;
+                $success = true;
+                break;
             }
             sleep(1);
         } while ($attempts--);
+
+        foreach ($processedNames as $name) {
+            echo "[OK] [{$name}]\n";
+        }
+
+        if ($success) {
+            echo "[SUCCESS]\n";
+            exit;
+        }
 
         if ($notChangedStatusesCount === 0) {
             echo "[{$this->getColoredText('FAIL')}] States not changed. Probably processes manager not ran!\n";
