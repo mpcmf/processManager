@@ -126,13 +126,13 @@ class processEditMenu
                 $input = trim(readline("/"));
             }
 
-            if (empty($input)) {
-                echo "Sorry, empty string! \n";
-                sleep(3);
-                return;
-            }
             if ($item->getKey() === 'instances') {
                 $input = (int) $input;
+                if ($input === 0) {
+                    echo "Sorry, you can't set 0 instances\n";
+                    sleep(3);
+                    return;
+                }
             }
 
             $titleValue = is_array($input) ? json_encode($input, 448) : $input;
