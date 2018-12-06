@@ -65,9 +65,11 @@ class executeCommand
         $apiClient = apiClient::factory();
         $hosts = [];
         $serverIds = [];
+        $serversList = [];
         if ($allHosts) {
             $result = $apiClient->call('server', 'getList', ['limit' => 200]);
-            foreach ($result['data'] as $server) {
+            $serversList = $result['data'];
+            foreach ($serversList as $server) {
                 $serverIds[] = $server['_id'];
             }
         } elseif (!empty($hostsList)) {
@@ -83,6 +85,7 @@ class executeCommand
         }
 
         if (empty($serverIds)) {
+            $serversList = [];
             foreach ($hosts as $host) {
                 $response = $apiClient->call('server', 'getByHost', ['host' => $host]);
                 if (!isset($response['data']['_id'])) {
@@ -90,6 +93,7 @@ class executeCommand
                     exit;
                 }
                 $serverIds[] = $response['data']['_id'];
+                $serversList[$response['data']['_id']] = $response['data'];
             }
         }
 
@@ -109,14 +113,15 @@ class executeCommand
         }
 
         if (empty($processIds)) {
-            echo "[{$this->getColoredText('FAIL')}] Not found processes by name {$this->getColoredText($processName)} on " . json_encode($hosts) . "\n";
+            $searchByTitle =  $processName ? "name {$processName}" : 'tags ' . json_encode($tags);
+            echo "[{$this->getColoredText('FAIL')}] Not found processes by {$this->getColoredText($searchByTitle)} on " . json_encode($hosts) . "\n";
             exit;
         }
 
         $apiClient->call('process', $processMethod, ['ids' => $processIds]);
 
         $attempts = 20;
-        $processedNames = [];
+        $processedProcesses = [];
         $success = false;
         do {
             $result = $apiClient->call('process', 'getByIds', ['ids' => $processIds]);
@@ -130,7 +135,7 @@ class executeCommand
             foreach ($processes as $process) {
                 if ($process['state'] === self::$expectedStates[$processMethod]) {
                     $processedCount++;
-                    $processedNames[$process['name']] = $process['name'];
+                    $processedProcesses[$process['_id']] = $process;
                 }
                 if ($process['state'] !== self::$processStates[$processMethod]) {
                     $notChangedStatusesCount++;
@@ -143,8 +148,8 @@ class executeCommand
             sleep(1);
         } while ($attempts--);
 
-        foreach ($processedNames as $name) {
-            echo "[OK] [{$name}]\n";
+        foreach ($processedProcesses as $process) {
+            echo "[OK] [{$process['name']}] [{$serversList[$process['server']]['host']}]\n";
         }
 
         if ($success) {
@@ -162,7 +167,7 @@ class executeCommand
                 if ($process['state'] === self::$expectedStates[$processMethod]) {
                     continue;
                 }
-                echo "[{$this->getColoredText('WARNING')}] [{$process['name']}] Expected state:" . self::$expectedStates[$processMethod] . " current state:{$process['state']} \n";
+                echo "[{$this->getColoredText('WARNING')}] [{$process['name']}] [{$serversList[$process['server']]['host']}] Expected state:" . self::$expectedStates[$processMethod] . " current state:{$process['state']} \n";
             }
         }
         exit;
