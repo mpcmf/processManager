@@ -216,7 +216,8 @@ class process
         }
         error_log('pipes closed');
         if (is_resource($this->processDescriptor)) {
-            proc_close($this->processDescriptor);
+            //blocking flow
+            //proc_close($this->processDescriptor);
         }
         error_log('pd closed');
 
