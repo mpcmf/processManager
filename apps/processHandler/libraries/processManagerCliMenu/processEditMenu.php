@@ -83,7 +83,8 @@ class processEditMenu
                     }
                 }));
                 $arrayEditmenu->addControlItem(new menuControlItem(terminal::KEY_INSERT, 'Ins', 'add:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
-                    $input = trim(readline("/"));
+                    $currentMenu->reDraw();
+                    $input = trim(readline("-->"));
                     if (empty($input)) {
                         echo "Sorry, empty string! \n";
                         sleep(3);
@@ -123,7 +124,7 @@ class processEditMenu
                 $multipleSelectMenu->open();
 
             } else {
-                $input = trim(readline("/"));
+                $input = trim(readline("-->"));
             }
 
             if ($item->getKey() === 'instances') {

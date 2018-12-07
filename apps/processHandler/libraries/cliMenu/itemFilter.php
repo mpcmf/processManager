@@ -29,7 +29,8 @@ class itemFilter
 
     protected function filter(menu $menu, $controlItem)
     {
-        $input = trim(readline("/"));
+        $menu->reDraw();
+        $input = trim(readline("-->"));
 
         $items = $menu->getMenuItems();
         $matched = false;
