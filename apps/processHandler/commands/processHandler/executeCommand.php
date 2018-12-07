@@ -120,7 +120,7 @@ class executeCommand
 
         $apiClient->call('process', $processMethod, ['ids' => $processIds]);
 
-        $attempts = 20;
+        $attempts = 30;
         $processedProcesses = [];
         $success = false;
         do {
