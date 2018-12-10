@@ -4,6 +4,7 @@ namespace mpcmf\apps\processHandler\commands\processHandler;
 
 use Codedungeon\PHPCliColors\Color;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
+use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\system\application\consoleCommandBase;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -102,7 +103,7 @@ class executeCommand
 
         if ($processMethod === 'getList') {
             foreach ($processesList['data'] as $process) {
-                echo "[{$process['state']}] {$process['name']} \n";
+                echo helper::padding($process['name'], helper::padding($process['state'], $serversList[$process['server']]['host'], 20), 50) . PHP_EOL;
             }
             exit;
         }
@@ -156,7 +157,7 @@ class executeCommand
         } while ($attempts--);
 
         foreach ($processedProcesses as $process) {
-            echo "[OK] [{$process['name']}] [{$serversList[$process['server']]['host']}]\n";
+            echo '[OK] ' . helper::padding($process['name'], helper::padding($process['state'], $serversList[$process['server']]['host'], 20), 50) . PHP_EOL;
         }
 
         if ($success) {
@@ -174,7 +175,7 @@ class executeCommand
                 if ($process['state'] === self::$expectedStates[$processMethod]) {
                     continue;
                 }
-                echo "[{$this->getColoredText('WARNING')}] [{$process['name']}] [{$serversList[$process['server']]['host']}] Expected state:" . self::$expectedStates[$processMethod] . " current state:{$process['state']} \n";
+                echo "[{$this->getColoredText('WARNING')}]  " . helper::padding($process['name'], $serversList[$process['server']]['host'] ,50) . '    Expected state:' . self::$expectedStates[$processMethod] . " current state:{$process['state']} \n";
             }
         }
         exit;
