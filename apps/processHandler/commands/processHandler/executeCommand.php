@@ -17,7 +17,8 @@ class executeCommand
     static protected $processMethods = [
         'start' => 'start',
         'stop' => 'stop',
-        'restart' => 'restart'
+        'restart' => 'restart',
+        'list' => 'getList'
     ];
 
     static protected $processStates = [
@@ -35,7 +36,7 @@ class executeCommand
 
     protected function defineArguments()
     {
-        $this->addArgument('command_to_execute', InputArgument::REQUIRED, 'start|stop|restart');
+        $this->addArgument('command_to_execute', InputArgument::REQUIRED, 'start|stop|restart|list');
         $this->addArgument('process_name', InputArgument::OPTIONAL, 'Process name');
 
         $this->addOption('hosts', null, InputOption::VALUE_OPTIONAL, 'Hosts separated by ,');
@@ -54,11 +55,6 @@ class executeCommand
         $allHosts = $input->getOption('allHosts');
         $allProcesses = $input->getOption('allProcesses');
         $hostsList = $input->getOption('hosts');
-
-        if (empty($processName) && empty($tags) && empty($allProcesses)) {
-            echo "[{$this->getColoredText('ERROR')}] Please, pass argument <process name> or specify --tag=<tag> option or --allProcesses=1 \n";
-            exit;
-        }
 
         $tags = $tags ? explode(',', $tags) : [];
 
@@ -102,6 +98,18 @@ class executeCommand
 
         if (empty($processesList['data'])) {
             echo "[{$this->getColoredText('FAIL')}] Not found processes on " . json_encode($hosts) . "\n";
+            exit;
+        }
+
+        if ($processMethod === 'getList') {
+            foreach ($processesList['data'] as $process) {
+                echo "[{$process['state']}] {$process['name']} \n";
+            }
+            exit;
+        }
+
+        if (empty($processName) && empty($tags) && empty($allProcesses)) {
+            echo "[{$this->getColoredText('ERROR')}] Please, pass argument <process name> or specify --tag=<tag> option or --allProcesses=1 \n";
             exit;
         }
 
