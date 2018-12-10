@@ -103,6 +103,12 @@ class executeCommand
 
         if ($processMethod === 'getList') {
             foreach ($processesList['data'] as $process) {
+                if (!empty($processName) && $process['name'] !== $processName) {
+                    continue;
+                }
+                if (!empty($tags) && empty(array_intersect($tags, $process['tags']))) {
+                    continue;
+                }
                 echo helper::padding($process['name'], helper::padding($process['state'], $serversList[$process['server']]['host'], 20), 50) . PHP_EOL;
             }
             exit;
