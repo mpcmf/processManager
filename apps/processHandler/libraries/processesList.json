@@ -1,0 +1,32 @@
+[
+  {
+    "name": "ping google.com",
+    "description": "",
+    "state": "stopped",
+    "mode": "repeatable",
+    "command": "ping google.com",
+    "work_dir": "/tmp/",
+    "tags": [
+      "ping"
+    ],
+    "std_out": [],
+    "std_error": [],
+    "instances": 1,
+    "server": "5bebecb07f8b9a1640d83c73"
+  },
+  {
+    "name": "ping ya.ru",
+    "description": "",
+    "state": "stopped",
+    "mode": "repeatable",
+    "command": "ping ya.ru",
+    "work_dir": "/tmp/",
+    "tags": [
+      "ping"
+    ],
+    "std_out": [],
+    "std_error": [],
+    "instances": 1,
+    "server": "5bebecb07f8b9a1640d83c73"
+  }
+]
