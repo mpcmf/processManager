@@ -43,7 +43,6 @@ class executeCommand
         $this->addOption('tags', null, InputOption::VALUE_OPTIONAL, 'Tags separated by ,');
         $this->addOption('allHosts', null, InputOption::VALUE_OPTIONAL, 'All hosts');
         $this->addOption('allProcesses', null, InputOption::VALUE_OPTIONAL, 'All processes');
-        $this->addUsage('<command_to_execute> <process_name>');
     }
 
     protected function handle(InputInterface $input, OutputInterface $output)
