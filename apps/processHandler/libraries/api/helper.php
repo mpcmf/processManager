@@ -2,6 +2,9 @@
 
 namespace mpcmf\apps\processHandler\libraries\api;
 
+use mpcmf\apps\processHandler\libraries\api\exceptions\notFoundParamException;
+use mpcmf\apps\processHandler\libraries\api\exceptions\paramTypeValidationException;
+
 class helper
 {
     const TYPE_ARRAY = 'array';

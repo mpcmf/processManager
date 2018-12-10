@@ -2,10 +2,10 @@
 
 namespace mpcmf\apps\processHandler\libraries\api\objects;
 
+use mpcmf\apps\processHandler\libraries\api\exceptions\validationException;
 use mpcmf\apps\processHandler\libraries\api\helper;
 use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\modules\moduleBase\models\modelCursor;
-use mpcmf\system\validator\exception\validatorException;
 
 abstract class objectBase
 {
@@ -48,7 +48,7 @@ abstract class objectBase
 
         $validationResult = $model::validate($object);
         if (!empty($validationResult['errors'])) {
-            throw new validatorException($this->getErrorMessage($validationResult['errors']));
+            throw new validationException($this->getErrorMessage($validationResult['errors']));
         }
 
         $model = $model::fromArray($object);
@@ -70,7 +70,7 @@ abstract class objectBase
         $validationResult = $model::validate($fieldsToUpdate, true);
 
         if (!empty($validationResult['errors'])) {
-            throw new validatorException($this->getErrorMessage($validationResult['errors']));
+            throw new validationException($this->getErrorMessage($validationResult['errors']));
         }
 
         $convertedFields = $this->mapper->convertDataFromForm($fieldsToUpdate);
