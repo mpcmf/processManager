@@ -93,7 +93,7 @@ class executeCommand
         }
 
 
-        $processesList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds, 'limit' => 500]);
+        $processesList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds, 'limit' => 3000]);
 
         if (empty($processesList['data'])) {
             echo "[{$this->getColoredText('FAIL')}] Not found processes on " . json_encode($hosts) . "\n";
