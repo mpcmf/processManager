@@ -224,7 +224,7 @@ class process
         $this->status = self::STATUS__STOPPING;
         posix_kill(-$this->gid, SIGTERM);
         $this->loop->addPeriodicTimer(1, function ($timer) {
-            static $attempts = 20;
+            static $attempts = 15;
 
             $stopped = false;
             error_log("Sent -15 to group {$this->gid}");
