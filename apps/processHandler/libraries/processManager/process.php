@@ -268,7 +268,9 @@ class process
 
     public function stop()
     {
-        $this->status = self::STATUS__STOP;
+        if ($this->status !== self::STATUS__STOPPING) {
+            $this->status = self::STATUS__STOP;
+        }
         $this->check();
     }
 
