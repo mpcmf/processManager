@@ -77,7 +77,11 @@ class server
         $this->serverModel->setCpuUsage($this->getCpuUsage());
         $this->serverModel->setRamUsage($this->getRamUsage());
 
-        $this->mapper()->save($this->serverModel, serverMapper::SAVE__MODE_CHANGES_ONLY);
+        try {
+            $this->mapper()->save($this->serverModel, serverMapper::SAVE__MODE_CHANGES_ONLY);
+        } catch (\Exception $exception) {
+            error_log("[Exception] on updating server info! {$exception->getMessage()}");
+        }
     }
 
     protected function mapper()
