@@ -3,14 +3,13 @@
 namespace mpcmf\apps\processHandler\libraries\streamRouter;
 
 use React\EventLoop\LoopInterface;
-use React\Stream\Stream;
 
 class streamRouter
 {
     protected $loop;
 
     /**
-     * @var Stream $readableStream
+     * @var reactStream $readableStream
      */
     protected $readableStream;
 
@@ -98,7 +97,7 @@ class streamRouter
             return true;
         }
 
-        $this->readableStream = new Stream($stream, $this->loop);
+        $this->readableStream = new reactStream($stream, $this->loop);
         $this->readableStream->on('data', function ($data) {
             foreach ($this->consumers as $consumer) {
                 $consumer->consume($data);
