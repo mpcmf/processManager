@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5b95c187b8012c66020d24fa871ba72e",
+    "content-hash": "977dc9eb05f341fc1f593b6e968f3a80",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -363,18 +363,18 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mongodb/mongo-php-library.git",
-                "reference": "6ecf84a871356072ce2e4e1175564590c4fe07bf"
+                "reference": "357d893ac21db978a0ab51abb35c7f8cfb437e8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/6ecf84a871356072ce2e4e1175564590c4fe07bf",
-                "reference": "6ecf84a871356072ce2e4e1175564590c4fe07bf",
+                "url": "https://api.github.com/repos/mongodb/mongo-php-library/zipball/357d893ac21db978a0ab51abb35c7f8cfb437e8b",
+                "reference": "357d893ac21db978a0ab51abb35c7f8cfb437e8b",
                 "shasum": ""
             },
             "require": {
                 "ext-hash": "*",
                 "ext-json": "*",
-                "ext-mongodb": "^1.5.2",
+                "ext-mongodb": "^1.6",
                 "php": ">=5.5"
             },
             "require-dev": {
@@ -420,7 +420,7 @@
                 "mongodb",
                 "persistence"
             ],
-            "time": "2018-11-19T17:00:49+00:00"
+            "time": "2018-12-06T00:26:54+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -428,12 +428,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "a335f6f1a564f43d2c63f2eeeca381e6c78f9006"
+                "reference": "68f536105f1e4fe439ccabac105bb1c90dee8b92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/a335f6f1a564f43d2c63f2eeeca381e6c78f9006",
-                "reference": "a335f6f1a564f43d2c63f2eeeca381e6c78f9006",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/68f536105f1e4fe439ccabac105bb1c90dee8b92",
+                "reference": "68f536105f1e4fe439ccabac105bb1c90dee8b92",
                 "shasum": ""
             },
             "require": {
@@ -498,7 +498,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2018-11-30T07:43:17+00:00"
+            "time": "2018-12-11T10:11:11+00:00"
         },
         {
             "name": "mpcmf/mpcmf-console",
@@ -548,12 +548,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpcmf/mpcmf-core.git",
-                "reference": "00bd2d1fa5301c29cc802b7846f13bdf2e412ebc"
+                "reference": "d1668acf5b0beadd1a5d37e83d9e6f3d10f8083e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpcmf/mpcmf-core/zipball/00bd2d1fa5301c29cc802b7846f13bdf2e412ebc",
-                "reference": "00bd2d1fa5301c29cc802b7846f13bdf2e412ebc",
+                "url": "https://api.github.com/repos/mpcmf/mpcmf-core/zipball/d1668acf5b0beadd1a5d37e83d9e6f3d10f8083e",
+                "reference": "d1668acf5b0beadd1a5d37e83d9e6f3d10f8083e",
                 "shasum": ""
             },
             "require": {
@@ -623,7 +623,7 @@
                 "smarty",
                 "threads"
             ],
-            "time": "2018-11-26T17:21:23+00:00"
+            "time": "2018-12-03T14:25:39+00:00"
         },
         {
             "name": "mpcmf/mpcmf-signal-handler",

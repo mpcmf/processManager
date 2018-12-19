@@ -27,7 +27,7 @@
         "mpcmf/mpcmf-console": "dev-master",
         "mpcmf/mpcmf-web": "dev-master",
         "react/event-loop": "v0.4.3",
-        "react/stream": "^0.4",
+        "react/stream": "^0.4.6",
         "codedungeon/php-cli-colors": "1.10.7"
     },
     "autoload": {
