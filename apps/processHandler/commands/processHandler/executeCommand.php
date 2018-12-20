@@ -105,9 +105,10 @@ class executeCommand
             echo "[{$this->getColoredText('FAIL')}] Not found processes on " . json_encode($hosts) . "\n";
             exit;
         }
-        foreach ($processesList['data'] as $process) {
+        foreach ($processesList['data'] as &$process) {
             $this->arrayToLower($process['tags']);
         }
+        unset($process);
 
         if ($processMethod === 'getList') {
             foreach ($processesList['data'] as $process) {
