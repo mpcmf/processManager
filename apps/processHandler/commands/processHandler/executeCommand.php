@@ -51,12 +51,17 @@ class executeCommand
         $command = $input->getArgument('command_to_execute');
         $processName = $input->getArgument('process_name');
 
+        if (!empty($processName)) {
+            $processName = mb_strtolower($processName);
+        }
+
         $tags = $input->getOption('tags');
         $allHosts = $input->getOption('allHosts');
         $allProcesses = $input->getOption('allProcesses');
         $hostsList = $input->getOption('hosts');
 
         $tags = $tags ? explode(',', $tags) : [];
+        $this->arrayToLower($tags);
 
         $apiClient = apiClient::factory();
         $hosts = [];
@@ -100,10 +105,13 @@ class executeCommand
             echo "[{$this->getColoredText('FAIL')}] Not found processes on " . json_encode($hosts) . "\n";
             exit;
         }
+        foreach ($processesList['data'] as $process) {
+            $this->arrayToLower($process['tags']);
+        }
 
         if ($processMethod === 'getList') {
             foreach ($processesList['data'] as $process) {
-                if (!empty($processName) && $process['name'] !== $processName) {
+                if (!empty($processName) && mb_strtolower($process['name']) !== $processName) {
                     continue;
                 }
                 if (!empty($tags) && empty(array_intersect($tags, $process['tags']))) {
@@ -121,7 +129,7 @@ class executeCommand
 
         $processIds = [];
         foreach ($processesList['data'] as $process) {
-            if ($allProcesses || $process['name'] === $processName || !empty(array_intersect($tags, $process['tags']))) {
+            if ($allProcesses || mb_strtolower($process['name']) === $processName || !empty(array_intersect($tags, $process['tags']))) {
                 $processIds[] = $process['_id'];
             }
         }
@@ -185,6 +193,13 @@ class executeCommand
             }
         }
         exit;
+    }
+
+    protected function arrayToLower(&$array)
+    {
+        array_walk($array, function (&$value, &$key) {
+            $value = mb_strtolower($value);
+        });
     }
 
     protected function getProcessMethodByCommand($command)
