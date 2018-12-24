@@ -9,7 +9,6 @@ use React\EventLoop\LoopInterface;
 
 class server
 {
-
     protected $hostname;
 
     /** @var serverModel */
@@ -23,19 +22,36 @@ class server
     public function __construct(LoopInterface $loop)
     {
         $this->loop = $loop;
-        $this->hostname = gethostname();
-        $this->register();
     }
 
     public function runPing()
     {
+        static $ran = false;
+        if ($ran) {
+            return;
+        }
+        $ran = true;
+        $this->ping();
         $this->loop->addPeriodicTimer($this->pingEvery, function () {
             $this->ping();
         });
     }
 
+    public function setHostName($hostname)
+    {
+        $this->hostname = $hostname;
+    }
+
+    public function getHostName()
+    {
+        return $this->hostname;
+    }
+
     protected function register()
     {
+        if ($this->hostname === null) {
+            $this->hostname = gethostname();
+        }
         try {
             /** @var serverModel $model */
             $model = $this->mapper()->getBy([

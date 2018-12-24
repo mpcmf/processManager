@@ -84,11 +84,11 @@ class processHandler
         $this->loop = $loop;
         pcntl_signal(SIGTERM, [$this, 'signalHandler']);
         pcntl_signal(SIGINT, [$this, 'signalHandler']);
+        $this->server = new server($this->loop);
     }
 
     public function start()
     {
-        $this->server = new server($this->loop);
         $this->server->runPing();
         $this->loop->addPeriodicTimer($this->mainCyclePeriodTime, function () {
             $this->mainCycle();
@@ -471,5 +471,13 @@ class processHandler
                 $this->stopProcessHandler();
                 break;
         }
+    }
+
+    /**
+     * @return server
+     */
+    public function getServer()
+    {
+        return $this->server;
     }
 }
