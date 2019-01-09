@@ -14,12 +14,18 @@ class menu
     protected $menuItems = [];
 
     /**
+     * @var menuItem[]
+     */
+    protected $menuItemsOrigin;
+
+    /**
      * @var controlItem[]
      */
     protected $menuControlItems = [];
     protected $cursor = 0;
     protected $headerInfo = '';
     protected $onRefresh;
+    protected $from = 0;
 
     public function addItem(menuItem $menuItem)
     {
@@ -68,8 +74,12 @@ class menu
 
         echo PHP_EOL . Color::bg_green() . $this->headerInfo . Color::RESET . PHP_EOL;
 
+        $i = 0;
+        $to = $this->from + $this->getMaxMenuItemsCount();
         foreach ($this->menuItems as $key => $menuItem) {
-            if (!$menuItem->isEnabled()) {
+            $outOfVisibleRange = $i < $this->from || $i >= $to;
+            $i++;
+            if ($outOfVisibleRange) {
                 continue;
             }
             if ($this->cursor === $key) {
@@ -89,6 +99,9 @@ class menu
         static $terminal;
         if ($terminal === null) {
             $terminal = new terminal();
+        }
+        if ($this->menuItemsOrigin === null) {
+            $this->menuItemsOrigin = $this->menuItems;
         }
         if ($this->opened) {
             $this->reDraw();
@@ -141,36 +154,33 @@ class menu
 
     protected function cursorUp()
     {
-        if ($this->isAllItemsDisabled()) {
+        if (!isset($this->menuItems[$this->cursor - 1])) {
             return;
         }
-        $itemsCount = count($this->menuItems);
-        if ($this->cursor <= 0) {
-            $this->cursor = $itemsCount - 1;
-        } else {
-            $this->cursor--;
+        if ($this->cursor === $this->from) {
+            $this->from--;
         }
-
-        if (!$this->menuItems[$this->cursor]->isEnabled()) {
-            $this->cursorUp();
-        }
+        $this->cursor--;
     }
 
     protected function cursorDown()
     {
-        if ($this->isAllItemsDisabled()) {
+        if (!isset($this->menuItems[$this->cursor + 1])) {
             return;
         }
-        $itemsCount = count($this->menuItems);
-        if ($this->cursor >= $itemsCount - 1) {
-            $this->cursor = 0;
-        } else {
-            $this->cursor++;
+        $this->cursor++;
+        $to = $this->from + $this->getMaxMenuItemsCount();
+        if ($this->cursor === $to) {
+            $this->from++;
         }
+    }
 
-        if (!$this->menuItems[$this->cursor]->isEnabled()) {
-            $this->cursorDown();
-        }
+    /**
+     * @return menuItem[]
+     */
+    public function getMenuItemsOrigin()
+    {
+        return $this->menuItemsOrigin;
     }
 
     /**
@@ -179,6 +189,16 @@ class menu
     public function getMenuItems()
     {
         return $this->menuItems;
+    }
+
+    /**
+     * @param array menuItems
+     */
+    public function setMenuItems(array $menuItems)
+    {
+        $this->from = 0;
+        $this->cursor = 0;
+        $this->menuItems = $menuItems;
     }
 
     /**
@@ -203,4 +223,14 @@ class menu
         return true;
     }
 
+    public function getMaxMenuItemsCount()
+    {
+        static $maxMenuItemsCount;
+        if ($maxMenuItemsCount === null) {
+            $terminal = new terminal();
+            $maxMenuItemsCount = $terminal->getHeight() - count($this->menuControlItems);
+        }
+
+        return $maxMenuItemsCount;
+    }
 }

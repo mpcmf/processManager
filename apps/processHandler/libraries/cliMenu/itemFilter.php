@@ -32,24 +32,22 @@ class itemFilter
         $menu->reDraw();
         $input = trim(readline("-->"));
 
-        $items = $menu->getMenuItems();
+        $items = $menu->getMenuItemsOrigin();
         $matched = false;
         /** @var menuItem $menuItem */
         foreach ($items as $key => $menuItem) {
-            $menuItem->enable();
             if (!empty($input) && !$this->checkCondition($menuItem, $input)) {
-                $menuItem->disable();
-                $menuItem->setSelected(false);
+                unset($items[$key]);
                 continue;
             }
             $matched = true;
         }
+        $items = array_values($items);
 
         if (!$matched) {
-            foreach ($items as $key => $menuItem) {
-                $menuItem->enable();
-            }
+            $items = $menu->getMenuItemsOrigin();
         }
+        $menu->setMenuItems($items);
 
         if (!empty($input)) {
             if (!$matched) {
