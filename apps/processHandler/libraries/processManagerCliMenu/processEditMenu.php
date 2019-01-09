@@ -38,6 +38,7 @@ class processEditMenu
         $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($processListMenu) {
             $currentMenu->close();
             $processListMenu->refresh();
+            $processListMenu->resetHeaderInfo();
             $processListMenu->open();
         }));
 
