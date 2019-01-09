@@ -68,7 +68,7 @@ class processHandlerAdmin
             $serverListMenu->close();
             $menu = new menu();
             $menu->setOnRefresh(function () use ($menu, $serversList, $apiClient, $serverIds) {
-                $processList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds])['data'];
+                $processList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds, 'limit' => 3000])['data'];
                 foreach ($processList as $process) {
                     $stateColor = Color::GREEN;
                     if ($process['state'] === 'stop' || $process['state'] === 'stopped') {
