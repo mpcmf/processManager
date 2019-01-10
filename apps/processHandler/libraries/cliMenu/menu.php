@@ -211,17 +211,6 @@ class menu
         return $this->menuItems[$this->cursor];
     }
 
-    protected function isAllItemsDisabled()
-    {
-        foreach ($this->menuItems as $menuItem) {
-            if ($menuItem->isEnabled()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public function getMaxMenuItemsCount()
     {
         static $maxMenuItemsCount;

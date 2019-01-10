@@ -8,8 +8,6 @@ class menuItem
     protected $value;
     protected $title;
     protected $selected = false;
-    protected $enabled = true;
-
 
     public function __construct($key, $value, $title)
     {
@@ -68,20 +66,4 @@ class menuItem
     {
         $this->selected = $this->selected ? false : true;
     }
-
-    public function disable()
-    {
-        $this->enabled = false;
-    }
-
-    public function enable()
-    {
-        $this->enabled = true;
-    }
-
-    public function isEnabled()
-    {
-        return $this->enabled;
-    }
-
 }

@@ -33,9 +33,6 @@ class selectAllControlItem
         static $select = true;
         $items = $parentMenu->getMenuItems();
         foreach ($items as $item) {
-            if (!$item->isEnabled()) {
-                continue;
-            }
             $item->setSelected($select);
         }
         $select = $select ? false : true;

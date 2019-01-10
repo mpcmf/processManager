@@ -59,9 +59,6 @@ class processEditMenu
                     $newItemValue = [];
                     $arrayEditMenuItems = $currentMenu->getMenuItems();
                     foreach ($arrayEditMenuItems as $arrayEditMenuItem) {
-                        if (!$arrayEditMenuItem->isEnabled()) {
-                            continue;
-                        }
                         $newItemValue[] = $arrayEditMenuItem->getValue();
                     }
                     $input = $newItemValue;
@@ -73,15 +70,22 @@ class processEditMenu
                 $arrayEditmenu->addControlItem(new menuControlItem(terminal::KEY_DELETE, 'Del', 'remove:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
                     $items = $currentMenu->getMenuItems();
                     $hasSelected = false;
-                    foreach ($items as $item) {
+                    foreach ($items as $key => $item) {
                         if ($item->isSelected()) {
-                            $item->disable();
+                            unset($items[$key]);
                             $hasSelected = true;
                         }
                     }
                     if (!$hasSelected) {
-                        $currentMenu->getCurrentItem()->disable();
+                        $currentItem = $currentMenu->getCurrentItem();
+                        foreach ($items as $key => $item) {
+                            if ($item === $currentItem) {
+                                unset($items[$key]);
+                            }
+                        }
                     }
+                    $items = array_values($items);
+                    $currentMenu->setMenuItems($items);
                 }));
                 $arrayEditmenu->addControlItem(new menuControlItem(terminal::KEY_INSERT, 'Ins', 'add:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
                     $currentMenu->reDraw();
