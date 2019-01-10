@@ -93,6 +93,7 @@ class processEditMenu
                     if (empty($input)) {
                         echo "Sorry, empty string! \n";
                         sleep(3);
+                        return;
                     }
                     $currentMenu->addItem(new menuItem($input, $input, $input));
                 }));
