@@ -75,6 +75,11 @@ class menu
 
         $i = 0;
         $to = $this->from + $this->getMaxMenuItemsCount();
+        if ($this->from !== 0) {
+            echo Color::bg_green() . "more...{$this->from}" . Color::RESET . PHP_EOL;
+        } else {
+            echo PHP_EOL;
+        }
         foreach ($this->menuItems as $key => $menuItem) {
             $outOfVisibleRange = $i < $this->from || $i >= $to;
             $i++;
@@ -90,6 +95,11 @@ class menu
                 continue;
             }
             echo $menuItem->getTitle() . PHP_EOL;
+        }
+        $menuItemsCount = count($this->menuItems);
+        if ($menuItemsCount > $to) {
+            $remainedItems = $menuItemsCount - $to;
+            echo Color::bg_green() . "more...{$remainedItems}"  . Color::RESET . PHP_EOL;
         }
     }
 
@@ -216,7 +226,8 @@ class menu
         static $maxMenuItemsCount;
         if ($maxMenuItemsCount === null) {
             $terminal = new terminal();
-            $maxMenuItemsCount = $terminal->getHeight() - count($this->menuControlItems);
+            $eolCount = 2;
+            $maxMenuItemsCount = $terminal->getHeight() - count($this->menuControlItems) - $eolCount;
         }
 
         return $maxMenuItemsCount;
