@@ -25,10 +25,7 @@ class menuControlItem
         $this->actionOnSelectedItem = $actionOnSelectedItem;
     }
 
-    /**
-     * @param menuItem[]
-     */
-    public function execute(&$menu)
+    public function execute(menu $menu)
     {
         $action = $this->actionOnSelectedItem;
         $action($menu, $this);

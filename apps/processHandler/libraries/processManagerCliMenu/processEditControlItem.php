@@ -24,10 +24,7 @@ class processEditControlItem
         $this->title = $title;
     }
 
-    /**
-     * @param menuItem[]
-     */
-    public function execute(&$menu)
+    public function execute(menu $menu)
     {
         $this->actionOnSelectedItem($menu);
     }

@@ -74,10 +74,7 @@ class itemFilter
         return false;
     }
 
-    /**
-     * @param menuItem[]
-     */
-    public function execute(&$menu)
+    public function execute(menu $menu)
     {
         $this->filter($menu, $this);
     }

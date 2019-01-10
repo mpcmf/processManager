@@ -17,6 +17,7 @@ class terminal
     const KEY_F7 = 56;
     const KEY_F8 = 57;
     const KEY_F9 = 48;
+    const KEY_F10 = 49;
     const KEY_F12 = 52;
     const KEY_ENTER = 10;
     const KEY_DELETE = 51;

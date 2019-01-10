@@ -9,10 +9,7 @@ abstract class controlItem
     protected $buttonName;
     protected $title;
 
-    /**
-     * @param menuItem[]
-     */
-    abstract public function execute(&$menu);
+    abstract public function execute(menu $menu);
 
     public function getKeyboardEventNumber()
     {

@@ -31,10 +31,7 @@ class processManagementControlItem
         $this->expectedState = $expectedState;
     }
 
-    /**
-     * @param menuItem[]
-     */
-    public function execute(&$menu)
+    public function execute(menu $menu)
     {
         $this->actionOnSelectedItem($menu, $this);
     }
