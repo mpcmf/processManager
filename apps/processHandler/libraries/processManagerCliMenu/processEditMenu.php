@@ -17,6 +17,7 @@ class processEditMenu
         $apiClient = apiClient::factory();
         $menu = new menu();
         $menu->setOnRefresh(function () use ($processItem, $menu) {
+            $menu->clean();
             $process = $processItem->getValue();
             if (!empty($process['_id'])) {
                 unset($process['last_update']);
@@ -38,7 +39,6 @@ class processEditMenu
         $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($processListMenu) {
             $currentMenu->close();
             $processListMenu->refresh();
-            $processListMenu->resetHeaderInfo();
             $processListMenu->open();
         }));
 
@@ -161,6 +161,7 @@ class processEditMenu
             var_dump($result);sleep(3);
             $processEditMenu->close();
             $processListMenu->refresh();
+            $processListMenu->resetHeaderInfo();
             $processListMenu->open();
         }));
 

@@ -46,7 +46,6 @@ class menu
     {
         $action = $this->onRefresh;
         if (is_callable($action)) {
-            $this->clean();
             $action();
         }
     }
