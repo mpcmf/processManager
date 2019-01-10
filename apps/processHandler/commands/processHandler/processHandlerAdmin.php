@@ -44,6 +44,19 @@ class processHandlerAdmin
         }
         $menuMain->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
 
+        $menuMain->addControlItem(new menuControlItem(terminal::KEY_F5, 'F5', 'Sorted', function (menu $menuMain, $menuControlItem) {
+            $serversItems = $menuMain->getMenuItems();
+            usort($serversItems, function ($item1, $item2) {
+                $title1 = $item1->getTitle();
+                $title2 = $item2->getTitle();
+                if ($title1 === $title2) {
+                    return 0;
+                }
+                return ($title1 < $title2) ? -1 : 1;
+            });
+            $menuMain->setMenuItems($serversItems);
+        }));
+
         $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
         $menuMain->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process'));
 
