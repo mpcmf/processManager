@@ -5,6 +5,7 @@ use mpcmf\apps\processHandler\libraries\api\client\apiClient;
 use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 
 class processManagementControlItem
     extends controlItem
@@ -52,6 +53,15 @@ class processManagementControlItem
         }
         if (empty($ids)) {
             $ids[] = $processListMenu->getCurrentItem()->getValue()['_id'];
+        }
+        if ($this->keyboardEventNumber === terminal::KEY_DELETE) {
+            do {
+                $processListMenu->reDraw();
+                $deletePrompt = readline('Do you want delete? [yes/no]:');
+                if ($deletePrompt === 'no') {
+                    return;
+                }
+            } while ($deletePrompt !== 'yes');
         }
         $result = $apiClient->call('process', $this->processMethod, ['ids' => $ids]);
 

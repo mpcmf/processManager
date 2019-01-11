@@ -80,7 +80,9 @@ class processHandlerAdmin
                     $menuItemsByKey[$menuItem->getKey()] = $menuItem;
                 }
                 $update = !empty($menuItemsByKey);
+                $processIds = [];
                 foreach ($processList as $process) {
+                    $processIds[$process['_id']] = $process['_id'];
                     $stateColor = Color::GREEN;
                     if ($process['state'] === 'stop' || $process['state'] === 'stopped') {
                         $stateColor = Color::RED;
@@ -96,6 +98,14 @@ class processHandlerAdmin
                         $menu->addItem(new menuItem($process['_id'], $process, $title));
                     }
                 }
+                $menuItems = $menu->getMenuItems();
+                foreach ($menuItems as $key => $menuItem) {
+                    if (!isset($processIds[$menuItem->getKey()])) {
+                        unset($menuItems[$key]);
+                    }
+                }
+                $menuItems = array_values($menuItems);
+                $menu->setMenuItems($menuItems);
             });
 
             $menu->refresh();

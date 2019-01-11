@@ -182,7 +182,7 @@ class menu
     {
         if (!isset($this->menuItems[$this->cursor + $positionsCount])) {
             $itemsCount = count($this->menuItems);
-            $this->from = $itemsCount - $this->getMaxMenuItemsCount();
+            $this->from = $itemsCount < $this->getMaxMenuItemsCount() ? 0 : $itemsCount - $this->getMaxMenuItemsCount();
             $this->cursor = $itemsCount - 1;
             return;
         }
