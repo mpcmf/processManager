@@ -9,6 +9,8 @@ use mpcmf\apps\processHandler\libraries\cliMenu\itemFilter;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\pageDownControlItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\pageUpControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\selectAllControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processEditControlItem;
@@ -47,6 +49,8 @@ class processHandlerAdmin
         $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
         $menuMain->addControlItem(new sortByTitleControlItem(terminal::KEY_F10, 'F10', 'Sorted'));
         $menuMain->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process'));
+        $menuMain->addControlItem(new pageDownControlItem());
+        $menuMain->addControlItem(new pageUpControlItem());
 
         //process list menu
         $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $serverListMenu, $menuControlItem) use ($apiClient, $serversList) {
@@ -111,6 +115,8 @@ class processHandlerAdmin
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
             $menu->addControlItem(new sortByTitleControlItem(terminal::KEY_F10, 'F10', 'Sorted'));
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'DEL', 'delete', 'delete', 'stopped'));
+            $menu->addControlItem(new pageDownControlItem());
+            $menu->addControlItem(new pageUpControlItem());
 
             //process edit menul
             $menu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));

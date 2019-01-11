@@ -2,8 +2,6 @@
 
 namespace mpcmf\apps\processHandler\libraries\cliMenu;
 
-require_once __DIR__ . '/controlItem.php';
-
 class menuControlItem
     extends controlItem
 {

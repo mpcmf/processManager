@@ -4,8 +4,6 @@ namespace mpcmf\apps\processHandler\libraries\cliMenu;
 
 use Codedungeon\PHPCliColors\Color;
 
-require_once __DIR__ . '/controlItem.php';
-
 class itemFilter
     extends controlItem
 {

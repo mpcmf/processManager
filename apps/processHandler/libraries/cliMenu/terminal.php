@@ -22,6 +22,8 @@ class terminal
     const KEY_ENTER = 10;
     const KEY_DELETE = 51;
     const KEY_INSERT = 126;
+    const KEY_PAGE_UP = 126;
+    const KEY_PAGE_DOWN = 54;
     const KEY_SLASH = 47;
     const KEY_UNKNOWN = 0;
 
@@ -47,7 +49,7 @@ class terminal
         if (27 === $key) {
             fgetc($stdin);
             $key = ord(fgetc($stdin));
-            if ($key === 49 || $key === 50) {
+            if ($key === 49 || $key === 50 || $key === 53) {
                 $key = ord(fgetc($stdin));
             }
         }

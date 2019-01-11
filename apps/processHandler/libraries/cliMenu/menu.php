@@ -161,26 +161,35 @@ class menu
         $this->opened = false;
     }
 
-    protected function cursorUp()
+    public function cursorUp($positionsCount = 1)
     {
-        if (!isset($this->menuItems[$this->cursor - 1])) {
+        if (!isset($this->menuItems[$this->cursor - $positionsCount])) {
+            $this->cursor = 0;
+            $this->from = 0;
             return;
         }
-        if ($this->cursor === $this->from) {
-            $this->from--;
+        if ($this->cursor - $positionsCount <= $this->from) {
+            if ($this->from < $positionsCount) {
+                $this->from = 0;
+            } else {
+                $this->from -= $positionsCount;
+            }
         }
-        $this->cursor--;
+        $this->cursor -= $positionsCount;
     }
 
-    protected function cursorDown()
+    public function cursorDown($positionsCount = 1)
     {
-        if (!isset($this->menuItems[$this->cursor + 1])) {
+        if (!isset($this->menuItems[$this->cursor + $positionsCount])) {
+            $itemsCount = count($this->menuItems);
+            $this->from = $itemsCount - $this->getMaxMenuItemsCount();
+            $this->cursor = $itemsCount - 1;
             return;
         }
-        $this->cursor++;
+        $this->cursor += $positionsCount;
         $to = $this->from + $this->getMaxMenuItemsCount();
-        if ($this->cursor === $to) {
-            $this->from++;
+        if ($this->cursor >= $to) {
+            $this->from += $positionsCount;
         }
     }
 
