@@ -88,7 +88,7 @@ class processHandlerAdmin
                     $state = $process['state'];
                     $stateColor = Color::GREEN;
 
-                    if ($process['state'] === 'stop' || $process['state'] === 'stopped') {
+                    if ($state === 'stop' || $state === 'stopped') {
                         $stateColor = Color::RED;
                     }
 
