@@ -141,40 +141,6 @@ class processHandlerAdmin
             //process edit menul
             $menu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));
 
-            // process log menu
-            $menu->addControlItem(new menuControlItem(terminal::KEY_F12, 'F12', 'ReadLog', function (menu $processListMenu, $menuControlItem) {
-                $selectedItem = $processListMenu->getCurrentItem()->getValue();
-
-                if (empty($selectedItem['std_out'])) {
-                    $processListMenu->setHeaderInfo("{$selectedItem['name']} - doesn't have a logs!");
-
-                    return;
-                }
-
-                $processListMenu->close();
-                $logMenu = new menu();
-                $logMenu->setOnRefresh(function () use ($logMenu, $selectedItem) {
-                    $logMenu->clean();
-
-                    foreach ($selectedItem['std_out'] as $stdOut) {
-                        $logMenu->addItem(new menuItem($stdOut, $stdOut, $stdOut));
-                    }
-                });
-
-                $logMenu->refresh();
-
-                $logMenu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentLogMenu, $menuControlItem) use ($processListMenu) {
-                    $currentLogMenu->close();
-                    $processListMenu->open();
-                }));
-                $logMenu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Show logs', function () {
-                    // TODO: method for open log file from other servers
-                }));
-
-                $logMenu->open();
-            }));
-
-
             $menu->open();
         }));
 
