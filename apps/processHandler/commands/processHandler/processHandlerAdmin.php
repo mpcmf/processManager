@@ -13,6 +13,7 @@ use mpcmf\apps\processHandler\libraries\cliMenu\pageDownControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\pageUpControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\selectAllControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
+use mpcmf\apps\processHandler\libraries\processManager\process;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processEditControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processManagementControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processNewControllerItem;
@@ -83,12 +84,21 @@ class processHandlerAdmin
                 $processIds = [];
                 foreach ($processList as $process) {
                     $processIds[$process['_id']] = $process['_id'];
+                    $timeAfterLastUpdate = time() - $process['last_update'];
                     $stateColor = Color::GREEN;
+
                     if ($process['state'] === 'stop' || $process['state'] === 'stopped') {
                         $stateColor = Color::RED;
                     }
+
+                    if ($timeAfterLastUpdate > process::TIMEOUT_SECONDS) {
+                        $stateColor = Color::YELLOW;
+                        $process['state'] = "timeout {$timeAfterLastUpdate} seconds";
+                    }
+
                     $state = $stateColor . " {$process['state']}" . Color::RESET;
-                    $title = helper::padding($process['name'], helper::padding($state, $serversList[$process['server']]['host'], 20), 100);
+                    $title = helper::padding($process['name'], helper::padding($state, $serversList[$process['server']]['host'], 40), 80);
+
                     if ($update) {
                         if (isset($menuItemsByKey[$process['_id']])) {
                             $menuItemsByKey[$process['_id']]->setValue($process);
@@ -130,6 +140,39 @@ class processHandlerAdmin
 
             //process edit menul
             $menu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));
+
+            // process log menu
+            $menu->addControlItem(new menuControlItem(terminal::KEY_F12, 'F12', 'ReadLog', function (menu $processListMenu, $menuControlItem) {
+                $selectedItem = $processListMenu->getCurrentItem()->getValue();
+
+                if (empty($selectedItem['std_out'])) {
+                    $processListMenu->setHeaderInfo("{$selectedItem['name']} - doesn't have a logs!");
+
+                    return;
+                }
+
+                $processListMenu->close();
+                $logMenu = new menu();
+                $logMenu->setOnRefresh(function () use ($logMenu, $selectedItem) {
+                    $logMenu->clean();
+
+                    foreach ($selectedItem['std_out'] as $stdOut) {
+                        $logMenu->addItem(new menuItem($stdOut, $stdOut, $stdOut));
+                    }
+                });
+
+                $logMenu->refresh();
+
+                $logMenu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentLogMenu, $menuControlItem) use ($processListMenu) {
+                    $currentLogMenu->close();
+                    $processListMenu->open();
+                }));
+                $logMenu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Show logs', function () {
+                    // TODO: method for open log file from other servers
+                }));
+
+                $logMenu->open();
+            }));
 
 
             $menu->open();
