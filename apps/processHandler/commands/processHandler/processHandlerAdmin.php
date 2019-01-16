@@ -85,6 +85,7 @@ class processHandlerAdmin
                 foreach ($processList as $process) {
                     $processIds[$process['_id']] = $process['_id'];
                     $timeAfterLastUpdate = time() - $process['last_update'];
+                    $state = $process['state'];
                     $stateColor = Color::GREEN;
 
                     if ($process['state'] === 'stop' || $process['state'] === 'stopped') {
@@ -93,10 +94,10 @@ class processHandlerAdmin
 
                     if ($timeAfterLastUpdate > process::TIMEOUT_SECONDS) {
                         $stateColor = Color::YELLOW;
-                        $process['state'] = "timeout {$timeAfterLastUpdate} seconds";
+                        $state = "timeout {$timeAfterLastUpdate} seconds";
                     }
 
-                    $state = $stateColor . " {$process['state']}" . Color::RESET;
+                    $state = $stateColor . " {$state}" . Color::RESET;
                     $title = helper::padding($process['name'], helper::padding($state, $serversList[$process['server']]['host'], 40), 80);
 
                     if ($update) {
