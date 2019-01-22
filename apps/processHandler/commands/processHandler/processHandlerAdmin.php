@@ -43,12 +43,7 @@ class processHandlerAdmin
 
         $serversList = $apiClient->call('server', 'getList')['data'];
         usort($serversList, function ($server1, $server2) {
-            $title1 = $server1['host'];
-            $title2 = $server2['host'];
-            if ($title1 === $title2) {
-                return 0;
-            }
-            return ($title1 < $title2) ? -1 : 1;
+            return strcasecmp($server1['host'], $server2['host']);
         });
         //server list menul
         $menuMain = new menu();
