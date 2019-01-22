@@ -4,7 +4,9 @@ namespace mpcmf\apps\processHandler\commands\processHandler;
 
 use Codedungeon\PHPCliColors\Color;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
+use mpcmf\apps\processHandler\libraries\cliMenu\endControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\helper;
+use mpcmf\apps\processHandler\libraries\cliMenu\homeControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\itemFilter;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
@@ -40,9 +42,17 @@ class processHandlerAdmin
         $apiClient = apiClient::factory();
 
         $serversList = $apiClient->call('server', 'getList')['data'];
-
+        usort($serversList, function ($server1, $server2) {
+            $title1 = $server1['host'];
+            $title2 = $server2['host'];
+            if ($title1 === $title2) {
+                return 0;
+            }
+            return ($title1 < $title2) ? -1 : 1;
+        });
         //server list menul
         $menuMain = new menu();
+        $menuMain->sortToggle();
         foreach ($serversList as $server) {
             $menuMain->addItem(new menuItem($server['_id'], $server,$server['host']));
         }
@@ -52,6 +62,8 @@ class processHandlerAdmin
         $menuMain->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process'));
         $menuMain->addControlItem(new pageDownControlItem());
         $menuMain->addControlItem(new pageUpControlItem());
+        $menuMain->addControlItem(new homeControlItem());
+        $menuMain->addControlItem(new endControlItem());
 
         //process list menu
         $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $serverListMenu, $menuControlItem) use ($apiClient, $serversList) {
@@ -138,6 +150,8 @@ class processHandlerAdmin
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'DEL', 'delete', 'delete', 'stopped'));
             $menu->addControlItem(new pageDownControlItem());
             $menu->addControlItem(new pageUpControlItem());
+            $menu->addControlItem(new homeControlItem());
+            $menu->addControlItem(new endControlItem());
 
             //process edit menul
             $menu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));

@@ -24,6 +24,8 @@ class terminal
     const KEY_INSERT = 126;
     const KEY_PAGE_UP = 126;
     const KEY_PAGE_DOWN = 54;
+    const KEY_HOME = 72;
+    const KEY_END = 70;
     const KEY_SLASH = 47;
     const KEY_UNKNOWN = 0;
 
