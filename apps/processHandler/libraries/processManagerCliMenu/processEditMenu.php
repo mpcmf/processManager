@@ -5,17 +5,16 @@ namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
-use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\sorting;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 
 class processEditMenu
 {
-
     public static function createMenu(menuItem $processItem, menu $processListMenu)
     {
         $apiClient = apiClient::factory();
-        $menu = new menu();
+        $menu = new menu(new sorting());
         $menu->setOnRefresh(function () use ($processItem, $menu) {
             $menu->clean();
             $process = $processItem->getValue();
@@ -49,7 +48,7 @@ class processEditMenu
             $input = null;
             //process array field edit menu
             if (is_array($itemValue)) {
-                $arrayEditmenu = new menu();
+                $arrayEditmenu = new menu(new sorting());
                 foreach ($itemValue as $key => $value) {
                     $arrayEditmenu->addItem(new menuItem($key, $value, $value));
                 }
@@ -100,7 +99,7 @@ class processEditMenu
 
                 $arrayEditmenu->open();
             } elseif ($item->getKey() === 'mode' || $item->getKey() === 'state') {
-                $multipleSelectMenu = new menu();
+                $multipleSelectMenu = new menu(new sorting());
                 if ($item->getKey() === 'mode') {
                     $toSelect = [
                         'one_run',

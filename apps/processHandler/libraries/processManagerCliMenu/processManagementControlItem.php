@@ -2,9 +2,7 @@
 namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
-use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
-use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 
 class processManagementControlItem
@@ -25,9 +23,7 @@ class processManagementControlItem
      */
     public function __construct($keyboardEventNumber, $buttonName, $title, $processMethod = 'start', $expectedState = 'running')
     {
-        $this->keyboardEventNumber = $keyboardEventNumber;
-        $this->buttonName = $buttonName;
-        $this->title = $title;
+        parent::__construct($keyboardEventNumber, $buttonName, $title);
         $this->processMethod = $processMethod;
         $this->expectedState = $expectedState;
     }

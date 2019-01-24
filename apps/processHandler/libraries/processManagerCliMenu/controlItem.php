@@ -1,13 +1,21 @@
 <?php
 
+namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
-namespace mpcmf\apps\processHandler\libraries\cliMenu;
+use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 
 abstract class controlItem
 {
     protected $keyboardEventNumber;
     protected $buttonName;
     protected $title;
+
+    public function __construct($keyboardEventNumber, $buttonName, $title)
+    {
+        $this->keyboardEventNumber = $keyboardEventNumber;
+        $this->buttonName = $buttonName;
+        $this->title = $title;
+    }
 
     abstract public function execute(menu $menu);
 

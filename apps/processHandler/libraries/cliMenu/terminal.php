@@ -27,6 +27,7 @@ class terminal
     const KEY_HOME = 72;
     const KEY_END = 70;
     const KEY_SLASH = 47;
+    const KEY_STAR = 42;
     const KEY_UNKNOWN = 0;
 
     /**

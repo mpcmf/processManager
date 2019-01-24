@@ -3,26 +3,28 @@
 namespace mpcmf\apps\processHandler\commands\processHandler;
 
 use Codedungeon\PHPCliColors\Color;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
-use mpcmf\apps\processHandler\libraries\cliMenu\endControlItem;
-use mpcmf\apps\processHandler\libraries\cliMenu\helper;
-use mpcmf\apps\processHandler\libraries\cliMenu\homeControlItem;
-use mpcmf\apps\processHandler\libraries\cliMenu\itemFilter;
-use mpcmf\apps\processHandler\libraries\cliMenu\menu;
-use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
-use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
-use mpcmf\apps\processHandler\libraries\cliMenu\pageDownControlItem;
-use mpcmf\apps\processHandler\libraries\cliMenu\pageUpControlItem;
-use mpcmf\apps\processHandler\libraries\cliMenu\selectAllControlItem;
-use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
-use mpcmf\apps\processHandler\libraries\processManager\process;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\endControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\homeControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\itemFilter;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\pageDownControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\menuControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\pageUpControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\selectAllControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\changeSortTypeControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processEditControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processManagementControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processNewControllerItem;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\sortByTitleControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\sortControlItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\helper;
+use mpcmf\apps\processHandler\libraries\cliMenu\menu;
+use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\sorting;
+use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
+use mpcmf\apps\processHandler\libraries\processManager\process;
 use mpcmf\system\application\consoleCommandBase;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class processHandlerAdmin
     extends consoleCommandBase
@@ -42,19 +44,16 @@ class processHandlerAdmin
         $apiClient = apiClient::factory();
 
         $serversList = $apiClient->call('server', 'getList')['data'];
-        usort($serversList, function ($server1, $server2) {
-            return strcasecmp($server1['host'], $server2['host']);
-        });
         //server list menul
-        $menuMain = new menu();
-        $menuMain->sortToggle();
+        $menuMain = new menu(new sorting());
         foreach ($serversList as $server) {
-            $menuMain->addItem(new menuItem($server['_id'], $server,$server['host']));
+            $menuMain->addItem(new menuItem($server['_id'], $server, $server['host']));
         }
         $menuMain->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
         $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
-        $menuMain->addControlItem(new sortByTitleControlItem(terminal::KEY_F10, 'F10', 'Sorted'));
+        $menuMain->addControlItem(new sortControlItem(terminal::KEY_F10, 'F10', 'Sorted'));
         $menuMain->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process'));
+        $menuMain->addControlItem(new changeSortTypeControlItem(terminal::KEY_STAR, '*', 'Change sort'));
         $menuMain->addControlItem(new pageDownControlItem());
         $menuMain->addControlItem(new pageUpControlItem());
         $menuMain->addControlItem(new homeControlItem());
@@ -79,7 +78,7 @@ class processHandlerAdmin
             }
 
             $serverListMenu->close();
-            $menu = new menu();
+            $menu = new menu(new sorting());
             $menu->setOnRefresh(function () use ($menu, $serversList, $apiClient, $serverIds) {
                 $processList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds, 'limit' => 3000])['data'];
                 $menuItems = $menu->getMenuItems();
@@ -141,7 +140,8 @@ class processHandlerAdmin
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_F7, 'F7', 'start', 'start', 'running'));
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_F8, 'F8', 'restart', 'restart', 'running'));
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
-            $menu->addControlItem(new sortByTitleControlItem(terminal::KEY_F10, 'F10', 'Sorted'));
+            $menu->addControlItem(new sortControlItem(terminal::KEY_F10, 'F10', 'Sorted'));
+            $menu->addControlItem(new changeSortTypeControlItem(terminal::KEY_STAR, '*', 'Change sort'));
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'DEL', 'delete', 'delete', 'stopped'));
             $menu->addControlItem(new pageDownControlItem());
             $menu->addControlItem(new pageUpControlItem());

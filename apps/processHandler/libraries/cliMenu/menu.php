@@ -3,10 +3,10 @@
 namespace mpcmf\apps\processHandler\libraries\cliMenu;
 
 use Codedungeon\PHPCliColors\Color;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\controlItem;
 
 class menu
 {
-
     protected $opened = false;
     /**
      * @var menuItem[]
@@ -19,6 +19,11 @@ class menu
     protected $menuItemsOrigin;
 
     /**
+     * @var sorting
+     */
+    protected $sorting;
+
+    /**
      * @var controlItem[]
      */
     protected $menuControlItems = [];
@@ -27,6 +32,11 @@ class menu
     protected $onRefresh;
     protected $from = 0;
     protected $sorted = false;
+
+    public function __construct(sorting $sorting)
+    {
+        $this->sorting = $sorting;
+    }
 
     public function addItem(menuItem $menuItem)
     {
@@ -247,15 +257,28 @@ class menu
         return $this->sorted;
     }
 
-    public function sortToggle() {
-        $this->sorted = !$this->sorted;
-    }
-
     /**
      * @return int
      */
-    public function getCursor()
+    public function getCursorPosition()
     {
         return $this->cursor;
+    }
+
+    public function sort()
+    {
+        $this->sorting->sort($this);
+        $this->sorted = !$this->sorted;
+        $this->setHeaderInfo($this->sorted ? 'Sorted from lower to higher' : 'Sorted from higher to lower' );
+    }
+
+    public function setSortType($sortType)
+    {
+        $this->sorting->setSortType($sortType);
+    }
+
+    public function getSortType()
+    {
+        return $this->sorting->getSortType() ?: 'by title';
     }
 }

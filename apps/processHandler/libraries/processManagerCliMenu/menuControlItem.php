@@ -1,6 +1,8 @@
 <?php
 
-namespace mpcmf\apps\processHandler\libraries\cliMenu;
+namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
+
+use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 
 class menuControlItem
     extends controlItem
@@ -17,9 +19,7 @@ class menuControlItem
      */
     public function __construct($keyboardEventNumber, $buttonName, $title, callable $actionOnSelectedItem)
     {
-        $this->keyboardEventNumber = $keyboardEventNumber;
-        $this->buttonName = $buttonName;
-        $this->title = $title;
+        parent::__construct($keyboardEventNumber, $buttonName, $title);
         $this->actionOnSelectedItem = $actionOnSelectedItem;
     }
 
