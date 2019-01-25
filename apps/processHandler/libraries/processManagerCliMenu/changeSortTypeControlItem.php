@@ -2,7 +2,9 @@
 
 namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
+use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
+use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\sorting;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;

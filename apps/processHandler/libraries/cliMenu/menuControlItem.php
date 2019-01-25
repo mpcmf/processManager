@@ -1,8 +1,6 @@
 <?php
 
-namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
-
-use mpcmf\apps\processHandler\libraries\cliMenu\menu;
+namespace mpcmf\apps\processHandler\libraries\cliMenu;
 
 class menuControlItem
     extends controlItem

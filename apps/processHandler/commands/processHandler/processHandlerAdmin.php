@@ -10,7 +10,6 @@ use mpcmf\apps\processHandler\libraries\processManagerCliMenu\endControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\homeControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\itemFilter;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\pageDownControlItem;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\pageUpControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\selectAllControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\changeSortTypeControlItem;
@@ -18,6 +17,7 @@ use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processEditControl
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processManagementControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processNewControllerItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\sortControlItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;

@@ -2,6 +2,7 @@
 
 namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
+use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 
 class processEditControlItem
