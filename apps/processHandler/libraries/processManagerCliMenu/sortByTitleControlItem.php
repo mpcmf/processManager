@@ -24,14 +24,18 @@ class sortByTitleControlItem
     public function execute(menu $menu)
     {
         $menuItems = $menu->getMenuItems();
-        usort($menuItems, function ($item1, $item2) {
+        usort($menuItems, function ($item1, $item2) use ($menu) {
             $title1 = $item1->getTitle();
             $title2 = $item2->getTitle();
-            if ($title1 === $title2) {
-                return 0;
+
+            if ($menu->isSorted()) {
+                return strcasecmp($title2, $title1);
             }
-            return ($title1 < $title2) ? -1 : 1;
+
+            return strcasecmp($title1, $title2);
         });
+
+        $menu->sortToggle();
         $menu->setMenuItems($menuItems);
     }
 }

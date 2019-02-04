@@ -130,6 +130,10 @@ class processEditMenu
                 $multipleSelectMenu->open();
 
             } else {
+                readline_completion_function(function ($input, $index) use ($item) {
+                    return [$item->getValue()];
+                });
+                
                 $input = trim(readline("-->"));
             }
 

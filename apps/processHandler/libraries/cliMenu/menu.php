@@ -26,6 +26,7 @@ class menu
     protected $headerInfo = '';
     protected $onRefresh;
     protected $from = 0;
+    protected $sorted = false;
 
     public function addItem(menuItem $menuItem)
     {
@@ -240,5 +241,21 @@ class menu
         }
 
         return $maxMenuItemsCount;
+    }
+
+    public function isSorted() {
+        return $this->sorted;
+    }
+
+    public function sortToggle() {
+        $this->sorted = !$this->sorted;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCursor()
+    {
+        return $this->cursor;
     }
 }

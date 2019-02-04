@@ -23,6 +23,8 @@ class process
 
     const STATUS__EXITED = 'exited';
 
+    const TIMEOUT_SECONDS = 300;
+
     /**
      * @var int
      */
