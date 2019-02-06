@@ -4,29 +4,29 @@ namespace mpcmf\apps\processHandler\libraries\cliMenu;
 
 class terminal
 {
-    const KEY_UP = 65;
-    const KEY_DOWN = 66;
-    const KEY_LEFT = 68;
-    const KEY_RIGHT = 67;
-    const KEY_SPACE = 32;
-    const KEY_F2 = 81;
-    const KEY_F3 = 82;
-    const KEY_F4 = 83;
-    const KEY_F5 = 53;
-    const KEY_F6 = 55;
-    const KEY_F7 = 56;
-    const KEY_F8 = 57;
-    const KEY_F9 = 48;
-    const KEY_F10 = 49;
-    const KEY_F12 = 52;
-    const KEY_ENTER = 10;
-    const KEY_DELETE = 51;
-    const KEY_INSERT = 126;
-    const KEY_PAGE_UP = 126;
-    const KEY_PAGE_DOWN = 54;
-    const KEY_HOME = 72;
-    const KEY_END = 70;
-    const KEY_SLASH = 47;
+    const KEY_UP = 0x1b5b41;
+    const KEY_DOWN = 0x1b5b42;
+    const KEY_LEFT = 0x1b5b44;
+    const KEY_RIGHT = 0x1b5b43;
+    const KEY_SPACE = 0x20;
+    const KEY_F2 = 0x1b4f51;
+    const KEY_F3 = 0x1b4f52;
+    const KEY_F4 = 0x1b4f53;
+    const KEY_F5 = 0x1b5b31357e;
+    const KEY_F6 = 0x1b5b31377e;
+    const KEY_F7 = 0x1b5b31387e;
+    const KEY_F8 = 0x1b5b31397e;
+    const KEY_F9 = 0x1b5b32307e;
+    const KEY_F10 = 0x1b5b32317e;
+    const KEY_F12 = 0x1b5b32347e;
+    const KEY_ENTER = 0x0a;
+    const KEY_DELETE = 0x1b5b337e;
+    const KEY_INSERT = 0x1b5b327e;
+    const KEY_PAGE_UP = 0x1b5b357e;
+    const KEY_PAGE_DOWN = 0x1b5b367e;
+    const KEY_HOME = 0x1b5b48;
+    const KEY_END = 0x1b5b46;
+    const KEY_SLASH = 0x2f;
     const KEY_UNKNOWN = 0;
 
     /**
@@ -43,49 +43,14 @@ class terminal
     public function getInput()
     {
         shell_exec('stty -icanon');
-
         $stdin = fopen('php://stdin', 'r');
+        $key = fgetc($stdin);
 
-        $key = ord(fgetc($stdin));
-
-        if (27 === $key) {
-            fgetc($stdin);
-            $key = ord(fgetc($stdin));
-            if ($key === 49 || $key === 50 || $key === 53) {
-                $key = ord(fgetc($stdin));
-            }
+        while (stream_get_meta_data($stdin)['unread_bytes'] !== 0) {
+            $key .= fgetc($stdin);
         }
 
-        switch ($key) {
-            case 65:
-                return self::KEY_UP;
-                break;
-            case 66:
-                return self::KEY_DOWN;
-                break;
-            case 68:
-                return self::KEY_LEFT;
-                break;
-            case 67:
-                return self::KEY_RIGHT;
-                break;
-            case 32:
-                return self::KEY_SPACE;
-                break;
-            case 50:
-                return self::KEY_F9;
-            case 83:
-                return self::KEY_F4;
-            case 10:
-                return self::KEY_ENTER;
-                break;
-            case 0:
-            case ord(''):
-                return self::KEY_UNKNOWN;
-                break;
-        }
-        return $key;
-
+        return hexdec(bin2hex($key));
     }
 
 
