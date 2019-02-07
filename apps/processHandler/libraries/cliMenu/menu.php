@@ -23,6 +23,11 @@ class menu
     protected $sorting;
 
     /**
+     * @var filter
+     */
+    protected $filter;
+
+    /**
      * @var controlItem[]
      */
     protected $menuControlItems = [];
@@ -32,9 +37,10 @@ class menu
     protected $from = 0;
     protected $sorted = false;
 
-    public function __construct(sorting $sorting)
+    public function __construct(sorting $sorting, filter $filter)
     {
         $this->sorting = $sorting;
+        $this->filter = $filter;
     }
 
     public function addItem(menuItem $menuItem)
@@ -143,10 +149,16 @@ class menu
                     break;
                 default:
                     foreach ($this->menuControlItems as $controlItem) {
-                        if ($controlItem->getKeyboardEventNumber() == $input) {
+                        if ($controlItem->getKeyboardEventNumber() === $input) {
                             $controlItem->execute($this);
+                            break 2;
                         }
                     }
+
+                    if ($this->filter !== null) {
+                        $this->filter->handleUserInput($this, $input);
+                    }
+
                     break;
             }
 

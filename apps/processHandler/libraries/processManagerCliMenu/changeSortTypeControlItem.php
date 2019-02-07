@@ -5,6 +5,7 @@ namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\sorting;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
@@ -14,7 +15,7 @@ class changeSortTypeControlItem
 {
     public function execute(menu $menu)
     {
-        $sortMenu = new menu(new sorting());
+        $sortMenu = menuFactory::getMenu();
         $fields = array_keys($menu->getMenuItems()[0]->getValue());
         $this->updateHeader($sortMenu, $menu);
 

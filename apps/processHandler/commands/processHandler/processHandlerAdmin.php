@@ -3,6 +3,7 @@
 namespace mpcmf\apps\processHandler\commands\processHandler;
 
 use Codedungeon\PHPCliColors\Color;
+use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
@@ -45,7 +46,7 @@ class processHandlerAdmin
 
         $serversList = $apiClient->call('server', 'getList')['data'];
         //server list menul
-        $menuMain = new menu(new sorting());
+        $menuMain = menuFactory::getMenu();
         foreach ($serversList as $server) {
             $menuMain->addItem(new menuItem($server['_id'], $server, $server['host']));
         }
@@ -78,7 +79,7 @@ class processHandlerAdmin
             }
 
             $serverListMenu->close();
-            $menu = new menu(new sorting());
+            $menu = menuFactory::getMenu();
             $menu->setOnRefresh(function () use ($menu, $serversList, $apiClient, $serverIds) {
                 $processList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds, 'limit' => 3000])['data'];
                 $menuItems = $menu->getMenuItems();
