@@ -147,6 +147,18 @@ class menu
                     $this->menuItems[$this->cursor]->toggleSelected();
                     $this->cursorDown();
                     break;
+                case terminal::KEY_PAGE_DOWN :
+                    $this->cursorDown(5);
+                    break;
+                case terminal::KEY_PAGE_UP :
+                    $this->cursorUp(5);
+                    break;
+                case terminal::KEY_HOME :
+                    $this->cursorUp($this->getCursorPosition());
+                    break;
+                case terminal::KEY_END :
+                    $this->cursorDown(count($this->getMenuItems()));
+                    break;
                 default:
                     foreach ($this->menuControlItems as $controlItem) {
                         if ($controlItem->getKeyboardEventNumber() === $input) {

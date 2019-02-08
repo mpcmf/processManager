@@ -7,7 +7,6 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
-use mpcmf\apps\processHandler\libraries\cliMenu\sorting;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 
 class changeSortTypeControlItem

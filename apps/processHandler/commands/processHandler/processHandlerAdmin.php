@@ -7,22 +7,16 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\endControlItem;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\homeControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\itemFilter;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\pageDownControlItem;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\pageUpControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\selectAllControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\changeSortTypeControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processEditControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processManagementControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processNewControllerItem;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\sortControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
-use mpcmf\apps\processHandler\libraries\cliMenu\sorting;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 use mpcmf\apps\processHandler\libraries\processManager\process;
 use mpcmf\system\application\consoleCommandBase;
@@ -52,13 +46,9 @@ class processHandlerAdmin
         }
         $menuMain->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
         $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
-        $menuMain->addControlItem(new sortControlItem(terminal::KEY_F10, 'F10', 'Sorted'));
+        $menuMain->addControlItem(new menuControlItem(terminal::KEY_F10, 'F10', 'Sorted', function (menu $menu) { $menu->sort(); }));
         $menuMain->addControlItem(new processNewControllerItem(terminal::KEY_F12, 'F12', 'New process'));
         $menuMain->addControlItem(new changeSortTypeControlItem(terminal::KEY_STAR, '*', 'Change sort'));
-        $menuMain->addControlItem(new pageDownControlItem());
-        $menuMain->addControlItem(new pageUpControlItem());
-        $menuMain->addControlItem(new homeControlItem());
-        $menuMain->addControlItem(new endControlItem());
 
         //process list menu
         $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $serverListMenu, $menuControlItem) use ($apiClient, $serversList) {
@@ -141,13 +131,9 @@ class processHandlerAdmin
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_F7, 'F7', 'start', 'start', 'running'));
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_F8, 'F8', 'restart', 'restart', 'running'));
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
-            $menu->addControlItem(new sortControlItem(terminal::KEY_F10, 'F10', 'Sorted'));
+            $menu->addControlItem(new menuControlItem(terminal::KEY_F10, 'F10', 'Sorted', function (menu $menu) { $menu->sort(); }));
             $menu->addControlItem(new changeSortTypeControlItem(terminal::KEY_STAR, '*', 'Change sort'));
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'DEL', 'delete', 'delete', 'stopped'));
-            $menu->addControlItem(new pageDownControlItem());
-            $menu->addControlItem(new pageUpControlItem());
-            $menu->addControlItem(new homeControlItem());
-            $menu->addControlItem(new endControlItem());
 
             //process edit menul
             $menu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));
@@ -156,6 +142,6 @@ class processHandlerAdmin
         }));
 
         $menuMain->open();
-
+        $menuMain->cursorDown();
     }
 }
