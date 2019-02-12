@@ -9,14 +9,18 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 class processNewControllerItem
     extends controlItem
 {
-    public function execute(menu $menu)
+    /** @var menu $serverItem */
+    private $serverItem;
+
+    public function __construct($keyboardEventNumber, $buttonName, $title, menuItem $serverItem)
     {
-        $this->actionOnSelectedItem($menu);
+        parent::__construct($keyboardEventNumber, $buttonName, $title);
+        $this->serverItem = $serverItem;
     }
 
-    protected function actionOnSelectedItem (menu $serverListMenu)
+    public function execute(menu $menu)
     {
-        $serverListMenu->close();
+        $menu->close();
         $processItem = new menuItem('', [
             'name' => '',
             'description' => '',
@@ -28,9 +32,9 @@ class processNewControllerItem
             'std_out' => [],
             'std_error' => [],
             'instances' => 1,
-            'server' => $serverListMenu->getCurrentItem()->getValue()['_id']
+            'server' => $this->serverItem->getValue()['_id']
         ], 'new process');
 
-        processEditMenu::createMenu($processItem, $serverListMenu);
+        processEditMenu::createMenu($processItem, $menu);
     }
 }
