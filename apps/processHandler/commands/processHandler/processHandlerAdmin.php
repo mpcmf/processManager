@@ -141,6 +141,7 @@ class processHandlerAdmin
             $menu->open();
         }));
 
+        $menuMain->sort();
         $menuMain->open();
     }
 }
