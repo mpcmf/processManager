@@ -6,7 +6,6 @@ use Codedungeon\PHPCliColors\Color;
 
 class menu
 {
-
     protected $opened = false;
     /**
      * @var menuItem[]
@@ -19,6 +18,16 @@ class menu
     protected $menuItemsOrigin;
 
     /**
+     * @var sorting
+     */
+    protected $sorting;
+
+    /**
+     * @var filter
+     */
+    protected $filter;
+
+    /**
      * @var controlItem[]
      */
     protected $menuControlItems = [];
@@ -27,6 +36,12 @@ class menu
     protected $onRefresh;
     protected $from = 0;
     protected $sorted = false;
+
+    public function __construct(sorting $sorting, filter $filter)
+    {
+        $this->sorting = $sorting;
+        $this->filter = $filter;
+    }
 
     public function addItem(menuItem $menuItem)
     {
@@ -132,12 +147,30 @@ class menu
                     $this->menuItems[$this->cursor]->toggleSelected();
                     $this->cursorDown();
                     break;
+                case terminal::KEY_PAGE_DOWN :
+                    $this->cursorDown(5);
+                    break;
+                case terminal::KEY_PAGE_UP :
+                    $this->cursorUp(5);
+                    break;
+                case terminal::KEY_HOME :
+                    $this->cursorUp($this->getCursorPosition());
+                    break;
+                case terminal::KEY_END :
+                    $this->cursorDown(count($this->getMenuItems()));
+                    break;
                 default:
                     foreach ($this->menuControlItems as $controlItem) {
-                        if ($controlItem->getKeyboardEventNumber() == $input) {
+                        if ($controlItem->getKeyboardEventNumber() === $input) {
                             $controlItem->execute($this);
+                            break 2;
                         }
                     }
+
+                    if ($this->filter !== null) {
+                        $this->filter->handleUserInput($this, $input);
+                    }
+
                     break;
             }
 
@@ -247,15 +280,28 @@ class menu
         return $this->sorted;
     }
 
-    public function sortToggle() {
-        $this->sorted = !$this->sorted;
-    }
-
     /**
      * @return int
      */
-    public function getCursor()
+    public function getCursorPosition()
     {
         return $this->cursor;
+    }
+
+    public function sort()
+    {
+        $this->sorting->sort($this);
+        $this->sorted = !$this->sorted;
+        $this->setHeaderInfo($this->sorted ? 'Sorted from lower to higher' : 'Sorted from higher to lower' );
+    }
+
+    public function setSortBy($sortBy)
+    {
+        $this->sorting->setSortBy($sortBy);
+    }
+
+    public function getSortBy()
+    {
+        return $this->sorting->getSortBy() ?: 'title';
     }
 }

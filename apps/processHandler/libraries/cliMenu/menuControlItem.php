@@ -17,9 +17,7 @@ class menuControlItem
      */
     public function __construct($keyboardEventNumber, $buttonName, $title, callable $actionOnSelectedItem)
     {
-        $this->keyboardEventNumber = $keyboardEventNumber;
-        $this->buttonName = $buttonName;
-        $this->title = $title;
+        parent::__construct($keyboardEventNumber, $buttonName, $title);
         $this->actionOnSelectedItem = $actionOnSelectedItem;
     }
 

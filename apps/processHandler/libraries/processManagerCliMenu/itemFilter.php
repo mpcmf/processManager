@@ -1,8 +1,11 @@
 <?php
 
-namespace mpcmf\apps\processHandler\libraries\cliMenu;
+namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
 use Codedungeon\PHPCliColors\Color;
+use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
+use mpcmf\apps\processHandler\libraries\cliMenu\menu;
+use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 
 class itemFilter
     extends controlItem
@@ -19,9 +22,7 @@ class itemFilter
      */
     public function __construct($keyboardEventNumber, $buttonName, $title, $filterBy = null)
     {
-        $this->keyboardEventNumber = $keyboardEventNumber;
-        $this->buttonName = $buttonName;
-        $this->title = $title;
+        parent::__construct($keyboardEventNumber, $buttonName, $title);
         $this->filterBy = $filterBy;
     }
 
