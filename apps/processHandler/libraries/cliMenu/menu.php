@@ -295,13 +295,13 @@ class menu
         $this->setHeaderInfo($this->sorted ? 'Sorted from lower to higher' : 'Sorted from higher to lower' );
     }
 
-    public function setSortType($sortType)
+    public function setSortBy($sortBy)
     {
-        $this->sorting->setSortType($sortType);
+        $this->sorting->setSortBy($sortBy);
     }
 
-    public function getSortType()
+    public function getSortBy()
     {
-        return $this->sorting->getSortType() ?: 'by title';
+        return $this->sorting->getSortBy() ?: 'title';
     }
 }

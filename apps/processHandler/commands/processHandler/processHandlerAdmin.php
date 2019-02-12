@@ -9,7 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\itemFilter;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\selectAllControlItem;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\changeSortTypeControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\changeSortControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processEditControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processManagementControlItem;
 use mpcmf\apps\processHandler\libraries\processManagerCliMenu\processNewControllerItem;
@@ -47,7 +47,7 @@ class processHandlerAdmin
         $menuMain->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
         $menuMain->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
         $menuMain->addControlItem(new menuControlItem(terminal::KEY_F10, 'F10', 'Sorted', function (menu $menu) { $menu->sort(); }));
-        $menuMain->addControlItem(new changeSortTypeControlItem(terminal::KEY_STAR, '*', 'Change sort'));
+        $menuMain->addControlItem(new changeSortControlItem(terminal::KEY_STAR, '*', 'Change sort'));
 
         //process list menu
         $menuMain->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $serverListMenu, $menuControlItem) use ($apiClient, $serversList) {
@@ -131,7 +131,7 @@ class processHandlerAdmin
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_F8, 'F8', 'restart', 'restart', 'running'));
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
             $menu->addControlItem(new menuControlItem(terminal::KEY_F10, 'F10', 'Sorted', function (menu $menu) { $menu->sort(); }));
-            $menu->addControlItem(new changeSortTypeControlItem(terminal::KEY_STAR, '*', 'Change sort'));
+            $menu->addControlItem(new changeSortControlItem(terminal::KEY_STAR, '*', 'Change sort'));
             $menu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'DEL', 'delete', 'delete', 'stopped'));
             $menu->addControlItem(new processNewControllerItem(terminal::KEY_INSERT, 'Insert', 'New process', $serverListMenu->getCurrentItem()));
 

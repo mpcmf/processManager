@@ -4,7 +4,7 @@ namespace mpcmf\apps\processHandler\libraries\cliMenu;
 
 class sorting
 {
-    private $sortType;
+    private $sortBy;
 
     public function sort(menu $menu) {
         $menuItems = $menu->getMenuItems();
@@ -13,9 +13,9 @@ class sorting
             $value1 = $item1->getTitle();
             $value2 = $item2->getTitle();
 
-            if ($this->sortType !== null) {
-                $value1 = $item1->getValue()[$this->sortType];
-                $value2 = $item2->getValue()[$this->sortType];
+            if ($this->sortBy !== null) {
+                $value1 = $item1->getValue()[$this->sortBy];
+                $value2 = $item2->getValue()[$this->sortBy];
             }
 
             if (is_array($value1) || is_array($value2)) {
@@ -33,13 +33,13 @@ class sorting
         $menu->setMenuItems($menuItems);
     }
 
-    public function setSortType($sortType)
+    public function setSortBy($sortBy)
     {
-        $this->sortType = $sortType;
+        $this->sortBy = $sortBy;
     }
 
-    public function getSortType()
+    public function getSortBy()
     {
-        return $this->sortType;
+        return $this->sortBy;
     }
 }

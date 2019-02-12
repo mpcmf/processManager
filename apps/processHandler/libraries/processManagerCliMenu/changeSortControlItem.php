@@ -9,7 +9,7 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 
-class changeSortTypeControlItem
+class changeSortControlItem
     extends controlItem
 {
     public function execute(menu $menu)
@@ -28,13 +28,13 @@ class changeSortTypeControlItem
         }));
 
         $sortMenu->addControlItem(new menuControlItem(terminal::KEY_F2, 'F2','Set default sort', function(menu $sortMenu) use ($menu) {
-            $menu->setSortType(null);
+            $menu->setSortBy(null);
             $this->updateHeader($sortMenu, $menu);
         }));
 
         $sortMenu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Select', function (menu $sortMenu) use ($menu) {
-            $sortType = $sortMenu->getCurrentItem()->getValue();
-            $menu->setSortType($sortType);
+            $sortBy = $sortMenu->getCurrentItem()->getValue();
+            $menu->setSortBy($sortBy);
             $this->updateHeader($sortMenu, $menu);
         }));
 
@@ -42,6 +42,6 @@ class changeSortTypeControlItem
     }
 
     private function updateHeader(menu $sortMenu, menu $menu) {
-        $sortMenu->setHeaderInfo("Current sort type: {$menu->getSortType()}");
+        $sortMenu->setHeaderInfo("Sort by: {$menu->getSortBy()}");
     }
 }
