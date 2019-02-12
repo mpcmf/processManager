@@ -42,12 +42,8 @@ class processHandlerAdmin
         $apiClient = apiClient::factory();
 
         $serversList = $apiClient->call('server', 'getList')['data'];
-        usort($serversList, function ($server1, $server2) {
-            return strcasecmp($server1['host'], $server2['host']);
-        });
         //server list menul
         $menuMain = new menu();
-        $menuMain->sortToggle();
         foreach ($serversList as $server) {
             $menuMain->addItem(new menuItem($server['_id'], $server,$server['host']));
         }
