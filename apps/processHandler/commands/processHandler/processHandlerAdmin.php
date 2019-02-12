@@ -142,6 +142,5 @@ class processHandlerAdmin
         }));
 
         $menuMain->open();
-        $menuMain->cursorDown();
     }
 }

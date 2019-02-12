@@ -17,14 +17,14 @@ class filter
 
     public function handleUserInput(menu $menu, $input)
     {
-        if ($input === 127) {
+        if ($input === terminal::KEY_BACKSPACE) {
             $this->removeSearchQueryLastChar();
             $this->update($menu);
 
             return;
         }
 
-        if (!ctype_graph($input)) {
+        if (($input < -128 || $input > 255) || !ctype_graph($input)) { // only latin chars and punctuation
             return;
         }
 
@@ -34,8 +34,7 @@ class filter
             $input = "0{$input}";
         }
 
-        $input = hex2bin($input);
-        $this->addToSearchQuery($input);
+        $this->addToSearchQuery(hex2bin($input));
         $this->update($menu);
     }
 
