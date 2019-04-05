@@ -27,12 +27,14 @@ abstract class objectBase
     public function getList($params)
     {
         $offset = helper::getParam('offset', $params, helper::TYPE_INT, null);
-        $limit = helper::getParam('limit', $params, helper::TYPE_INT, 100);
+        $limit = helper::getParam('limit', $params, helper::TYPE_INT, null);
         $fields = helper::getParam('fields', $params, helper::TYPE_ARRAY, []);
         $sort = helper::getParam('sort', $params, helper::TYPE_ARRAY, []);
 
         $modelCursor = $this->mapper->getAllBy([], $fields, $sort);
-        $modelCursor->limit($limit);
+        if (is_int($limit) && $limit > 0) {
+            $modelCursor->limit($limit);
+        }
         if (is_int($offset) && $offset > 0) {
             $modelCursor->skip($offset);
         }
@@ -99,10 +101,12 @@ abstract class objectBase
         return $this->getByCriteria(['_id' => ['$in' => $mongoIds]]);
     }
 
-    protected function getByCriteria(array $criteria, $offset = null, $limit = 100, array $fields = [], array $sort = [])
+    protected function getByCriteria(array $criteria, $offset = null, $limit = null, array $fields = [], array $sort = [])
     {
         $modelCursor = $this->mapper->getAllBy($criteria, $fields, $sort);
-        $modelCursor->limit($limit);
+        if (is_int($limit) && $limit > 0) {
+            $modelCursor->limit($limit);
+        }
         if (is_int($offset) && $offset > 0) {
             $modelCursor->skip($offset);
         }
