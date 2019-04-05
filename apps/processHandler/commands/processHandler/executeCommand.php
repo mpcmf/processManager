@@ -68,7 +68,7 @@ class executeCommand
         $serverIds = [];
         $serversList = [];
         if ($allHosts) {
-            $result = $apiClient->call('server', 'getList', ['limit' => 200]);
+            $result = $apiClient->call('server', 'getList');
             $serversList = $result['data'];
             foreach ($serversList as $server) {
                 $serverIds[] = $server['_id'];
@@ -99,7 +99,7 @@ class executeCommand
         }
 
 
-        $processesList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds, 'limit' => 3000]);
+        $processesList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds]);
 
         if (empty($processesList['data'])) {
             echo "[{$this->getColoredText('FAIL')}] Not found processes on " . json_encode($hosts) . "\n";

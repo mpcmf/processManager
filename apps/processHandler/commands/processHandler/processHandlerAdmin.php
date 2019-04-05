@@ -70,7 +70,7 @@ class processHandlerAdmin
             $serverListMenu->close();
             $menu = menuFactory::getMenu();
             $menu->setOnRefresh(function () use ($menu, $serversList, $apiClient, $serverIds) {
-                $processList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds, 'limit' => 3000])['data'];
+                $processList = $apiClient->call('process', 'getByServerIds', ['server_ids' => $serverIds])['data'];
                 $menuItems = $menu->getMenuItems();
                 $menuItemsByKey = [];
                 foreach ($menuItems as $menuItem) {
