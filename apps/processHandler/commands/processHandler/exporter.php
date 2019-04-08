@@ -14,9 +14,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 class exporter
     extends consoleCommandBase
 {
-    const SERVER_STATUS_OK = 'ok';
-    const SERVER_STATUS_WARNING = 'warning';
-    const SERVER_STATUS_ERROR = 'error';
+    const SERVER_STATUS_OK = 0;
+    const SERVER_STATUS_WARNING = 1;
+    const SERVER_STATUS_ERROR = 2;
 
     protected $config;
 
