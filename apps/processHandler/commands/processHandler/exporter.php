@@ -82,15 +82,17 @@ class exporter
             $allServers[$serverKey]['server_monitoring_status'] = $serverMonitoringStatus;
 
             $processCount = 0;
-            if ($allServers[$serverKey]['server_monitoring_status'] === self::SERVER_STATUS_OK) {
+            $forksCount = 0;
+            if ($allServers[$serverKey]['server_monitoring_status'] === self::SERVER_STATUS_OK || $allServers[$serverKey]['server_monitoring_status'] === self::SERVER_STATUS_WARNING) {
                 foreach ($server['processes'] as $process) {
-                    if ($process[processMapper::FIELD__STATE] === process::STATUS__RUNNING) {
+                    if ($process[processMapper::FIELD__STATE] === process::STATUS__RUNNING && !$process['timed_out']) {
                         $processCount += $process[processMapper::FIELD__INSTANCES];
+                        $forksCount += $process[processMapper::FIELD__FORKS_COUNT];
                     }
                 }
             }
             $allServers[$serverKey]['process_count'] = $processCount;
-            $allServers[$serverKey]['forks_count'] = array_sum(array_column($server['processes'], processMapper::FIELD__FORKS_COUNT));
+            $allServers[$serverKey]['forks_count'] = $forksCount;
         }
         $this->saveStats($allServers);
     }
