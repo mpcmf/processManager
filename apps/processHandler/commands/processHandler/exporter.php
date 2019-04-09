@@ -3,6 +3,7 @@
 namespace mpcmf\apps\processHandler\commands\processHandler;
 
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
+use mpcmf\apps\processHandler\libraries\processManager\process;
 use mpcmf\modules\processHandler\mappers\processMapper;
 use mpcmf\modules\processHandler\mappers\serverMapper;
 use mpcmf\system\application\consoleCommandBase;
@@ -56,13 +57,17 @@ class exporter
             'fields' => [
                 processMapper::FIELD__NAME => 1,
                 processMapper::FIELD__SERVER => 1,
-                processMapper::FIELD__LAST_UPDATE => 1
+                processMapper::FIELD__LAST_UPDATE => 1,
+                processMapper::FIELD__FORKS_COUNT => 1,
+                processMapper::FIELD__INSTANCES => 1,
+                processMapper::FIELD__STATE => 1,
             ]
         ])['data'];
 
 
         foreach ($allProcesses as $process) {
-            $allServers[$process['server']]['processes'][$process['_id']]['timed_out'] = $currentTime - $process[processMapper::FIELD__LAST_UPDATE] > $this->config['process_time_out'];
+            $process['timed_out'] = $currentTime - $process[processMapper::FIELD__LAST_UPDATE] > $this->config['process_time_out'];
+            $allServers[$process['server']]['processes'][$process['_id']] = $process;
         }
 
         foreach ($allServers as $serverKey => $server) {
@@ -75,8 +80,18 @@ class exporter
                 }
             }
             $allServers[$serverKey]['server_monitoring_status'] = $serverMonitoringStatus;
-        }
 
+            $processCount = 0;
+            if ($allServers[$serverKey]['server_monitoring_status'] === self::SERVER_STATUS_OK) {
+                foreach ($server['processes'] as $process) {
+                    if ($process[processMapper::FIELD__STATE] === process::STATUS__RUNNING) {
+                        $processCount += $process[processMapper::FIELD__INSTANCES];
+                    }
+                }
+            }
+            $allServers[$serverKey]['process_count'] = $processCount;
+            $allServers[$serverKey]['forks_count'] = array_sum(array_column($server['processes'], processMapper::FIELD__FORKS_COUNT));
+        }
         $this->saveStats($allServers);
     }
 
