@@ -38,6 +38,8 @@ use mpcmf\system\pattern\singleton;
  * @method $this getWorkDir() Work dir
  * @method integer getInstances() Instances
  * @method $this setInstances(int $value) Instances
+ * @method integer getForksCount() ForksCount
+ * @method $this setForksCount(int $value) ForksCount
  * @method array getTags() Tags
  * @method $this setTags(array $value) Tags
  * @method array getStdOutPaths() Paths
