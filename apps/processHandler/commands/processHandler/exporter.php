@@ -70,14 +70,8 @@ class exporter
             $allServers[$process['server']]['processes'][$process['_id']] = $process;
             if (!isset($allServers[$process['server']]['process_count'])) {
                 $allServers[$process['server']]['process_count'] = 0;
-            }
-            if (!isset($allServers[$process['server']]['process_count_running'])) {
                 $allServers[$process['server']]['process_count_running'] = 0;
-            }
-            if (!isset($allServers[$process['server']]['process_count_timed_out'])) {
                 $allServers[$process['server']]['process_count_timed_out'] = 0;
-            }
-            if (!isset($allServers[$process['server']]['forks_count_running'])) {
                 $allServers[$process['server']]['forks_count_running'] = 0;
             }
             $allServers[$process['server']]['process_count']++;
