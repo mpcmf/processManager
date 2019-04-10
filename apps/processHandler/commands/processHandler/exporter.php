@@ -70,11 +70,15 @@ class exporter
             $allServers[$process['server']]['processes'][$process['_id']] = $process;
             if (!isset($allServers[$process['server']]['process_count'])) {
                 $allServers[$process['server']]['process_count'] = 0;
+                $allServers[$process['server']]['process_count_active'] = 0;
                 $allServers[$process['server']]['process_count_running'] = 0;
                 $allServers[$process['server']]['process_count_timed_out'] = 0;
                 $allServers[$process['server']]['forks_count_running'] = 0;
             }
             $allServers[$process['server']]['process_count']++;
+            if ($process[processMapper::FIELD__STATE] !== process::STATUS__STOPPED) {
+                $allServers[$process['server']]['process_count_active'] += $process[processMapper::FIELD__INSTANCES];
+            }
 
             if ($process['timed_out']) {
                 $allServers[$process['server']]['process_count_timed_out']++;
