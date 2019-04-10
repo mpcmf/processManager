@@ -68,31 +68,35 @@ class exporter
         foreach ($allProcesses as $process) {
             $process['timed_out'] = $currentTime - $process[processMapper::FIELD__LAST_UPDATE] > $this->config['process_time_out'];
             $allServers[$process['server']]['processes'][$process['_id']] = $process;
+            if (!isset($allServers[$process['server']]['process_count'])) {
+                $allServers[$process['server']]['process_count'] = 0;
+                $allServers[$process['server']]['process_count_running'] = 0;
+                $allServers[$process['server']]['process_count_timed_out'] = 0;
+                $allServers[$process['server']]['forks_count'] = 0;
+            }
+            if ($process[processMapper::FIELD__STATE] !== process::STATUS__STOPPED) {
+                $allServers[$process['server']]['process_count']++;
+            }
+            if ($process['timed_out']) {
+                $allServers[$process['server']]['process_count_timed_out']++;
+                
+                continue;
+            }
+            if ($process[processMapper::FIELD__STATE] === process::STATUS__RUNNING) {
+                $allServers[$process['server']]['process_count_running'] += $process[processMapper::FIELD__INSTANCES];
+                $allServers[$process['server']]['forks_count'] += $process[processMapper::FIELD__FORKS_COUNT];
+            }
         }
 
         foreach ($allServers as $serverKey => $server) {
-            $timedOut = array_column($server['processes'], 'timed_out');
             $serverMonitoringStatus = self::SERVER_STATUS_OK;
-            if (in_array(true, $timedOut, true)) {
+            if ($server['process_count_timed_out'] === $allServers[$process['server']]['process_count']) {
                 $serverMonitoringStatus = self::SERVER_STATUS_ERROR;
-                if (in_array(false, $timedOut, true)) {
-                    $serverMonitoringStatus = self::SERVER_STATUS_WARNING;
-                }
+            } elseif($server['process_count_timed_out'] !== 0) {
+                $serverMonitoringStatus = self::SERVER_STATUS_WARNING;
             }
             $allServers[$serverKey]['server_monitoring_status'] = $serverMonitoringStatus;
 
-            $processCount = 0;
-            $forksCount = 0;
-            if ($allServers[$serverKey]['server_monitoring_status'] === self::SERVER_STATUS_OK || $allServers[$serverKey]['server_monitoring_status'] === self::SERVER_STATUS_WARNING) {
-                foreach ($server['processes'] as $process) {
-                    if ($process[processMapper::FIELD__STATE] === process::STATUS__RUNNING && !$process['timed_out']) {
-                        $processCount += $process[processMapper::FIELD__INSTANCES];
-                        $forksCount += $process[processMapper::FIELD__FORKS_COUNT];
-                    }
-                }
-            }
-            $allServers[$serverKey]['process_count'] = $processCount;
-            $allServers[$serverKey]['forks_count'] = $forksCount;
         }
         $this->saveStats($allServers);
     }
