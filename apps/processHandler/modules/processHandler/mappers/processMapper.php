@@ -39,6 +39,7 @@ class processMapper
     const FIELD__TAGS = 'tags';
     const FIELD__STD_OUT = 'std_out';
     const FIELD__STD_ERROR = 'std_error';
+    const FIELD__FORKS_COUNT = 'forks_count';
 
     const MODE__ONE_RUN = 'one_run';
     const MODE__REPEATABLE = 'repeatable';
@@ -338,6 +339,29 @@ class processMapper
                 'relations' => [],
                 'options' => [
                     'required' => true,
+                    'unique' => false,
+                ],
+            ],
+            self::FIELD__FORKS_COUNT => [
+                'getter' => 'getForksCount',
+                'setter' => 'setForksCount',
+                'role' => [
+                ],
+                'name' => 'ForksCount',
+                'description' => 'ForksCount',
+                'type' => 'int',
+                'formType' => 'text',
+                'validator' => [
+                    [
+                        'type' => 'type.check',
+                        'data' => [
+                            'type' => 'int'
+                        ]
+                    ]
+                ],
+                'relations' => [],
+                'options' => [
+                    'required' => false,
                     'unique' => false,
                 ],
             ],

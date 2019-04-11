@@ -291,4 +291,12 @@ class process
 
         return $pids;
     }
+
+    public function getForksCount()
+    {
+        if (!$this->gid) {
+            return 0;
+        }
+        return (int) trim(shell_exec("pgrep -cg {$this->gid}"));
+    }
 }

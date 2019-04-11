@@ -31,7 +31,7 @@ class process
     {
         $state = helper::getParam('state', $params, helper::TYPE_STRING);
         $offset = helper::getParam('offset', $params, helper::TYPE_INT, null);
-        $limit = helper::getParam('limit', $params, helper::TYPE_INT, 100);
+        $limit = helper::getParam('limit', $params, helper::TYPE_INT, null);
         $fields = helper::getParam('fields', $params, helper::TYPE_ARRAY, []);
         $sort = helper::getParam('sort', $params, helper::TYPE_ARRAY, []);
 
@@ -42,7 +42,7 @@ class process
     {
         $tags = helper::getParam('tags', $params, helper::TYPE_ARRAY);
         $offset = helper::getParam('offset', $params, helper::TYPE_INT, null);
-        $limit = helper::getParam('limit', $params, helper::TYPE_INT, 100);
+        $limit = helper::getParam('limit', $params, helper::TYPE_INT, null);
         $fields = helper::getParam('fields', $params, helper::TYPE_ARRAY, []);
         $sort = helper::getParam('sort', $params, helper::TYPE_ARRAY, []);
 
@@ -107,7 +107,7 @@ class process
     {
         $serverId = helper::getParam('server_id', $params, helper::TYPE_STRING);
         $offset = helper::getParam('offset', $params, helper::TYPE_INT, null);
-        $limit = helper::getParam('limit', $params, helper::TYPE_INT, 100);
+        $limit = helper::getParam('limit', $params, helper::TYPE_INT, null);
         $fields = helper::getParam('fields', $params, helper::TYPE_ARRAY, []);
         $sort = helper::getParam('sort', $params, helper::TYPE_ARRAY, []);
 
@@ -118,7 +118,7 @@ class process
     {
         $serverIds = helper::getParam('server_ids', $params, helper::TYPE_ARRAY);
         $offset = helper::getParam('offset', $params, helper::TYPE_INT, null);
-        $limit = helper::getParam('limit', $params, helper::TYPE_INT, 100);
+        $limit = helper::getParam('limit', $params, helper::TYPE_INT, null);
         $fields = helper::getParam('fields', $params, helper::TYPE_ARRAY, []);
         $sort = helper::getParam('sort', $params, helper::TYPE_ARRAY, []);
 

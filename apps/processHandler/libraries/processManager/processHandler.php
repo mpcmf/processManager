@@ -230,6 +230,12 @@ class processHandler
                     unset($this->processPool[$id]);
                     continue;
                 }
+                $forksCount = 0;
+                /** @var process $processInstance */
+                foreach ($process['instances'] as $processInstance) {
+                    $forksCount += $processInstance->getForksCount();
+                }
+                $process['config']->setForksCount($forksCount);
                 $this->configStorage->saveConfig($process['config']);
             } catch (\Exception $exception) {
                 error_log("[Exception] on syncing config! {$exception->getMessage()}");
