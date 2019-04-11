@@ -87,7 +87,8 @@ class exporter
             }
             if ($process[processMapper::FIELD__STATE] === process::STATUS__RUNNING) {
                 $allServers[$process['server']]['process_count_running'] += $process[processMapper::FIELD__INSTANCES];
-                $allServers[$process['server']]['forks_count_running'] += $process[processMapper::FIELD__FORKS_COUNT];
+                $forksCountRunning = isset($process[processMapper::FIELD__FORKS_COUNT]) ? $process[processMapper::FIELD__FORKS_COUNT] : 0;
+                $allServers[$process['server']]['forks_count_running'] += $forksCountRunning;
             }
         }
 
