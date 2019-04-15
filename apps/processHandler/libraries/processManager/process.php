@@ -297,6 +297,7 @@ class process
         if (!$this->gid) {
             return 0;
         }
-        return (int) trim(shell_exec("pgrep -cg {$this->gid}"));
+
+        return substr_count(shell_exec("pgrep -g {$this->gid}"), "\n");
     }
 }
