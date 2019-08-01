@@ -8,12 +8,14 @@ class menuItem
     protected $value;
     protected $title;
     protected $selected = false;
+    protected $isVisible = true;
 
-    public function __construct($key, $value, $title)
+    public function __construct($key, $value, $title, $isVisible = true)
     {
         $this->key = $key;
         $this->value = $value;
         $this->title = $title;
+        $this->isVisible = $isVisible;
     }
 
     public function getKey()
@@ -65,5 +67,10 @@ class menuItem
     public function toggleSelected()
     {
         $this->selected = $this->selected ? false : true;
+    }
+
+    public function isVisible()
+    {
+        return $this->isVisible;
     }
 }

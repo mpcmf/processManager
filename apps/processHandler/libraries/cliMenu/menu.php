@@ -17,6 +17,10 @@ class menu
      */
     protected $menuItemsOrigin;
 
+
+    protected $visibleMenuItems = [];
+    protected $invisibleMenuItems = [];
+
     /**
      * @var sorting
      */
@@ -45,12 +49,17 @@ class menu
 
     public function addItem(menuItem $menuItem)
     {
-        $this->menuItems[] = $menuItem;
+        if ($menuItem->isVisible()) {
+            $this->visibleMenuItems[] = $menuItem;
+        } else {
+            $this->invisibleMenuItems[] = $menuItem;
+        }
     }
 
     public function clean()
     {
-        $this->menuItems = [];
+        $this->invisibleMenuItems = [];
+        $this->visibleMenuItems = [];
     }
 
     public function setOnRefresh(callable $onRefresh)
@@ -62,7 +71,7 @@ class menu
     {
         $action = $this->onRefresh;
         if (is_callable($action)) {
-            $action();
+            $action($this);
         }
     }
 
@@ -96,7 +105,7 @@ class menu
         } else {
             echo PHP_EOL;
         }
-        foreach ($this->menuItems as $key => $menuItem) {
+        foreach ($this->visibleMenuItems as $key => $menuItem) {
             $outOfVisibleRange = $i < $this->from || $i >= $to;
             $i++;
             if ($outOfVisibleRange) {
@@ -112,7 +121,7 @@ class menu
             }
             echo $menuItem->getTitle() . PHP_EOL;
         }
-        $menuItemsCount = count($this->menuItems);
+        $menuItemsCount = count($this->visibleMenuItems);
         if ($menuItemsCount > $to) {
             $remainedItems = $menuItemsCount - $to;
             echo Color::bg_green() . "more...{$remainedItems}"  . Color::RESET . PHP_EOL;
@@ -197,7 +206,7 @@ class menu
 
     public function cursorUp($positionsCount = 1)
     {
-        if (!isset($this->menuItems[$this->cursor - $positionsCount])) {
+        if (!isset($this->visibleMenuItems[$this->cursor - $positionsCount])) {
             $this->cursor = 0;
             $this->from = 0;
             return;
@@ -209,13 +218,14 @@ class menu
                 $this->from -= $positionsCount;
             }
         }
+
         $this->cursor -= $positionsCount;
     }
 
     public function cursorDown($positionsCount = 1)
     {
-        if (!isset($this->menuItems[$this->cursor + $positionsCount])) {
-            $itemsCount = count($this->menuItems);
+        if (!isset($this->visibleMenuItems[$this->cursor + $positionsCount])) {
+            $itemsCount = count($this->visibleMenuItems);
             $this->from = $itemsCount < $this->getMaxMenuItemsCount() ? 0 : $itemsCount - $this->getMaxMenuItemsCount();
             $this->cursor = $itemsCount - 1;
             return;
@@ -227,6 +237,15 @@ class menu
         }
     }
 
+    public function setCursorPosition($position)
+    {
+        if (!isset($this->visibleMenuItems[$position])) {
+            return false;
+        }
+
+        $this->cursor = $position;
+    }
+
     /**
      * @return menuItem[]
      */
@@ -235,12 +254,27 @@ class menu
         return $this->menuItemsOrigin;
     }
 
+    public function getMenuItems()
+    {
+        return $this->visibleMenuItems;
+    }
+
+    public function getVisibleMenuItems()
+    {
+        return $this->visibleMenuItems;
+    }
+
+    public function getInvisibleMenuItems()
+    {
+        return $this->invisibleMenuItems;
+    }
+
     /**
      * @return menuItem[]
      */
-    public function getMenuItems()
+    public function getAllMenuItems()
     {
-        return $this->menuItems;
+        return array_merge($this->visibleMenuItems, $this->invisibleMenuItems);
     }
 
     /**
@@ -248,9 +282,13 @@ class menu
      */
     public function setMenuItems(array $menuItems)
     {
+        $this->clean();
+        foreach ($menuItems as $menuItem) {
+            $this->addItem($menuItem);
+        }
+
         $this->from = 0;
         $this->cursor = 0;
-        $this->menuItems = $menuItems;
     }
 
     /**
@@ -258,10 +296,10 @@ class menu
      */
     public function getCurrentItem()
     {
-        if (empty($this->menuItems)) {
+        if (empty($this->visibleMenuItems)) {
             return false;
         }
-        return $this->menuItems[$this->cursor];
+        return $this->visibleMenuItems[$this->cursor];
     }
 
     public function getMaxMenuItemsCount()

@@ -42,6 +42,8 @@ use mpcmf\system\pattern\singleton;
  * @method $this setForksCount(int $value) ForksCount
  * @method array getTags() Tags
  * @method $this setTags(array $value) Tags
+ * @method string getLogging() Params of logging
+ * @method $this setLogging(string $value) Params of logging
  * @method array getStdOutPaths() Paths
  * @method $this setStdOutPaths(array $value) Paths
  * @method array getStdErrorPaths() Paths
