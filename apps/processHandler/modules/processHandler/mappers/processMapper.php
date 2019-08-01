@@ -31,12 +31,12 @@ class processMapper
     const FIELD__DESCRIPTION = 'description';
     const FIELD__STATE = 'state';
     const FIELD__MODE = 'mode';
-    const FIELD__UPDATED_BY = 'updated_by';
     const FIELD__COMMAND = 'command';
     const FIELD__INSTANCES = 'instances';
     const FIELD__WORK_DIR = 'work_dir';
     const FIELD__SERVER = 'server';
     const FIELD__TAGS = 'tags';
+    const FIELD__LOGGING = 'logging';
     const FIELD__STD_OUT = 'std_out';
     const FIELD__STD_ERROR = 'std_error';
     const FIELD__FORKS_COUNT = 'forks_count';
@@ -285,31 +285,15 @@ class processMapper
                     'unique' => false,
                 ],
             ],
-            self::FIELD__STD_OUT => [
-                'getter' => 'getStdOutPaths',
-                'setter' => 'setStdOutPaths',
-                'role' => [],
-                'name' => 'StdOut',
-                'description' => 'Std out log file path',
-                'type' => 'string[]',
-                'formType' => 'multitext',
-                'validator' => [
+            self::FIELD__LOGGING => [
+                'getter' => 'getLogging',
+                'setter' => 'setLogging',
+                'role' => [
                 ],
-                'relations' => [
-                ],
-                'options' => [
-                    'required' => false,
-                    'unique' => false,
-                ],
-            ],
-            self::FIELD__STD_ERROR => [
-                'getter' => 'getStdErrorPaths',
-                'setter' => 'setStdErrorPaths',
-                'role' => [],
-                'name' => 'StdError',
-                'description' => 'Std error log file path',
-                'type' => 'string[]',
-                'formType' => 'multitext',
+                'name' => 'Logging',
+                'description' => 'Params of logging',
+                'type' => 'array',
+                'formType' => 'json',
                 'validator' => [
                 ],
                 'relations' => [
