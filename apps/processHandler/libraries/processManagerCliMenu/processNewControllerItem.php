@@ -5,7 +5,7 @@ namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
-use mpcmf\apps\processHandler\libraries\menuItem\processMenuItem;
+use mpcmf\apps\processHandler\libraries\menuItem\process\processMenuItem;
 
 class processNewControllerItem
     extends controlItem
@@ -21,9 +21,12 @@ class processNewControllerItem
 
     public function execute(menu $menu)
     {
+        $processMenuItem = new processMenuItem([
+            'server' => $this->serverItem->export()
+        ]);
+
+        $menu->setCursorPosition($menu->addItem($processMenuItem));
         $menu->close();
-        $menu->addItem(new processMenuItem('', [], ''));
-        $menu->cursorDown();
 
         processEditMenu::createMenu($menu);
     }

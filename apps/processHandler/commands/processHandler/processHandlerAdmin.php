@@ -2,9 +2,8 @@
 
 namespace mpcmf\apps\processHandler\commands\processHandler;
 
-use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
-use mpcmf\apps\processHandler\libraries\menuItem\processMenuItem;
+use mpcmf\apps\processHandler\libraries\menuItem\process\processMenuItem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
@@ -107,9 +106,8 @@ class processHandlerAdmin
         $processMenuItems = [];
         $processList = apiClient::factory()->call('process', 'getByServerIds', ['server_ids' => array_keys($serversMenuByKeys)])['data'];
         foreach ($processList as $processData) {
-            $key = $processData['_id'];
-            $title = helper::formProcessTitle($processData, $serversMenuByKeys[$processData['server']]->getValue());
-            $processMenuItems[] = new processMenuItem($key, $processData, $title);
+            $processData['server'] = $serversMenuByKeys[$processData['server']]->export();
+            $processMenuItems[] = new processMenuItem($processData);
         }
 
         return $processMenuItems;

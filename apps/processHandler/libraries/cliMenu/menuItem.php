@@ -73,4 +73,9 @@ class menuItem
     {
         return $this->isVisible;
     }
+
+    public function export()
+    {
+        return $this->value;
+    }
 }
