@@ -156,4 +156,22 @@ class process
             'fields_to_update' => [processMapper::FIELD__STATE => processHandler::STATE__REMOVE]
         ]);
     }
+
+    public function add($params)
+    {
+        if (isset($params[processMapper::FIELD__LOGGING])) {
+            $params[processMapper::FIELD__LOGGING] = json_encode($params[processMapper::FIELD__LOGGING]);
+        }
+
+        return parent::add($params);
+    }
+
+    public function update($params)
+    {
+        if (isset($params['fields_to_update'][processMapper::FIELD__LOGGING])) {
+            $params['fields_to_update'][processMapper::FIELD__LOGGING] = json_encode($params['fields_to_update'][processMapper::FIELD__LOGGING]);
+        }
+
+        return parent::update($params);
+    }
 }

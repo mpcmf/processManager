@@ -1,10 +1,13 @@
 <?php
+
 namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
 use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
+use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
+use mpcmf\apps\processHandler\libraries\notifcation\operationResult;
 
 class processManagementControlItem
     extends controlItem
@@ -42,33 +45,30 @@ class processManagementControlItem
             return;
         }
         $ids = [];
+        /** @var menuItem $item */
         foreach ($menuItems as $item) {
             if (!$item->isSelected()) {
                 continue;
             }
-            $ids[] = $item->getValue()['_id'];
+            $value = $item->getValue();
+            $ids[] = $value['_id']->getValue();
         }
+
         if (empty($ids)) {
-            $ids[] = $processListMenu->getCurrentItem()->getValue()['_id'];
+            $ids[] = $processListMenu->getCurrentItem()->getValue()['_id']->getValue();
         }
-        if ($this->keyboardEventNumber === terminal::KEY_DELETE) {
-            do {
-                $processListMenu->reDraw();
-                $deletePrompt = readline('Do you want delete? [yes/no]:');
-                if ($deletePrompt === 'no') {
-                    return;
-                }
-            } while ($deletePrompt !== 'yes');
-        }
+
+        $this->prompt($processListMenu);
+
         $result = $apiClient->call('process', $this->processMethod, ['ids' => $ids]);
 
-        if (!$result['status']) {
-            echo json_encode($result, 448);
-            sleep(5);
+        $success = $result['status'];
 
+        if ($success === false) {
+            $errors = isset($result['data']['errors']) ? $result['data']['errors'] : [];
+            operationResult::notify($success, $errors);
             return;
         }
-
 
         $attempts = 20;
         do {
@@ -76,11 +76,15 @@ class processManagementControlItem
             $processListMenu->setHeaderInfo('Waiting end of action...');
             $processListMenu->refresh();
             $processListMenu->reDraw();
-            if (!$result['status']) {
-                echo json_encode($result, 448);
-                sleep(5);
+
+            $success = $result['status'];
+            if ($success === false) {
+                $errors = isset($result['data']['errors']) ? $result['data']['errors'] : [];
+
+                operationResult::notify($success, $errors);
                 break;
             }
+
             $processes = $result['data'];
             $processedCount = 0;
             foreach ($processes as $process) {
@@ -95,5 +99,27 @@ class processManagementControlItem
         } while ($attempts--);
 
         $processListMenu->resetHeaderInfo();
+    }
+
+    protected function prompt(menu $menu)
+    {
+        switch ($this->keyboardEventNumber) {
+            case terminal::KEY_DELETE:
+                $this->deletePrompt($menu);
+                break;
+            default:
+                break;
+        }
+    }
+
+    protected function deletePrompt(menu $menu)
+    {
+        do {
+            $menu->reDraw();
+            $response = readline('Do you want delete? [yes/no]:');
+            if ($response === 'no') {
+                return;
+            }
+        } while ($response !== 'yes');
     }
 }

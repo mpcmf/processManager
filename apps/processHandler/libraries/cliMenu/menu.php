@@ -7,38 +7,38 @@ use Codedungeon\PHPCliColors\Color;
 class menu
 {
     protected $opened = false;
-    /**
-     * @var menuItem[]
-     */
-    protected $menuItems = [];
 
-    /**
-     * @var menuItem[]
-     */
+    /** @var menuItem[] */
     protected $menuItemsOrigin;
 
-
+    /** @var array menuItem[] */
     protected $visibleMenuItems = [];
+
+    /** @var array menuItem[] */
     protected $invisibleMenuItems = [];
 
-    /**
-     * @var sorting
-     */
+    /** @var sorting */
     protected $sorting;
 
-    /**
-     * @var filter
-     */
+    /* @var filter */
     protected $filter;
 
-    /**
-     * @var controlItem[]
-     */
+    /* @var controlItem[] */
     protected $menuControlItems = [];
+
+    /** @var int */
     protected $cursor = 0;
+
+    /** @var string */
     protected $headerInfo = '';
+
+    /** @var callable */
     protected $onRefresh;
+
+    /** @var int */
     protected $from = 0;
+
+    /** @var bool */
     protected $sorted = false;
 
     public function __construct(sorting $sorting, filter $filter)
@@ -51,9 +51,13 @@ class menu
     {
         if ($menuItem->isVisible()) {
             $this->visibleMenuItems[] = $menuItem;
-        } else {
-            $this->invisibleMenuItems[] = $menuItem;
+
+            return count($this->visibleMenuItems) - 1;
         }
+
+        $this->invisibleMenuItems[] = $menuItem;
+
+        return count($this->invisibleMenuItems) - 1;
     }
 
     public function clean()
@@ -135,7 +139,7 @@ class menu
             $terminal = new terminal();
         }
         if ($this->menuItemsOrigin === null) {
-            $this->menuItemsOrigin = $this->menuItems;
+            $this->menuItemsOrigin = $this->visibleMenuItems;
         }
         if ($this->opened) {
             $this->reDraw();
@@ -153,7 +157,7 @@ class menu
                     $this->cursorUp();
                     break;
                 case terminal::KEY_SPACE :
-                    $this->menuItems[$this->cursor]->toggleSelected();
+                    $this->visibleMenuItems[$this->cursor]->toggleSelected();
                     $this->cursorDown();
                     break;
                 case terminal::KEY_PAGE_DOWN :
@@ -300,6 +304,44 @@ class menu
             return false;
         }
         return $this->visibleMenuItems[$this->cursor];
+    }
+
+    public function getMenuItemByKey($key)
+    {
+        foreach ($this->visibleMenuItems as $menuItem) {
+            if ($menuItem->getKey() === $key) {
+                return $menuItem;
+            }
+        }
+
+        foreach ($this->invisibleMenuItems as $menuItem) {
+            if ($menuItem->getKey() === $key) {
+                return $menuItem;
+            }
+        }
+
+        return false;
+    }
+
+    public function dropMenuItemByKey($key)
+    {
+        foreach ($this->visibleMenuItems as $i => $item) {
+            if ($item->getKey() === $key) {
+                unset($this->visibleMenuItems[$i]);
+
+                return true;
+            }
+        }
+
+        foreach ($this->invisibleMenuItems as $i => $item) {
+            if ($item->getKey() === $key) {
+                unset($this->invisibleMenuItems[$i]);
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getMaxMenuItemsCount()
