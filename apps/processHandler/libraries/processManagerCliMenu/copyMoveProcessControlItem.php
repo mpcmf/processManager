@@ -12,12 +12,33 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 use mpcmf\apps\processHandler\libraries\communication\operationResult;
 use mpcmf\apps\processHandler\libraries\communication\prompt;
+use mpcmf\system\exceptions\mpcmfException;
 
 /**
  * @author Gadel Raymanov <raymanovg@gmail.com>
  */
-class copyProcessControlItem  extends controlItem
+class copyMoveProcessControlItem  extends controlItem
 {
+    const ACTION_COPY = 'copy';
+    const ACTION_MOVE = 'move';
+
+    private $availableActions = [
+        self::ACTION_COPY => true,
+        self::ACTION_MOVE => true,
+    ];
+
+    private $action;
+
+    public function __construct($keyboardEventNumber, $buttonName, $title, $action)
+    {
+        if (!isset($this->availableActions[$action])) {
+            throw new mpcmfException("Unknown action {$action}");
+        }
+
+        $this->action = $action;
+
+        parent::__construct($keyboardEventNumber, $buttonName, $title);
+    }
 
     public function execute(menu $processListMenu)
     {
@@ -41,7 +62,7 @@ class copyProcessControlItem  extends controlItem
             $serverId = $currentItem->getValue();
             $serverHost = $currentItem->getKey();
 
-            $message = "Do you want to copy processes: "
+            $message = "Do you want to {$this->action} processes: "
                 . Color::GREEN . "\n\t- " . implode(", \n\t- ", array_column($processes, 'name')) . Color::RESET
                 . "\n to" . Color::GREEN . "\n\t- {$serverHost}" . Color::RESET . ' ? ';
 
@@ -49,11 +70,12 @@ class copyProcessControlItem  extends controlItem
             $agree = $prompt->getAgreement($message);
 
             if ($agree) {
-                $result = apiClient::factory()->call('process', 'copy', ['ids' => array_column($processes, '_id'), 'server' => $serverId]);
+                $result = apiClient::factory()->call('process', $this->action, ['ids' => array_column($processes, '_id'), 'server' => $serverId]);
+                $errors = [];
                 if ($result['status'] === false) {
                     $errors = isset($result['data']['errors']) ? $result['data']['errors'] : [];
-                    operationResult::notify($result['status'], $errors);
                 }
+                operationResult::notify($result['status'], $errors);
             }
 
             $menu->close();

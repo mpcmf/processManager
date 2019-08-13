@@ -4,7 +4,7 @@ namespace mpcmf\apps\processHandler\commands\processHandler;
 
 use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
 use mpcmf\apps\processHandler\libraries\menuItem\process\processMenuItem;
-use mpcmf\apps\processHandler\libraries\processManagerCliMenu\copyProcessControlItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\copyMoveProcessControlItem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
@@ -78,13 +78,14 @@ class processHandlerAdmin
             $processListMenu->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'name'));
             $processListMenu->addControlItem(new itemFilter(terminal::KEY_F5, 'F5', 'FilterByTag', 'tags'));
             $processListMenu->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
-            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_F7, 'F7', 'start', 'start', 'running'));
-            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_F8, 'F8', 'restart', 'restart', 'running'));
-            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
+            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_F7, 'F7', 'Start', 'start', 'running'));
+            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_F8, 'F8', 'Restart', 'restart', 'running'));
+            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_F9, 'F9', 'Stop', 'stop', 'stopped'));
             $processListMenu->addControlItem(new menuControlItem(terminal::KEY_F10, 'F10', 'Sorted', function (menu $menu) { $menu->sort(); }));
-            $processListMenu->addControlItem(new changeSortControlItem(terminal::KEY_STAR, '*', 'Change sort'));
-            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'Del', 'delete', 'delete', 'stopped'));
-            $processListMenu->addControlItem(new copyProcessControlItem(terminal::KEY_F12, 'F12', 'copy'));
+            $processListMenu->addControlItem(new changeSortControlItem(terminal::KEY_F12, 'F12', 'Change sort'));
+            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'Del', 'Delete', 'delete', 'stopped'));
+            $processListMenu->addControlItem(new copyMoveProcessControlItem(terminal::KEY_STAR, '*', 'Copy', copyMoveProcessControlItem::ACTION_COPY));
+            $processListMenu->addControlItem(new copyMoveProcessControlItem(terminal::KEY_QUESTION, '!', 'Move', copyMoveProcessControlItem::ACTION_MOVE));
             $processListMenu->addControlItem(new processNewControllerItem(terminal::KEY_INSERT, 'Insert', 'New process', $serverListMenu->getCurrentItem()));
             $processListMenu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));
 
