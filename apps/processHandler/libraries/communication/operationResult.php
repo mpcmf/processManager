@@ -1,6 +1,6 @@
 <?php
 
-namespace mpcmf\apps\processHandler\libraries\notifcation;
+namespace mpcmf\apps\processHandler\libraries\communication;
 
 use Codedungeon\PHPCliColors\Color;
 

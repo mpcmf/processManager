@@ -7,6 +7,7 @@ use mpcmf\apps\processHandler\libraries\processManager\process as processStarter
 use mpcmf\apps\processHandler\libraries\processManager\processHandler;
 use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\modules\processHandler\mappers\processMapper;
+use mpcmf\system\exceptions\mpcmfException;
 
 class process
     extends objectBase
@@ -157,11 +158,13 @@ class process
         ]);
     }
 
-    public function add($params)
+    public function add(array $params)
     {
         if (isset($params[processMapper::FIELD__LOGGING])) {
             $params[processMapper::FIELD__LOGGING] = json_encode($params[processMapper::FIELD__LOGGING]);
         }
+
+        $params[processMapper::FIELD__CREATED_AT] = time();
 
         return parent::add($params);
     }
@@ -172,6 +175,32 @@ class process
             $params['fields_to_update'][processMapper::FIELD__LOGGING] = json_encode($params['fields_to_update'][processMapper::FIELD__LOGGING]);
         }
 
+        $params['fields_to_update'][processMapper::FIELD__UPDATE_AT] = time();
+
         return parent::update($params);
+    }
+
+    public function copy($params)
+    {
+        $server = helper::getParam('server', $params, helper::TYPE_STRING);
+
+        $errors = [];
+        foreach ($this->getByIds($params) as $process) {
+            unset($process[processMapper::FIELD___ID]);
+            $process[processMapper::FIELD__SERVER] = $server;
+            $process[processMapper::FIELD__STATE] = processHandler::STATE__STOPPED;
+
+            try {
+                $this->add(['object' => $process]);
+            } catch (\Exception $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        if (!empty($errors)) {
+            throw new mpcmfException(implode("\n", $errors));
+        }
+
+        return true;
     }
 }

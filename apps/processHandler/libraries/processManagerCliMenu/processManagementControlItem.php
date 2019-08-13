@@ -7,7 +7,8 @@ use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
-use mpcmf\apps\processHandler\libraries\notifcation\operationResult;
+use mpcmf\apps\processHandler\libraries\communication\operationResult;
+use mpcmf\apps\processHandler\libraries\communication\prompt;
 
 class processManagementControlItem
     extends controlItem
@@ -58,7 +59,9 @@ class processManagementControlItem
             $ids[] = $processListMenu->getCurrentItem()->getValue()['_id']->getValue();
         }
 
-        $this->prompt($processListMenu);
+        if (!$this->prompt($processListMenu)) {
+            return;
+        }
 
         $result = $apiClient->call('process', $this->processMethod, ['ids' => $ids]);
 
@@ -103,23 +106,15 @@ class processManagementControlItem
 
     protected function prompt(menu $menu)
     {
+        $prompt = new prompt($menu);
         switch ($this->keyboardEventNumber) {
             case terminal::KEY_DELETE:
-                $this->deletePrompt($menu);
+                $message = 'Do you want delete?';
+                return $prompt->getAgreement($message);
                 break;
             default:
+                return true;
                 break;
         }
-    }
-
-    protected function deletePrompt(menu $menu)
-    {
-        do {
-            $menu->reDraw();
-            $response = readline('Do you want delete? [yes/no]:');
-            if ($response === 'no') {
-                return;
-            }
-        } while ($response !== 'yes');
     }
 }

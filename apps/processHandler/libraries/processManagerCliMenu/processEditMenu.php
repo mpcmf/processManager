@@ -10,11 +10,11 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
+use mpcmf\apps\processHandler\libraries\communication\prompt;
 use mpcmf\apps\processHandler\libraries\menuItem\arrayEditableMenuItem;
 use mpcmf\apps\processHandler\libraries\menuItem\objectEditMenuItem;
 use mpcmf\apps\processHandler\libraries\menuItem\selectableEditMenuItem;
-use mpcmf\apps\processHandler\libraries\notifcation\operationResult;
-use mpcmf\modules\processHandler\mappers\processMapper;
+use mpcmf\apps\processHandler\libraries\communication\operationResult;
 
 class processEditMenu
 {
@@ -25,12 +25,8 @@ class processEditMenu
         $processEditMenu->addControlItem(new menuControlItem(terminal::KEY_F6, 'F6', 'Save', function (menu $processEditMenu) use ($processListMenu)  {
             $process = $processListMenu->getCurrentItem()->export();
             if (empty($process['_id'])) {
-                $process[processMapper::FIELD__CREATED_BY] = get_current_user();
-                $process[processMapper::FIELD__CREATED_AT] = time();
                 $result = apiClient::factory()->call('process', 'add', ['object' => $process]);
             } else {
-                $process[processMapper::FIELD__UPDATED_BY] = get_current_user();
-                $process[processMapper::FIELD__UPDATE_AT] = time();
                 $result = apiClient::factory()->call('process', 'update', ['ids' => [$process['_id']], 'fields_to_update' => $process]);
             }
 
@@ -88,11 +84,10 @@ class processEditMenu
                 $menu = self::createArrayEditMenu($currentMenu);
                 $menu->open();
             } else {
-                readline_completion_function(function ($input, $index) use ($item) {
-                    return [$item->getValue()];
-                });
+                $prompt = new prompt($currentMenu);
+                $prompt->completion([$item->getValue()]);
+                $input = $prompt->getResponse("New {$item->getKey()}: ");
 
-                $input = trim(readline("-->"));
                 $item->setValue($input);
                 $item->setTitle(titleHelper::formTitle($itemKey, $input));
             }
@@ -135,6 +130,7 @@ class processEditMenu
 
         $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Done:', function (menu $currentMenu) use ($currentItem) {
             $newValues = [];
+            /** @var menuItem $editedItem */
             foreach ($currentMenu->getMenuItems() as $editedItem) {
                 $newValues[] = $editedItem->getValue();
             }
@@ -163,20 +159,16 @@ class processEditMenu
         }));
 
         $menu->addControlItem(new menuControlItem(terminal::KEY_INSERT, 'Ins', 'add:', function (menu $currentMenu) use ($currentItem) {
-            $currentMenu->reDraw();
-            $input = trim(readline("-->"));
-            if (empty($input)) {
-                echo "Sorry, empty string! \n";
-                sleep(3);
-                return;
+            $prompt = new prompt($currentMenu);
+            $input = $prompt->getResponse("New {$currentItem->getKey()}: ");
+            if (!empty($input)) {
+                $new = new menuItem($input, $input, $input);
+                $items = $currentItem->getValue();
+                $items[] = $new;
+
+                $currentItem->setValue($items);
+                $currentMenu->addItem($new);
             }
-
-            $menuItem = new menuItem('', $input, $input);
-
-            $values = $currentItem->getValue();
-            $values[] = $menuItem;
-            $currentItem->setValue($values);
-            $currentMenu->addItem($menuItem);
         }));
 
         return $menu;
