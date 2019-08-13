@@ -40,7 +40,7 @@ class processHandlerAdmin
         $serverListMenu->addControlItem(new itemFilter(terminal::KEY_F4, 'F4', 'FilterByName', 'host'));
         $serverListMenu->addControlItem(new selectAllControlItem(terminal::KEY_F6, 'F6', 'SelectAll'));
         $serverListMenu->addControlItem(new menuControlItem(terminal::KEY_F10, 'F10', 'Sorted', function (menu $menu) { $menu->sort(); }));
-        $serverListMenu->addControlItem(new changeSortControlItem(terminal::KEY_STAR, '*', 'Change sort'));
+        $serverListMenu->addControlItem(new changeSortControlItem(terminal::KEY_F12, 'F12', 'Change sort'));
 
         $serverListMenu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'ProcessList', function (menu $serverListMenu) {
             $serverMenuItems = $serverListMenu->getMenuItems();
@@ -83,9 +83,9 @@ class processHandlerAdmin
             $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_F9, 'F9', 'Stop', 'stop', 'stopped'));
             $processListMenu->addControlItem(new menuControlItem(terminal::KEY_F10, 'F10', 'Sorted', function (menu $menu) { $menu->sort(); }));
             $processListMenu->addControlItem(new changeSortControlItem(terminal::KEY_F12, 'F12', 'Change sort'));
-            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'Del', 'Delete', 'delete', 'stopped'));
             $processListMenu->addControlItem(new copyMoveProcessControlItem(terminal::KEY_STAR, '*', 'Copy', copyMoveProcessControlItem::ACTION_COPY));
             $processListMenu->addControlItem(new copyMoveProcessControlItem(terminal::KEY_QUESTION, '!', 'Move', copyMoveProcessControlItem::ACTION_MOVE));
+            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'Del', 'Delete', 'delete', 'stopped'));
             $processListMenu->addControlItem(new processNewControllerItem(terminal::KEY_INSERT, 'Insert', 'New process', $serverListMenu->getCurrentItem()));
             $processListMenu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));
 
