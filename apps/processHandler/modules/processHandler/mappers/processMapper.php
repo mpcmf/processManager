@@ -40,9 +40,7 @@ class processMapper
     const FIELD__STD_ERROR = 'std_error';
     const FIELD__FORKS_COUNT = 'forks_count';
     const FIELD__UPDATE_AT = 'updated_at';
-    const FIELD__UPDATED_BY = 'updated_by';
     const FIELD__CREATED_AT = 'created_at';
-    const FIELD__CREATED_BY = 'created_by';
 
     const MODE__ONE_RUN = 'one_run';
     const MODE__REPEATABLE = 'repeatable';
@@ -362,8 +360,8 @@ class processMapper
                 ],
             ],
             self::FIELD__UPDATE_AT => [
-                'getter' => 'getUpdateAt',
-                'setter' => 'setUpdateAt',
+                'getter' => 'getUpdatedAt',
+                'setter' => 'setUpdatedAt',
                 'role' => [
                     self::ROLE__SORTABLE => true
                 ],
@@ -371,21 +369,6 @@ class processMapper
                 'description' => 'Updated at',
                 'type' => 'int',
                 'formType' => 'datetimepicker',
-                'validator' => [],
-                'relations' => [],
-                'options' => [
-                    'required' => false,
-                    'unique' => false,
-                ],
-            ],
-            self::FIELD__UPDATED_BY => [
-                'getter' => 'getUpdateBy',
-                'setter' => 'setUpdateBy',
-                'role' => [],
-                'name' => 'Updated by',
-                'description' => 'Updated by',
-                'type' => 'string',
-                'formType' => 'text',
                 'validator' => [],
                 'relations' => [],
                 'options' => [
@@ -409,22 +392,7 @@ class processMapper
                     'required' => false,
                     'unique' => false,
                 ],
-            ],
-            self::FIELD__CREATED_BY => [
-                'getter' => 'getCreatedBy',
-                'setter' => 'setCreatedBy',
-                'role' => [],
-                'name' => 'Created by',
-                'description' => 'Created by',
-                'type' => 'string',
-                'formType' => 'text',
-                'validator' => [],
-                'relations' => [],
-                'options' => [
-                    'required' => false,
-                    'unique' => false,
-                ],
-            ],
+            ]
         ];
     }
 }

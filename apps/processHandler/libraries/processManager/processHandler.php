@@ -129,7 +129,7 @@ class processHandler
                     break;
                 case self::STATE__STOP:
                     $this->stop($id);
-                    var_dump('Set state to stoppting!');
+                    var_dump('Setting state to stop!');
                     $process['config']->setState(self::STATE__STOPPING);
                     break;
 
@@ -266,8 +266,7 @@ class processHandler
             $process =& $this->processPool[$id];
 
             //set config from db
-            $process['config']->setStdOutPaths($processModel->getStdOutPaths());
-            $process['config']->setStdErrorPaths($processModel->getStdErrorPaths());
+            $process['config']->setLogging($processModel->getLogging());
             $process['config']->setCommand($processModel->getCommand());
             $process['config']->setWorkDir($processModel->getWorkDir());
             $process['config']->setDescription($processModel->getDescription());
@@ -359,7 +358,7 @@ class processHandler
 
     protected function run($id)
     {
-        $this->setLogFiles($id);
+        $this->setLoggingParams($id);
         $process =& $this->processPool[$id];
         /** @var processModel $config */
         $config =& $process['config'];
@@ -391,19 +390,29 @@ class processHandler
         }
     }
 
-    protected function setLogFiles($id)
+    protected function setLoggingParams($id)
     {
-        $process =& $this->processPool[$id];
-        /** @var processModel $config */
-        $config =& $process['config'];
+        $process = $this->processPool[$id];
 
-        $stdErrorPaths = $config->getStdErrorPaths();
-        $stdOutPaths = $config->getStdOutPaths();
+        /** @var processModel $config */
+        $config = $process['config'];
+        $params = $config->getLogging();
 
         /** @var process $instance */
         foreach ($process['instances'] as $instance) {
-            $instance->setStdError($stdErrorPaths);
-            $instance->setStdOut($stdOutPaths);
+            if (!$params['enabled']) {
+                $instance->setStdOut([]);
+                $instance->setStdError([]);
+
+                continue;
+            }
+
+            if (in_array('stdout', $params['handlers'])) {
+                $instance->addStdOut($params['path']);
+            }
+            if (in_array('stderr', $params['handlers'])) {
+                $instance->addStdError($params['path']);
+            }
         }
     }
 

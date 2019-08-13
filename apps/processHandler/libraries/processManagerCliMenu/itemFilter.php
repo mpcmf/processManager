@@ -6,6 +6,7 @@ use Codedungeon\PHPCliColors\Color;
 use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
+use mpcmf\apps\processHandler\libraries\communication\prompt;
 
 class itemFilter
     extends controlItem
@@ -28,8 +29,8 @@ class itemFilter
 
     protected function filter(menu $menu, $controlItem)
     {
-        $menu->reDraw();
-        $input = trim(readline("-->"));
+        $prompt = new prompt($menu);
+        $input = $prompt->getResponse("{$this->filterBy}: ");
 
         $items = $menu->getMenuItemsOrigin();
         $matched = false;
@@ -77,5 +78,4 @@ class itemFilter
     {
         $this->filter($menu, $this);
     }
-
 }

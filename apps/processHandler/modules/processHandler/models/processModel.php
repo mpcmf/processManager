@@ -22,8 +22,8 @@ use mpcmf\system\pattern\singleton;
  * @method $this setMongoId(string $value) Mongo ID
  * @method string getDescription() Description
  * @method $this setDescription(string $value) Description
- * @method int getLastUpdate() Last update
- * @method $this setLastUpdate(int $value) Last update
+ * @method int getUpdatedAt() Updated at
+ * @method $this setUpdatedAt(int $value) Updated at
  * @method string getName() Name
  * @method $this setName(string $value) Name
  * @method string getState() State
@@ -42,12 +42,8 @@ use mpcmf\system\pattern\singleton;
  * @method $this setForksCount(int $value) ForksCount
  * @method array getTags() Tags
  * @method $this setTags(array $value) Tags
- * @method string getLogging() Params of logging
- * @method $this setLogging(string $value) Params of logging
- * @method array getStdOutPaths() Paths
- * @method $this setStdOutPaths(array $value) Paths
- * @method array getStdErrorPaths() Paths
- * @method $this setStdErrorPaths(array $value) Paths
+ * @method array getLogging() Params of logging
+ * @method $this setLogging(array $value) Params of logging
  * @method $this setHost(string $value) Server's address where will be started process
  * @method string getHost() Server's address where will be started process
  */

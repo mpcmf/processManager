@@ -48,9 +48,6 @@ class process
         0 => ['pipe', 'r'],
         1 => ['pipe', 'w'],
         2 => ['pipe', 'w']
-//        0 => ['file', 'php://stdin', 'r'],
-//        1 => ['file', 'php://stdout', 'a'],
-//        2 => ['file', 'php://stderr', 'a']
     ];
 
     protected $pipes = [];
@@ -67,9 +64,6 @@ class process
      */
     protected $stderr;
 
-    protected $stdOut = [];
-    protected $stdError = [];
-    protected $enabledWs = false;
     protected $checkEvery = 2;
 
     protected $stdOutStreamRouter;

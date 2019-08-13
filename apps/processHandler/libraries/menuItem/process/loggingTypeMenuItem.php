@@ -19,7 +19,8 @@ class loggingTypeMenuItem extends menuItem implements selectableEditMenuItem
     public function getToSelectItems()
     {
         return [
-            'file' => 'file'
+            'file' => 'file',
+            //'http' => 'http'
         ];
     }
 }

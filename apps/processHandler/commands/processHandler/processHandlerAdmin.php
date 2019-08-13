@@ -4,6 +4,7 @@ namespace mpcmf\apps\processHandler\commands\processHandler;
 
 use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
 use mpcmf\apps\processHandler\libraries\menuItem\process\processMenuItem;
+use mpcmf\apps\processHandler\libraries\processManagerCliMenu\copyProcessControlItem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
@@ -82,7 +83,8 @@ class processHandlerAdmin
             $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_F9, 'F9', 'stop', 'stop', 'stopped'));
             $processListMenu->addControlItem(new menuControlItem(terminal::KEY_F10, 'F10', 'Sorted', function (menu $menu) { $menu->sort(); }));
             $processListMenu->addControlItem(new changeSortControlItem(terminal::KEY_STAR, '*', 'Change sort'));
-            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'DEL', 'delete', 'delete', 'stopped'));
+            $processListMenu->addControlItem(new processManagementControlItem(terminal::KEY_DELETE, 'Del', 'delete', 'delete', 'stopped'));
+            $processListMenu->addControlItem(new copyProcessControlItem(terminal::KEY_F12, 'F12', 'copy'));
             $processListMenu->addControlItem(new processNewControllerItem(terminal::KEY_INSERT, 'Insert', 'New process', $serverListMenu->getCurrentItem()));
             $processListMenu->addControlItem(new processEditControlItem(terminal::KEY_ENTER, 'Enter', 'Edit'));
 
