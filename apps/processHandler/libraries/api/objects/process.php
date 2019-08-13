@@ -136,10 +136,10 @@ class process
         }
 
         //if process manager stopped remove processes from db
-        $processes = $this->getByCriteria(['_id' => ['$in' => $mongoIds]]);
+        $processes = $this->getByCriteria([processMapper::FIELD___ID => ['$in' => $mongoIds]]);
         $idsToRemove = [];
         foreach ($processes as $process) {
-            if (!is_int($process['last_update']) || time() - 20 > $process['last_update']) {
+            if (!is_int($process[processMapper::FIELD__UPDATE_AT]) || time() - 20 > $process[processMapper::FIELD__UPDATE_AT]) {
                 $idsToRemove[] = $process['_id'];
             }
         }
@@ -192,6 +192,31 @@ class process
 
             try {
                 $this->add(['object' => $process]);
+            } catch (\Exception $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        if (!empty($errors)) {
+            throw new mpcmfException(implode("\n", $errors));
+        }
+
+        return true;
+    }
+
+    public function move($params)
+    {
+        $server = helper::getParam('server', $params, helper::TYPE_STRING);
+
+        $errors = [];
+        foreach ($this->getByIds($params) as $process) {
+            $processId = $process[processMapper::FIELD___ID];
+            unset($process[processMapper::FIELD___ID]);
+            $process[processMapper::FIELD__SERVER] = $server;
+
+            try {
+                $this->add(['object' => $process]);
+                $this->delete(['ids' => [$processId]]);
             } catch (\Exception $e) {
                 $errors[] = $e->getMessage();
             }
