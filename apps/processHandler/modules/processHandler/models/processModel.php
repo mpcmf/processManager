@@ -30,15 +30,17 @@ use mpcmf\system\pattern\singleton;
  * @method $this setState($value) State
  * @method string getMode() Mode
  * @method $this setMode(string $value) Mode
+ * @method int getPeriod() Period time
+ * @method $this setPeriod(int $value) Period time
  * @method string getServer() Mode
  * @method $this setServer(string $value) Mode
  * @method string getCommand() Command
  * @method $this setCommand(string $value) Command
  * @method string setWorkDir(string $value) Work dir
  * @method $this getWorkDir() Work dir
- * @method integer getInstances() Instances
+ * @method int getInstances() Instances
  * @method $this setInstances(int $value) Instances
- * @method integer getForksCount() ForksCount
+ * @method int getForksCount() ForksCount
  * @method $this setForksCount(int $value) ForksCount
  * @method array getTags() Tags
  * @method $this setTags(array $value) Tags

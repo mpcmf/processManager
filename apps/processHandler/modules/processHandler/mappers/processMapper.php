@@ -30,6 +30,7 @@ class processMapper
     const FIELD__DESCRIPTION = 'description';
     const FIELD__STATE = 'state';
     const FIELD__MODE = 'mode';
+    const FIELD__PERIOD = 'period';
     const FIELD__COMMAND = 'command';
     const FIELD__INSTANCES = 'instances';
     const FIELD__WORK_DIR = 'work_dir';
@@ -188,6 +189,28 @@ class processMapper
                                 . self::MODE__PERIODIC . '|'
                                 . self::MODE__TIMER . '|'
                                 . self::MODE__CRON .')$/'
+                        ]
+                    ]
+                ],
+                'relations' => [],
+                'options' => [
+                    'required' => true,
+                    'unique' => false,
+                ],
+            ],
+            self::FIELD__PERIOD => [
+                'getter' => 'getPeriod',
+                'setter' => 'setPeriod',
+                'role' => [],
+                'name' => 'Period',
+                'description' => 'Period for periodic start',
+                'type' => 'int',
+                'formType' => 'text',
+                'validator' => [
+                    [
+                        'type' => 'type.check',
+                        'data' => [
+                            'type' => 'int'
                         ]
                     ]
                 ],
