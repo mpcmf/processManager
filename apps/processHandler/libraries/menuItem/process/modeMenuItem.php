@@ -20,7 +20,8 @@ class modeMenuItem extends menuItem implements selectableEditMenuItem
     {
         return [
             'one_run' => 'one_run',
-            'repeatable' => 'repeatable'
+            'repeatable' => 'repeatable',
+            'periodic' => 'periodic'
         ];
     }
 }

@@ -17,6 +17,7 @@ class processMenuItem extends menuItem implements objectEditMenuItem
         'description' => '',
         'state' => 'stopped',
         'mode' => 'repeatable',
+        'period' => 0,
         'command' => '',
         'work_dir' => '',
         'tags' => [],
@@ -91,7 +92,12 @@ class processMenuItem extends menuItem implements objectEditMenuItem
         $exported = [];
         /** @var menuItem $menuItem */
         foreach ($this->value as $menuItem) {
-            $exported[$menuItem->getKey()] = $menuItem->export();
+            $key = $menuItem->getKey();
+            $value = $menuItem->export();
+            if ($key === 'period' || $key === 'instances') {
+                $value = (int) $value;
+            }
+            $exported[$key] = $value;
         }
 
         return $exported;

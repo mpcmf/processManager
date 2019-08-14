@@ -44,6 +44,10 @@ class process
 
     protected $loop;
 
+    protected $startedAt;
+
+    protected $stoppedAt;
+
     protected $descriptors = [
         0 => ['pipe', 'r'],
         1 => ['pipe', 'w'],
@@ -138,6 +142,7 @@ class process
         if ($processStatus['running']) {
             error_log("Process running with pid [{$processStatus['pid']}]!");
             $this->status = self::STATUS__RUNNING;
+            $this->startedAt = time();
             $this->pid = $processStatus['pid'];
             posix_setpgid($processStatus['pid'], $processStatus['pid']);
             $this->gid = $processStatus['pid'];
@@ -234,6 +239,7 @@ class process
             }
             if ($stopped) {
                 $this->status = self::STATUS__STOPPED;
+                $this->stoppedAt = time();
                 $this->pid = -1;
                 $this->loop->cancelTimer($timer);
             }
@@ -293,5 +299,15 @@ class process
         }
 
         return substr_count(shell_exec("pgrep -g {$this->gid}"), "\n");
+    }
+
+    public function getStartedAt()
+    {
+        return $this->startedAt;
+    }
+
+    public function getStoppedAt()
+    {
+        return $this->stoppedAt;
     }
 }
