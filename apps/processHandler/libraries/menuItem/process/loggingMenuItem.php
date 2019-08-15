@@ -13,7 +13,6 @@ class loggingMenuItem extends menuItem implements objectEditMenuItem
 {
     protected $default = [
         'enabled' => false,
-        'type' => 'file',
         'path' => '',
         'handlers' => [
             'stdout',
@@ -25,7 +24,6 @@ class loggingMenuItem extends menuItem implements objectEditMenuItem
 
     protected $customMenuItems = [
         'enabled' => loggingEnableMenuItem::class,
-        'type' => loggingTypeMenuItem::class,
         'handlers' => loggingHandlersMenuItem::class
     ];
 
