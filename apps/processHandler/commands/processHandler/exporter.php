@@ -57,7 +57,7 @@ class exporter
             'fields' => [
                 processMapper::FIELD__NAME => 1,
                 processMapper::FIELD__SERVER => 1,
-                processMapper::FIELD__LAST_UPDATE => 1,
+                processMapper::FIELD__UPDATE_AT => 1,
                 processMapper::FIELD__FORKS_COUNT => 1,
                 processMapper::FIELD__INSTANCES => 1,
                 processMapper::FIELD__STATE => 1,
@@ -75,7 +75,7 @@ class exporter
         unset($server);
 
         foreach ($allProcesses as $process) {
-            $process['timed_out'] = $currentTime - $process[processMapper::FIELD__LAST_UPDATE] > $this->config['process_time_out'];
+            $process['timed_out'] = $currentTime - $process[processMapper::FIELD__UPDATE_AT] > $this->config['process_time_out'];
             $allServers[$process['server']]['processes'][$process['_id']] = $process;
             $allServers[$process['server']]['process_count']++;
             if ($process[processMapper::FIELD__STATE] !== process::STATUS__STOPPED) {
