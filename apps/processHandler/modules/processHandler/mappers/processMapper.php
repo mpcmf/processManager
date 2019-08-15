@@ -40,7 +40,7 @@ class processMapper
     const FIELD__STD_OUT = 'std_out';
     const FIELD__STD_ERROR = 'std_error';
     const FIELD__FORKS_COUNT = 'forks_count';
-    const FIELD__UPDATE_AT = 'updated_at';
+    const FIELD__UPDATED_AT = 'updated_at';
     const FIELD__CREATED_AT = 'created_at';
 
     const MODE__ONE_RUN = 'one_run';
@@ -382,7 +382,7 @@ class processMapper
                     'unique' => false,
                 ],
             ],
-            self::FIELD__UPDATE_AT => [
+            self::FIELD__UPDATED_AT => [
                 'getter' => 'getUpdatedAt',
                 'setter' => 'setUpdatedAt',
                 'role' => [
