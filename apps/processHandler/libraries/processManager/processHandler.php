@@ -3,6 +3,7 @@
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
 use mpcmf\apps\processHandler\libraries\processManager\config\configStorage;
+use mpcmf\apps\processHandler\libraries\stats\stats;
 use mpcmf\modules\processHandler\mappers\processMapper;
 use mpcmf\modules\processHandler\models\processModel;
 use React\EventLoop\LoopInterface;
@@ -383,9 +384,9 @@ class processHandler
 
                     break;
                 }
-                $startTime = $process['last_started'] + $config->getPeriod();
-                if ($startTime > time()) {
-                    error_log('Time was not yet ripe. Start time is ' . date('m-d H:i:s', $startTime));
+                $nextStartTime = $process['last_started'] + $config->getPeriod();
+                if ($nextStartTime > time()) {
+                    error_log('Time was not yet ripe. Start time is ' . date('Y-m-d H:i:s', $nextStartTime));
 
                     break;
                 }
@@ -393,6 +394,8 @@ class processHandler
                 while (count($process['instances']) < $maxInstances && $this->stopAll === false) {
                     $instance = new process($this->loop, $config->getCommand(), $config->getWorkDir());
                     $instance->run();
+
+                    stats::start($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
 
                     $process['instances'][] = $instance;
                     $process['last_started'] = $instance->getStartedAt();
@@ -433,16 +436,19 @@ class processHandler
     protected function stopProcessHandler()
     {
         foreach ($this->processPool as $process) {
+            /** @var processModel $config */
+            $config = $process['config'];
             /** @var process $instance */
             foreach ($process['instances'] as $instance) {
                 $instance->stop();
+                stats::stop($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
             }
         }
         $this->stopAll = true;
 
         $this->loop->addPeriodicTimer(1, function () {
             if (!$this->isAllStopped()) {
-                error_log('Waiting stopping all processes...');
+                error_log('Waiting for stopping all processes...');
                 return;
             }
             exit("All processes stopped! Exit!\n");
@@ -467,9 +473,13 @@ class processHandler
     {
         $process =& $this->processPool[$id];
 
+        /** @var processModel $config */
+        $config = $process['config'];
+
         /** @var process $instance */
         foreach ($process['instances'] as $instance) {
             $instance->stop();
+            stats::stop($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
         }
     }
 
