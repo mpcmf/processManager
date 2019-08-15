@@ -156,7 +156,9 @@ class processHandler
                 case self::STATE__RESTART:
                     if ($currentState === self::STATE__STOPPED) {
                         $process['config']->setState(self::STATE__RUN);
-                        $process['last_started'] = null;
+                        if ($process['config']->getMode() !== processMapper::MODE__PERIODIC) {
+                            $process['last_started'] = null;
+                        }
                         MPCMF_DEBUG && error_log("Process {$id} stopped in restart. Starting again!");
                     } else {
                         $this->stop($id);
@@ -322,7 +324,9 @@ class processHandler
         /** @var processModel $processModel */
         foreach ($changes['run'] as $id => $processModel) {
             $processModel->setState(self::STATE__RUN);
-            $this->processPool[$id]['last_started'] = null;
+            if ($processModel->getMode() !== processMapper::MODE__PERIODIC) {
+                $this->processPool[$id]['last_started'] = null;
+            }
             $this->processPool[$id]['config'] = $processModel;
         }
 
