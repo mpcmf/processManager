@@ -6,6 +6,8 @@ use Codedungeon\PHPCliColors\Color;
 use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\menuItem\objectEditMenuItem;
+use mpcmf\apps\processHandler\libraries\processManager\processHandler;
+use mpcmf\modules\processHandler\mappers\processMapper;
 
 /**
  * @author Gadel Raymanov <raymanovg@gmail.com>
@@ -15,8 +17,8 @@ class processMenuItem extends menuItem implements objectEditMenuItem
     protected $default = [
         'name' => '',
         'description' => '',
-        'state' => 'stopped',
-        'mode' => 'repeatable',
+        'state' => processHandler::STATE__STOPPED,
+        'mode' => processMapper::MODE__REPEATABLE,
         'period' => 0,
         'command' => '',
         'work_dir' => '',
@@ -30,9 +32,7 @@ class processMenuItem extends menuItem implements objectEditMenuItem
         '_id' => true,
         'forks_count' => true,
         'updated_at' => true,
-        'updated_by' => true,
         'created_at' => true,
-        'created_by' => true,
         'std_out' => true,
         'std_error' => true,
     ];
@@ -75,7 +75,7 @@ class processMenuItem extends menuItem implements objectEditMenuItem
         }
 
         $isLogged = isset($process['logging']['enabled']) && $process['logging']['enabled'] === true;
-        $stopped = $process['state'] === 'stop' || $process['state'] === 'stopped';
+        $stopped = $process['state'] === processHandler::STATE__STOP || $process['state'] === processHandler::STATE__STOPPED;
 
         $state = ($stopped ? Color::RED : Color::GREEN) . " {$process['state']}" . Color::RESET;
         $logging = ($isLogged ? Color::GREEN : Color::RED) . 'logging' . Color::RESET;
