@@ -90,20 +90,6 @@ class process
         ]);
     }
 
-    public function setLogFiles($params)
-    {
-        $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
-        $logFiles = helper::getParam('log_files', $params, helper::TYPE_ARRAY);
-
-        return $this->update([
-            'ids' => $ids,
-            'fields_to_update' => [
-                processMapper::FIELD__STD_ERROR => $logFiles,
-                processMapper::FIELD__STD_OUT => $logFiles
-            ]
-        ]);
-    }
-
     public function getByServerId($params)
     {
         $serverId = helper::getParam('server_id', $params, helper::TYPE_STRING);
@@ -139,7 +125,7 @@ class process
         $processes = $this->getByCriteria([processMapper::FIELD___ID => ['$in' => $mongoIds]]);
         $idsToRemove = [];
         foreach ($processes as $process) {
-            if (!is_int($process[processMapper::FIELD__UPDATE_AT]) || time() - 20 > $process[processMapper::FIELD__UPDATE_AT]) {
+            if (!is_int($process[processMapper::FIELD__UPDATED_AT]) || time() - 20 > $process[processMapper::FIELD__UPDATED_AT]) {
                 $idsToRemove[] = $process['_id'];
             }
         }
@@ -175,7 +161,7 @@ class process
             $params['fields_to_update'][processMapper::FIELD__LOGGING] = json_encode($params['fields_to_update'][processMapper::FIELD__LOGGING]);
         }
 
-        $params['fields_to_update'][processMapper::FIELD__UPDATE_AT] = time();
+        $params['fields_to_update'][processMapper::FIELD__UPDATED_AT] = time();
 
         return parent::update($params);
     }
