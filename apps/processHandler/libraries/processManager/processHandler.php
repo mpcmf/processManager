@@ -390,7 +390,7 @@ class processHandler
                 }
                 $nextStartTime = $process['last_started'] + $config->getPeriod();
                 if ($nextStartTime > time()) {
-                    error_log('The time has not yet come. Start time is ' . date('Y-m-d H:i:s', $nextStartTime));
+                    error_log('The time has not come yet. Start time is ' . date('Y-m-d H:i:s', $nextStartTime));
 
                     break;
                 }

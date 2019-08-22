@@ -12,7 +12,7 @@ class operationResult
     public static function notify($success, array $errors)
     {
         if ($success) {
-            echo "\n" . Color::GREEN . "Operation is success \n" . Color::RESET;
+            echo "\n" . Color::GREEN . "Operation completed successfully \n" . Color::RESET;
         } else {
             echo "\n" . Color::RED . "Operation failed \n" . Color::RESET;
             foreach ($errors as $error) {
