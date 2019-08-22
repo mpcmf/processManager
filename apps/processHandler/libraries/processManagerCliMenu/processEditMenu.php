@@ -4,7 +4,6 @@ namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
 use mpcmf\apps\processHandler\libraries\cliMenu\helper;
-use mpcmf\apps\processHandler\libraries\cliMenu\helper as titleHelper;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
@@ -65,7 +64,7 @@ class processEditMenu
 
             $currentItem = $parentMenu->getCurrentItem();
             $currentItem->setTitle(helper::formTitle($currentItem->getKey(), $newValues));
-            $parentMenu->getCurrentItem()->setTitle(titleHelper::formTitle($currentItem->getKey(), $newValues));
+            $parentMenu->getCurrentItem()->setTitle(helper::formTitle($currentItem->getKey(), $newValues));
             $processEditMenu->close();
             $parentMenu->refresh();
             $parentMenu->open();
@@ -89,7 +88,7 @@ class processEditMenu
                 $input = $prompt->getResponse("New {$item->getKey()}: ");
 
                 $item->setValue($input);
-                $item->setTitle(titleHelper::formTitle($itemKey, $input));
+                $item->setTitle(helper::formTitle($itemKey, $input));
             }
         }));
 
@@ -112,7 +111,7 @@ class processEditMenu
         $handler = function (menu $currentMenu) use ($item) {
             $currentItem = $currentMenu->getCurrentItem();
             $item->setValue($currentItem->getValue());
-            $item->setTitle(titleHelper::formTitle($item->getKey(), $currentItem->getKey()));
+            $item->setTitle(helper::formTitle($item->getKey(), $currentItem->getKey()));
             $currentMenu->close();
         };
 
@@ -135,7 +134,7 @@ class processEditMenu
                 $newValues[] = $editedItem->getValue();
             }
 
-            $currentItem->setTitle(titleHelper::formTitle($currentItem->getKey(), $newValues));
+            $currentItem->setTitle(helper::formTitle($currentItem->getKey(), $newValues));
 
             $currentMenu->close();
         }));
