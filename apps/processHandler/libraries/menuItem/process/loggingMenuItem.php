@@ -35,10 +35,6 @@ class loggingMenuItem extends menuItem implements objectEditMenuItem
             }
         }
 
-        if (empty($params['path'])) {
-            $params['path'] = '/tmp/process_' . md5(microtime()) . '.log';
-        }
-
         $menuItems = [];
         $title = helper::formTitle('logging', $params);
 

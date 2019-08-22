@@ -23,10 +23,17 @@ class processEditMenu
 
         $processEditMenu->addControlItem(new menuControlItem(terminal::KEY_F6, 'F6', 'Save', function (menu $processEditMenu) use ($processListMenu)  {
             $process = $processListMenu->getCurrentItem()->export();
-            if (empty($process['_id'])) {
-                $result = apiClient::factory()->call('process', 'add', ['object' => $process]);
-            } else {
+
+            $updating = false;
+            if (!empty($process['_id'])) {
+                $response = apiClient::factory()->call('process', 'getById', ['id' => $process['_id']]);
+                $updating = $response['status'];
+            }
+
+            if ($updating) {
                 $result = apiClient::factory()->call('process', 'update', ['ids' => [$process['_id']], 'fields_to_update' => $process]);
+            } else {
+                $result = apiClient::factory()->call('process', 'add', ['object' => $process]);
             }
 
             $success = $result['status'];

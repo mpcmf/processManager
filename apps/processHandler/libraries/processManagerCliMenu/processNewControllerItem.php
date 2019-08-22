@@ -22,6 +22,7 @@ class processNewControllerItem
     public function execute(menu $menu)
     {
         $processMenuItem = new processMenuItem([
+            '_id' => (string) (new \MongoId()),
             'server' => $this->serverItem->export()
         ]);
 

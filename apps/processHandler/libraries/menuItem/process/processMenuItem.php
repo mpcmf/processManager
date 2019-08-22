@@ -47,6 +47,10 @@ class processMenuItem extends menuItem implements objectEditMenuItem
 
     public function __construct(array $process = [])
     {
+        $this->default['logging'] = [
+            'path' => "/tmp/process_{$process['_id']}.log"
+        ];
+
         foreach ($this->default as $field => $item) {
             if (empty($process[$field])) {
                 $process[$field] = $item;
@@ -63,9 +67,7 @@ class processMenuItem extends menuItem implements objectEditMenuItem
             }
         }
 
-        $processKey = md5(json_encode($process));
-
-        parent::__construct($processKey, $value, $this->formTitle($process));
+        parent::__construct($process['_id'], $value, $this->formTitle($process));
     }
 
     public function formTitle(array $process = [])
