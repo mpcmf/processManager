@@ -16,7 +16,7 @@ class changeSortControlItem
     {
         $sortMenu = menuFactory::getMenu();
         $fields = array_keys($menu->getMenuItems()[0]->getValue());
-         $this->updateHeader($sortMenu, $menu);
+        $this->updateHeader($sortMenu, $menu);
 
         foreach ($fields as $key => $field) {
             $sortMenu->addItem(new menuItem($key, $field, $field));
@@ -38,6 +38,7 @@ class changeSortControlItem
             $this->updateHeader($sortMenu, $menu);
             $sortMenu->close();
             $menu->reDraw();
+            $menu->sort();
         }));
 
         $sortMenu->open();
