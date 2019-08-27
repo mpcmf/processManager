@@ -94,6 +94,7 @@ class processHandlerAdmin
             $processListMenu->open();
         }));
 
+        $serverListMenu->setSortBy('host');
         $serverListMenu->sort();
         $serverListMenu->open();
     }
