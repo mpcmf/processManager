@@ -26,20 +26,22 @@ class processMapper
     use singleton;
 
     const FIELD___ID = '_id';
-    const FIELD__LAST_UPDATE = 'last_update';
     const FIELD__NAME = 'name';
     const FIELD__DESCRIPTION = 'description';
     const FIELD__STATE = 'state';
     const FIELD__MODE = 'mode';
-    const FIELD__UPDATED_BY = 'updated_by';
+    const FIELD__PERIOD = 'period';
     const FIELD__COMMAND = 'command';
     const FIELD__INSTANCES = 'instances';
     const FIELD__WORK_DIR = 'work_dir';
     const FIELD__SERVER = 'server';
     const FIELD__TAGS = 'tags';
+    const FIELD__LOGGING = 'logging';
     const FIELD__STD_OUT = 'std_out';
     const FIELD__STD_ERROR = 'std_error';
     const FIELD__FORKS_COUNT = 'forks_count';
+    const FIELD__UPDATED_AT = 'updated_at';
+    const FIELD__CREATED_AT = 'created_at';
 
     const MODE__ONE_RUN = 'one_run';
     const MODE__REPEATABLE = 'repeatable';
@@ -163,7 +165,7 @@ class processMapper
                     'unique' => false,
                 ],
             ],
-            self::FIELD__MODE=> [
+            self::FIELD__MODE => [
                 'getter' => 'getMode',
                 'setter' => 'setMode',
                 'role' => [],
@@ -196,28 +198,32 @@ class processMapper
                     'unique' => false,
                 ],
             ],
-            self::FIELD__LAST_UPDATE => [
-                'getter' => 'getLastUpdate',
-                'setter' => 'setLastUpdate',
-                'role' => [
-                    self::ROLE__SORTABLE => true
-                ],
-                'name' => 'Last update',
-                'description' => 'Last update',
+            self::FIELD__PERIOD => [
+                'getter' => 'getPeriod',
+                'setter' => 'setPeriod',
+                'role' => [],
+                'name' => 'Period',
+                'description' => 'Period for periodic start',
                 'type' => 'int',
-                'formType' => 'datetimepicker',
-                'validator' => [],
+                'formType' => 'text',
+                'validator' => [
+                    [
+                        'type' => 'type.check',
+                        'data' => [
+                            'type' => 'int'
+                        ]
+                    ]
+                ],
                 'relations' => [],
                 'options' => [
-                    'required' => false,
+                    'required' => true,
                     'unique' => false,
                 ],
             ],
             self::FIELD__COMMAND => [
                 'getter' => 'getCommand',
                 'setter' => 'setCommand',
-                'role' => [
-                ],
+                'role' => [],
                 'name' => 'Command',
                 'description' => 'Command',
                 'type' => 'string',
@@ -243,8 +249,7 @@ class processMapper
             self::FIELD__WORK_DIR => [
                 'getter' => 'getWorkDir',
                 'setter' => 'setWorkDir',
-                'role' => [
-                ],
+                'role' => [],
                 'name' => 'Work dir',
                 'description' => 'Work dir',
                 'type' => 'string',
@@ -276,44 +281,24 @@ class processMapper
                 'description' => 'Tags',
                 'type' => 'string[]',
                 'formType' => 'multitext',
-                'validator' => [
-                ],
-                'relations' => [
-                ],
+                'validator' => [],
+                'relations' => [],
                 'options' => [
                     'required' => false,
                     'unique' => false,
                 ],
             ],
-            self::FIELD__STD_OUT => [
-                'getter' => 'getStdOutPaths',
-                'setter' => 'setStdOutPaths',
-                'role' => [],
-                'name' => 'StdOut',
-                'description' => 'Std out log file path',
-                'type' => 'string[]',
-                'formType' => 'multitext',
-                'validator' => [
+            self::FIELD__LOGGING => [
+                'getter' => 'getLogging',
+                'setter' => 'setLogging',
+                'role' => [
                 ],
-                'relations' => [
-                ],
-                'options' => [
-                    'required' => false,
-                    'unique' => false,
-                ],
-            ],
-            self::FIELD__STD_ERROR => [
-                'getter' => 'getStdErrorPaths',
-                'setter' => 'setStdErrorPaths',
-                'role' => [],
-                'name' => 'StdError',
-                'description' => 'Std error log file path',
-                'type' => 'string[]',
-                'formType' => 'multitext',
-                'validator' => [
-                ],
-                'relations' => [
-                ],
+                'name' => 'Logging',
+                'description' => 'Params of logging',
+                'type' => 'array',
+                'formType' => 'json',
+                'validator' => [],
+                'relations' => [],
                 'options' => [
                     'required' => false,
                     'unique' => false,
@@ -322,8 +307,7 @@ class processMapper
             self::FIELD__INSTANCES => [
                 'getter' => 'getInstances',
                 'setter' => 'setInstances',
-                'role' => [
-                ],
+                'role' => [],
                 'name' => 'Instances',
                 'description' => 'Instances',
                 'type' => 'int',
@@ -345,8 +329,7 @@ class processMapper
             self::FIELD__FORKS_COUNT => [
                 'getter' => 'getForksCount',
                 'setter' => 'setForksCount',
-                'role' => [
-                ],
+                'role' => [],
                 'name' => 'ForksCount',
                 'description' => 'ForksCount',
                 'type' => 'int',
@@ -399,6 +382,40 @@ class processMapper
                     'unique' => false,
                 ],
             ],
+            self::FIELD__UPDATED_AT => [
+                'getter' => 'getUpdatedAt',
+                'setter' => 'setUpdatedAt',
+                'role' => [
+                    self::ROLE__SORTABLE => true
+                ],
+                'name' => 'Updated at',
+                'description' => 'Updated at',
+                'type' => 'int',
+                'formType' => 'datetimepicker',
+                'validator' => [],
+                'relations' => [],
+                'options' => [
+                    'required' => false,
+                    'unique' => false,
+                ],
+            ],
+            self::FIELD__CREATED_AT => [
+                'getter' => 'getCreatedAt',
+                'setter' => 'setCreatedAt',
+                'role' => [
+                    self::ROLE__SORTABLE => true
+                ],
+                'name' => 'Created at',
+                'description' => 'Created at',
+                'type' => 'int',
+                'formType' => 'datetimepicker',
+                'validator' => [],
+                'relations' => [],
+                'options' => [
+                    'required' => false,
+                    'unique' => false,
+                ],
+            ]
         ];
     }
 }

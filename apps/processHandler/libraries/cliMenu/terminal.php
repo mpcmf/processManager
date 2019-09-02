@@ -28,6 +28,7 @@ class terminal
     const KEY_END = 0x1b5b46;
     const KEY_SLASH = 0x2f;
     const KEY_STAR = 0x2a;
+    const KEY_QUESTION = 0x21;
     const KEY_BACKSPACE = 0x7f;
     const KEY_UNKNOWN = 0;
 

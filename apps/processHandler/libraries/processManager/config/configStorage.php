@@ -38,7 +38,7 @@ class configStorage
 
     public function saveConfig(processModel $process)
     {
-        $process->setLastUpdate(time());
+        $process->setUpdatedAt(time());
         $this->mapper()->save($process);
     }
 

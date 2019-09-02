@@ -3,6 +3,7 @@
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
 use mpcmf\apps\processHandler\libraries\processManager\config\configStorage;
+use mpcmf\apps\processHandler\libraries\stats\stats;
 use mpcmf\modules\processHandler\mappers\processMapper;
 use mpcmf\modules\processHandler\models\processModel;
 use React\EventLoop\LoopInterface;
@@ -115,32 +116,33 @@ class processHandler
             $this->refresh($id);
             $currentState = $this->checkState($id, $process['config']->getState());
             error_log("{$process['config']->getCommand()}: {$currentState}");
+
             switch ($process['config']->getState()) {
                 case self::STATE__NEW:
                 case self::STATE__RUN:
                     $this->run($id);
                     $process['config']->setState(self::STATE__RUNNING);
-                    $process['last_started'] = time();
-                    break;
 
+                    break;
                 case self::STATE__REMOVE:
                     $this->stop($id);
                     $process['config']->setState(self::STATE__REMOVING);
+
                     break;
                 case self::STATE__STOP:
                     $this->stop($id);
-                    var_dump('Set state to stoppting!');
+                    error_log('Setting state to stop!');
                     $process['config']->setState(self::STATE__STOPPING);
-                    break;
 
+                    break;
                 case self::STATE__REMOVING:
                     if ($currentState === self::STATE__STOPPED) {
                         $process['config']->setState(self::STATE__READY_TO_REMOVE_FROM_DB);
                     } else {
                         MPCMF_DEBUG && error_log("Process {$id} waiting for remove...");
                     }
-                    break;
 
+                    break;
                 case self::STATE__STOPPING:
                     if ($currentState === self::STATE__STOPPED) {
                         $process['config']->setState(self::STATE__STOPPED);
@@ -148,13 +150,15 @@ class processHandler
                         $this->stop($id);
                         MPCMF_DEBUG && error_log("Process {$id} waiting for stop...");
                     }
-                    break;
 
+                    break;
                 case self::STATE__RESTARTING:
                 case self::STATE__RESTART:
                     if ($currentState === self::STATE__STOPPED) {
                         $process['config']->setState(self::STATE__RUN);
-                        $process['last_started'] = null;
+                        if ($process['config']->getMode() !== processMapper::MODE__PERIODIC) {
+                            $process['last_started'] = null;
+                        }
                         MPCMF_DEBUG && error_log("Process {$id} stopped in restart. Starting again!");
                     } else {
                         $this->stop($id);
@@ -165,7 +169,6 @@ class processHandler
                 case self::STATE__RUNNING:
                     $this->run($id);
                     break;
-
                 case self::STATE__STOPPED:
                     MPCMF_DEBUG && error_log("Process {$id} in endless state: [{$process['config']->getState()}]");
                     break;
@@ -266,8 +269,7 @@ class processHandler
             $process =& $this->processPool[$id];
 
             //set config from db
-            $process['config']->setStdOutPaths($processModel->getStdOutPaths());
-            $process['config']->setStdErrorPaths($processModel->getStdErrorPaths());
+            $process['config']->setLogging($processModel->getLogging());
             $process['config']->setCommand($processModel->getCommand());
             $process['config']->setWorkDir($processModel->getWorkDir());
             $process['config']->setDescription($processModel->getDescription());
@@ -322,7 +324,9 @@ class processHandler
         /** @var processModel $processModel */
         foreach ($changes['run'] as $id => $processModel) {
             $processModel->setState(self::STATE__RUN);
-            $this->processPool[$id]['last_started'] = null;
+            if ($processModel->getMode() !== processMapper::MODE__PERIODIC) {
+                $this->processPool[$id]['last_started'] = null;
+            }
             $this->processPool[$id]['config'] = $processModel;
         }
 
@@ -351,7 +355,7 @@ class processHandler
         foreach ($process['instances'] as $instanceId => $instance) {
             $status = $instance->getStatus();
             if ($status === process::STATUS__STOPPED || $status === process::STATUS__EXITED) {
-                var_dump('$unset');
+                error_log('Instance of process is stopped or exited. Deleting from instances collection');
                 unset($process['instances'][$instanceId]);
             }
         }
@@ -359,7 +363,7 @@ class processHandler
 
     protected function run($id)
     {
-        $this->setLogFiles($id);
+        $this->setLoggingParams($id);
         $process =& $this->processPool[$id];
         /** @var processModel $config */
         $config =& $process['config'];
@@ -368,7 +372,6 @@ class processHandler
         $currentState = $this->checkState($id, $config->getState());
 
         switch ($mode) {
-            case processMapper::MODE__PERIODIC:
             case processMapper::MODE__TIMER:
             case processMapper::MODE__CRON:
                 error_log("Mode [{$mode}] not implemented, used [one_run] mode");
@@ -378,12 +381,29 @@ class processHandler
                     $config->setState($currentState);
                     break;
                 }
+            case processMapper::MODE__PERIODIC:
+                $instancesCount = count($process['instances']);
+                if ($instancesCount != 0) {
+                    error_log('Instances has no finished yet');
+
+                    break;
+                }
+                $nextStartTime = $process['last_started'] + $config->getPeriod();
+                if ($nextStartTime > time()) {
+                    error_log('The time has not come yet. Start time is ' . date('Y-m-d H:i:s', $nextStartTime));
+
+                    break;
+                }
             case processMapper::MODE__REPEATABLE:
                 while (count($process['instances']) < $maxInstances && $this->stopAll === false) {
                     $instance = new process($this->loop, $config->getCommand(), $config->getWorkDir());
                     $instance->run();
 
+                    stats::start($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
+
                     $process['instances'][] = $instance;
+                    $process['last_started'] = $instance->getStartedAt();
+
                     usleep(10000);
                 }
 
@@ -391,35 +411,48 @@ class processHandler
         }
     }
 
-    protected function setLogFiles($id)
+    protected function setLoggingParams($id)
     {
-        $process =& $this->processPool[$id];
-        /** @var processModel $config */
-        $config =& $process['config'];
+        $process = $this->processPool[$id];
 
-        $stdErrorPaths = $config->getStdErrorPaths();
-        $stdOutPaths = $config->getStdOutPaths();
+        /** @var processModel $config */
+        $config = $process['config'];
+        $params = $config->getLogging();
 
         /** @var process $instance */
         foreach ($process['instances'] as $instance) {
-            $instance->setStdError($stdErrorPaths);
-            $instance->setStdOut($stdOutPaths);
+            if (!$params['enabled']) {
+                $instance->setStdOut([]);
+                $instance->setStdError([]);
+
+                continue;
+            }
+
+            if (in_array('stdout', $params['handlers'])) {
+                $instance->addStdOut($params['path']);
+            }
+            if (in_array('stderr', $params['handlers'])) {
+                $instance->addStdError($params['path']);
+            }
         }
     }
 
     protected function stopProcessHandler()
     {
         foreach ($this->processPool as $process) {
+            /** @var processModel $config */
+            $config = $process['config'];
             /** @var process $instance */
             foreach ($process['instances'] as $instance) {
                 $instance->stop();
+                stats::stop($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
             }
         }
         $this->stopAll = true;
 
         $this->loop->addPeriodicTimer(1, function () {
             if (!$this->isAllStopped()) {
-                error_log('Waiting stopping all processes...');
+                error_log('Waiting for stopping all processes...');
                 return;
             }
             exit("All processes stopped! Exit!\n");
@@ -444,9 +477,13 @@ class processHandler
     {
         $process =& $this->processPool[$id];
 
+        /** @var processModel $config */
+        $config = $process['config'];
+
         /** @var process $instance */
         foreach ($process['instances'] as $instance) {
             $instance->stop();
+            stats::stop($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
         }
     }
 

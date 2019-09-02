@@ -27,15 +27,18 @@ class changeSortControlItem
             $menu->open();
         }));
 
-        $sortMenu->addControlItem(new menuControlItem(terminal::KEY_F2, 'F2','Set default sort', function(menu $sortMenu) use ($menu) {
+        $sortMenu->addControlItem(new menuControlItem(terminal::KEY_F2, 'F2', 'Set default sort', function(menu $sortMenu) use ($menu) {
             $menu->setSortBy(null);
             $this->updateHeader($sortMenu, $menu);
         }));
 
         $sortMenu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Select', function (menu $sortMenu) use ($menu) {
-            $sortBy = $sortMenu->getCurrentItem()->getValue();
-            $menu->setSortBy($sortBy);
+            $menu->setSortBy($sortMenu->getCurrentItem()->getValue());
+
             $this->updateHeader($sortMenu, $menu);
+            $sortMenu->close();
+            $menu->reDraw();
+            $menu->sort();
         }));
 
         $sortMenu->open();

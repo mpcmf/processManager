@@ -21,6 +21,6 @@ class processEditControlItem
             $processListMenu->open();
             return;
         }
-        processEditMenu::createMenu($processItem, $processListMenu);
+        processEditMenu::createMenu($processListMenu);
     }
 }

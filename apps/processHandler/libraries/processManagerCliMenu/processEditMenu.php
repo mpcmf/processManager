@@ -1,181 +1,182 @@
 <?php
 
-
 namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
+use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuFactory;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
+use mpcmf\apps\processHandler\libraries\communication\prompt;
+use mpcmf\apps\processHandler\libraries\menuItem\arrayEditableMenuItem;
+use mpcmf\apps\processHandler\libraries\menuItem\objectEditMenuItem;
+use mpcmf\apps\processHandler\libraries\menuItem\selectableEditMenuItem;
+use mpcmf\apps\processHandler\libraries\communication\operationResult;
 
 class processEditMenu
 {
-    public static function createMenu(menuItem $processItem, menu $processListMenu)
+    public static function createMenu(menu $processListMenu)
     {
-        $apiClient = apiClient::factory();
-        $menu = menuFactory::getMenu();
-        $menu->setOnRefresh(function () use ($processItem, $menu) {
-            $menu->clean();
-            $process = $processItem->getValue();
+        $processEditMenu = self::createObjectEditMenu($processListMenu);
+
+        $processEditMenu->addControlItem(new menuControlItem(terminal::KEY_F6, 'F6', 'Save', function (menu $processEditMenu) use ($processListMenu)  {
+            $process = $processListMenu->getCurrentItem()->export();
+
+            $updating = false;
             if (!empty($process['_id'])) {
-                unset($process['last_update']);
-                $doNotDisplay = [
-                    '_id' => '_id',
-                    'last_update' => 'last_update'
-                ];
+                $response = apiClient::factory()->call('process', 'getById', ['id' => $process['_id']]);
+                $updating = $response['status'];
             }
-            foreach ($process as $fieldName => $fieldValue) {
-                if (isset($doNotDisplay[$fieldName])) {
-                    continue;
-                }
-                $titleValue = is_array($fieldValue) ? json_encode($fieldValue, 448) : $fieldValue;
-                $menu->addItem(new menuItem($fieldName, $fieldValue, "{$fieldName}:{$titleValue}"));
-            }
-        });
-        $menu->refresh();
 
-        $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($processListMenu) {
-            $currentMenu->close();
-            $processListMenu->refresh();
-            $processListMenu->open();
-        }));
-
-        $menu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Edit', function (menu $parentMenu, $menuControlItem)  {
-            $item = $parentMenu->getCurrentItem();
-            $itemValue = $item->getValue();
-
-            $input = null;
-            //process array field edit menu
-            if (is_array($itemValue)) {
-                $arrayEditmenu = menuFactory::getMenu();
-                foreach ($itemValue as $key => $value) {
-                    $arrayEditmenu->addItem(new menuItem($key, $value, $value));
-                }
-
-                $arrayEditmenu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Done:', function (menu $currentMenu, $menuControlItem) use ($parentMenu, &$input) {
-                    //setting new array values
-                    $newItemValue = [];
-                    $arrayEditMenuItems = $currentMenu->getMenuItems();
-                    foreach ($arrayEditMenuItems as $arrayEditMenuItem) {
-                        $newItemValue[] = $arrayEditMenuItem->getValue();
-                    }
-                    $input = $newItemValue;
-
-                    //close current menu and open parent
-                    $currentMenu->close();
-                }));
-
-                $arrayEditmenu->addControlItem(new menuControlItem(terminal::KEY_DELETE, 'Del', 'remove:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
-                    $items = $currentMenu->getMenuItems();
-                    $hasSelected = false;
-                    foreach ($items as $key => $item) {
-                        if ($item->isSelected()) {
-                            unset($items[$key]);
-                            $hasSelected = true;
-                        }
-                    }
-                    if (!$hasSelected) {
-                        $currentItem = $currentMenu->getCurrentItem();
-                        foreach ($items as $key => $item) {
-                            if ($item === $currentItem) {
-                                unset($items[$key]);
-                            }
-                        }
-                    }
-                    $items = array_values($items);
-                    $currentMenu->setMenuItems($items);
-                }));
-                $arrayEditmenu->addControlItem(new menuControlItem(terminal::KEY_INSERT, 'Ins', 'add:', function (menu $currentMenu, $menuControlItem) use ($parentMenu) {
-                    $currentMenu->reDraw();
-                    $input = trim(readline("-->"));
-                    if (empty($input)) {
-                        echo "Sorry, empty string! \n";
-                        sleep(3);
-                        return;
-                    }
-                    $currentMenu->addItem(new menuItem($input, $input, $input));
-                }));
-
-                $arrayEditmenu->open();
-            } elseif ($item->getKey() === 'mode' || $item->getKey() === 'state') {
-                $multipleSelectMenu = menuFactory::getMenu();
-                if ($item->getKey() === 'mode') {
-                    $toSelect = [
-                        'one_run',
-                        'repeatable'
-                    ];
-                } else {
-                    $toSelect = [
-                        'run',
-                        'stop',
-                        'restart'
-                    ];
-                }
-
-                foreach ($toSelect as $key => $value) {
-                    $multipleSelectMenu->addItem(new menuItem($key, $value, $value));
-                }
-
-                $multipleSelectMenu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $currentMenu, $menuControlItem) use ($item, &$input) {
-                    $input = $item->getValue();
-                    $currentMenu->close();
-                }));
-
-                $multipleSelectMenu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Select', function (menu $currentMenu, $menuControlItem) use (&$input)  {
-                    $input = $currentMenu->getCurrentItem()->getValue();
-                    $currentMenu->close();
-                }));
-                $multipleSelectMenu->open();
-
+            if ($updating) {
+                $result = apiClient::factory()->call('process', 'update', ['ids' => [$process['_id']], 'fields_to_update' => $process]);
             } else {
-                readline_completion_function(function ($input, $index) use ($item) {
-                    return [$item->getValue()];
-                });
-                
-                $input = trim(readline("-->"));
+                $result = apiClient::factory()->call('process', 'add', ['object' => $process]);
             }
 
-            if ($item->getKey() === 'instances') {
-                $input = (int) $input;
-                if ($input === 0) {
-                    echo "Sorry, you can't set 0 instances\n";
-                    sleep(3);
-                    return;
-                }
-            }
+            $success = $result['status'];
+            $errors = isset($result['data']['errors']) ? $result['data']['errors'] : [];
 
-            $titleValue = is_array($input) ? json_encode($input, 448) : $input;
-            $item->setValue($input);
-            $item->setTitle("{$item->getKey()}:{$titleValue}");
+            operationResult::notify($success, $errors);
 
-        }));
-
-        $menu->addControlItem(new menuControlItem(terminal::KEY_F6, 'F6', 'Save', function (menu $processEditMenu, $menuControlItem) use ($processItem, $apiClient, $processListMenu)  {
-            $items = $processEditMenu->getMenuItems();
-            $process = $processItem->getValue();
-            foreach ($items as $item) {
-                $process[$item->getKey()] = $item->getValue();
-            }
-
-            if (!empty($process['_id'])) {
-                $id = $process['_id'];
-                unset($process['_id']);
-                $result = $apiClient->call('process', 'update', ['ids' => [$id], 'fields_to_update' => $process]);
-            } else {
-                $result = $apiClient->call('process', 'add', ['object' => $process]);
-            }
-
-            var_dump($result);sleep(3);
             $processEditMenu->close();
             $processListMenu->refresh();
             $processListMenu->resetHeaderInfo();
             $processListMenu->open();
         }));
 
-
-        $menu->open();
+        $processEditMenu->open();
     }
 
+    private static function createObjectEditMenu(menu $parentMenu)
+    {
+        $processEditMenu = menuFactory::getMenu();
+        $currentProcessMenuItem = $parentMenu->getCurrentItem();
+
+        $processEditMenu->setOnRefresh(function (menu $processEditMenu) use ($currentProcessMenuItem) {
+            $processEditMenu->clean();
+            $processEditMenu->setMenuItems($currentProcessMenuItem->getValue());
+        });
+
+        $processEditMenu->refresh();
+
+        $processEditMenu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $processEditMenu) use ($parentMenu) {
+            $newValues = [];
+            /** @var menuItem $editedItem */
+            foreach ($processEditMenu->getMenuItems() as $editedItem) {
+                $newValues[$editedItem->getKey()] = $editedItem->export();
+            }
+
+            $currentItem = $parentMenu->getCurrentItem();
+            $currentItem->setTitle(helper::formTitle($currentItem->getKey(), $newValues));
+            $parentMenu->getCurrentItem()->setTitle(helper::formTitle($currentItem->getKey(), $newValues));
+            $processEditMenu->close();
+            $parentMenu->refresh();
+            $parentMenu->open();
+        }));
+
+        $processEditMenu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Edit', function (menu $currentMenu)  {
+            $item = $currentMenu->getCurrentItem();
+            $itemKey = $item->getKey();
+            if ($item instanceof selectableEditMenuItem) {
+                $menu = self::createSelectableEditMenu($item, $currentMenu);
+                $menu->open();
+            } elseif ($item instanceof objectEditMenuItem) {
+                $menu = self::createObjectEditMenu($currentMenu);
+                $menu->open();
+            } elseif($item instanceof arrayEditableMenuItem) {
+                $menu = self::createArrayEditMenu($currentMenu);
+                $menu->open();
+            } else {
+                $prompt = new prompt($currentMenu);
+                $prompt->completion([$item->getValue()]);
+                $input = $prompt->getResponse("New {$item->getKey()}: ");
+
+                $item->setValue($input);
+                $item->setTitle(helper::formTitle($itemKey, $input));
+            }
+        }));
+
+        return $processEditMenu;
+    }
+
+    private static function createSelectableEditMenu(selectableEditMenuItem $menuItem, menu $parentMenu)
+    {
+        $cursor = 0;
+        $menu = menuFactory::getMenu();
+        foreach ($menuItem->getToSelectItems() as $key => $value) {
+            $menu->addItem(new menuItem($key, $value, $key));
+            if ($value === $menuItem->getValue()) {
+                $menu->setCursorPosition($cursor);
+            }
+            $cursor++;
+        }
+
+        $item = $parentMenu->getCurrentItem();
+        $handler = function (menu $currentMenu) use ($item) {
+            $currentItem = $currentMenu->getCurrentItem();
+            $item->setValue($currentItem->getValue());
+            $item->setTitle(helper::formTitle($item->getKey(), $currentItem->getKey()));
+            $currentMenu->close();
+        };
+
+        $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', $handler));
+        $menu->addControlItem(new menuControlItem(terminal::KEY_ENTER, 'Enter', 'Select', $handler));
+
+        return $menu;
+    }
+
+    private static function createArrayEditMenu(menu $parentMenu)
+    {
+        $currentItem = $parentMenu->getCurrentItem();
+        $menu = menuFactory::getMenu();
+        $menu->setMenuItems($currentItem->getValue());
+
+        $menu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Done:', function (menu $currentMenu) use ($currentItem) {
+            $newValues = [];
+            /** @var menuItem $editedItem */
+            foreach ($currentMenu->getMenuItems() as $editedItem) {
+                $newValues[] = $editedItem->getValue();
+            }
+
+            $currentItem->setTitle(helper::formTitle($currentItem->getKey(), $newValues));
+
+            $currentMenu->close();
+        }));
+
+        $menu->addControlItem(new menuControlItem(terminal::KEY_DELETE, 'Del', 'remove:', function (menu $currentMenu) use ($currentItem) {
+            $menuItems = $currentMenu->getMenuItems();
+            $hasSelected = false;
+            /** @var menuItem $item */
+            foreach ($menuItems as $item) {
+                if ($item->isSelected()) {
+                    $currentMenu->dropMenuItemByKey($item->getKey());
+                    $hasSelected = true;
+                }
+            }
+            if (!$hasSelected) {
+                $currentItemKey = $currentMenu->getCurrentItem()->getKey();
+                $currentMenu->dropMenuItemByKey($currentItemKey);
+            }
+
+            $currentItem->setValue($currentMenu->getMenuItems());
+        }));
+
+        $menu->addControlItem(new menuControlItem(terminal::KEY_INSERT, 'Ins', 'add:', function (menu $currentMenu) use ($currentItem) {
+            $prompt = new prompt($currentMenu);
+            $input = $prompt->getResponse("New {$currentItem->getKey()}: ");
+            if (!empty($input)) {
+                $new = new menuItem($input, $input, $input);
+                $items = $currentItem->getValue();
+                $items[] = $new;
+
+                $currentItem->setValue($items);
+                $currentMenu->addItem($new);
+            }
+        }));
+
+        return $menu;
+    }
 }

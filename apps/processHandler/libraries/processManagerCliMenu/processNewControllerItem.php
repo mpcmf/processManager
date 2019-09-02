@@ -5,6 +5,7 @@ namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
+use mpcmf\apps\processHandler\libraries\menuItem\process\processMenuItem;
 
 class processNewControllerItem
     extends controlItem
@@ -20,21 +21,14 @@ class processNewControllerItem
 
     public function execute(menu $menu)
     {
-        $menu->close();
-        $processItem = new menuItem('', [
-            'name' => '',
-            'description' => '',
-            'state' => 'stopped',
-            'mode' => 'repeatable',
-            'command' => '',
-            'work_dir' => '',
-            'tags' => [],
-            'std_out' => [],
-            'std_error' => [],
-            'instances' => 1,
-            'server' => $this->serverItem->getValue()['_id']
-        ], 'new process');
+        $processMenuItem = new processMenuItem([
+            '_id' => (string) (new \MongoId()),
+            'server' => $this->serverItem->export()
+        ]);
 
-        processEditMenu::createMenu($processItem, $menu);
+        $menu->setCursorPosition($menu->addItem($processMenuItem));
+        $menu->close();
+
+        processEditMenu::createMenu($menu);
     }
 }

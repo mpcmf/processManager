@@ -7,6 +7,7 @@ use mpcmf\apps\processHandler\libraries\processManager\process as processStarter
 use mpcmf\apps\processHandler\libraries\processManager\processHandler;
 use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\modules\processHandler\mappers\processMapper;
+use mpcmf\system\exceptions\mpcmfException;
 
 class process
     extends objectBase
@@ -89,20 +90,6 @@ class process
         ]);
     }
 
-    public function setLogFiles($params)
-    {
-        $ids = helper::getParam('ids', $params, helper::TYPE_ARRAY);
-        $logFiles = helper::getParam('log_files', $params, helper::TYPE_ARRAY);
-
-        return $this->update([
-            'ids' => $ids,
-            'fields_to_update' => [
-                processMapper::FIELD__STD_ERROR => $logFiles,
-                processMapper::FIELD__STD_OUT => $logFiles
-            ]
-        ]);
-    }
-
     public function getByServerId($params)
     {
         $serverId = helper::getParam('server_id', $params, helper::TYPE_STRING);
@@ -135,10 +122,10 @@ class process
         }
 
         //if process manager stopped remove processes from db
-        $processes = $this->getByCriteria(['_id' => ['$in' => $mongoIds]]);
+        $processes = $this->getByCriteria([processMapper::FIELD___ID => ['$in' => $mongoIds]]);
         $idsToRemove = [];
         foreach ($processes as $process) {
-            if (!is_int($process['last_update']) || time() - 20 > $process['last_update']) {
+            if (!is_int($process[processMapper::FIELD__UPDATED_AT]) || time() - 20 > $process[processMapper::FIELD__UPDATED_AT]) {
                 $idsToRemove[] = $process['_id'];
             }
         }
@@ -155,5 +142,76 @@ class process
             'ids' => $ids,
             'fields_to_update' => [processMapper::FIELD__STATE => processHandler::STATE__REMOVE]
         ]);
+    }
+
+    public function add(array $params)
+    {
+        if (isset($params[processMapper::FIELD__LOGGING])) {
+            $params[processMapper::FIELD__LOGGING] = json_encode($params[processMapper::FIELD__LOGGING]);
+        }
+
+        $params[processMapper::FIELD__CREATED_AT] = time();
+
+        return parent::add($params);
+    }
+
+    public function update($params)
+    {
+        if (isset($params['fields_to_update'][processMapper::FIELD__LOGGING])) {
+            $params['fields_to_update'][processMapper::FIELD__LOGGING] = json_encode($params['fields_to_update'][processMapper::FIELD__LOGGING]);
+        }
+
+        $params['fields_to_update'][processMapper::FIELD__UPDATED_AT] = time();
+
+        return parent::update($params);
+    }
+
+    public function copy($params)
+    {
+        $server = helper::getParam('server', $params, helper::TYPE_STRING);
+
+        $errors = [];
+        foreach ($this->getByIds($params) as $process) {
+            unset($process[processMapper::FIELD___ID]);
+            $process[processMapper::FIELD__SERVER] = $server;
+            $process[processMapper::FIELD__STATE] = processHandler::STATE__STOPPED;
+
+            try {
+                $this->add(['object' => $process]);
+            } catch (\Exception $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        if (!empty($errors)) {
+            throw new mpcmfException(implode("\n", $errors));
+        }
+
+        return true;
+    }
+
+    public function move($params)
+    {
+        $server = helper::getParam('server', $params, helper::TYPE_STRING);
+
+        $errors = [];
+        foreach ($this->getByIds($params) as $process) {
+            $processId = $process[processMapper::FIELD___ID];
+            unset($process[processMapper::FIELD___ID]);
+            $process[processMapper::FIELD__SERVER] = $server;
+
+            try {
+                $this->add(['object' => $process]);
+                $this->delete(['ids' => [$processId]]);
+            } catch (\Exception $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        if (!empty($errors)) {
+            throw new mpcmfException(implode("\n", $errors));
+        }
+
+        return true;
     }
 }
