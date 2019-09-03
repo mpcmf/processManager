@@ -276,6 +276,7 @@ class processHandler
             $process['config']->setMode($processModel->getMode());
             $process['config']->setTags($processModel->getTags());
             $process['config']->setName($processModel->getName());
+            $process['config']->setPeriod($processModel->getPeriod());
 
             if ($processModel->getState() === self::STATE__STOP && $process['config']->getState() === self::STATE__RUNNING) {
                 $changedStates['stop'][$id] = $processModel;
