@@ -429,10 +429,10 @@ class processHandler
             }
 
             if (in_array('stdout', $params['handlers'])) {
-                $instance->addStdOut($params['path']);
+                $instance->setStdOut([$params['path']]);
             }
             if (in_array('stderr', $params['handlers'])) {
-                $instance->addStdError($params['path']);
+                $instance->setStdError([$params['path']]);
             }
         }
     }
