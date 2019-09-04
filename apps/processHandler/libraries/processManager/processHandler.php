@@ -243,6 +243,8 @@ class processHandler
             } catch (\Exception $exception) {
                 error_log("[Exception] on syncing config! {$exception->getMessage()}");
             }
+
+            $this->loop->tick();
         }
     }
 
@@ -276,6 +278,7 @@ class processHandler
             $process['config']->setMode($processModel->getMode());
             $process['config']->setTags($processModel->getTags());
             $process['config']->setName($processModel->getName());
+            $process['config']->setPeriod($processModel->getPeriod());
 
             if ($processModel->getState() === self::STATE__STOP && $process['config']->getState() === self::STATE__RUNNING) {
                 $changedStates['stop'][$id] = $processModel;
@@ -429,10 +432,10 @@ class processHandler
             }
 
             if (in_array('stdout', $params['handlers'])) {
-                $instance->addStdOut($params['path']);
+                $instance->setStdOut([$params['path']]);
             }
             if (in_array('stderr', $params['handlers'])) {
-                $instance->addStdError($params['path']);
+                $instance->setStdError([$params['path']]);
             }
         }
     }

@@ -37,8 +37,6 @@ class processMapper
     const FIELD__SERVER = 'server';
     const FIELD__TAGS = 'tags';
     const FIELD__LOGGING = 'logging';
-    const FIELD__STD_OUT = 'std_out';
-    const FIELD__STD_ERROR = 'std_error';
     const FIELD__FORKS_COUNT = 'forks_count';
     const FIELD__UPDATED_AT = 'updated_at';
     const FIELD__CREATED_AT = 'created_at';

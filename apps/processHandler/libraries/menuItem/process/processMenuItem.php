@@ -48,7 +48,7 @@ class processMenuItem extends menuItem implements objectEditMenuItem
     public function __construct(array $process = [])
     {
         $this->default['logging'] = [
-            'path' => "/tmp/process_{$process['_id']}.log"
+            'path' => "file:///tmp/process_{$process['_id']}.log"
         ];
 
         foreach ($this->default as $field => $item) {
