@@ -278,7 +278,8 @@ class processHandler
             $process['config']->setMode($processModel->getMode());
             $process['config']->setTags($processModel->getTags());
             $process['config']->setName($processModel->getName());
-            $process['config']->setPeriod($processModel->getPeriod());
+            $period = $processModel->getPeriod();
+            $process['config']->setPeriod(is_int($period) ? $period : 0);
 
             if ($processModel->getState() === self::STATE__STOP && $process['config']->getState() === self::STATE__RUNNING) {
                 $changedStates['stop'][$id] = $processModel;
@@ -421,6 +422,10 @@ class processHandler
         /** @var processModel $config */
         $config = $process['config'];
         $params = $config->getLogging();
+
+        if (!isset($params['enabled'])) {
+            return;
+        }
 
         /** @var process $instance */
         foreach ($process['instances'] as $instance) {
