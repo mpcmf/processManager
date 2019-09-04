@@ -243,6 +243,8 @@ class processHandler
             } catch (\Exception $exception) {
                 error_log("[Exception] on syncing config! {$exception->getMessage()}");
             }
+
+            $this->loop->tick();
         }
     }
 
