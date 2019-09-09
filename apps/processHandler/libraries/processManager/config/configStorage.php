@@ -2,6 +2,7 @@
 
 namespace mpcmf\apps\processHandler\libraries\processManager\config;
 
+use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\modules\processHandler\mappers\processMapper;
 use mpcmf\modules\processHandler\models\processModel;
 
@@ -39,7 +40,7 @@ class configStorage
     public function saveConfig(processModel $process)
     {
         $process->setUpdatedAt(time());
-        $this->mapper()->save($process);
+        $this->mapper()->save($process, mapperBase::SAVE__MODE_CHANGES_ONLY);
     }
 
     public function removeConfig(processModel $process)
