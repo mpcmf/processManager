@@ -8,11 +8,12 @@ use mpcmf\apps\processHandler\libraries\stats\stats;
 use mpcmf\modules\processHandler\mappers\processMapper;
 use mpcmf\modules\processHandler\models\processModel;
 use mpcmf\system\helper\cache\cache;
+use mpcmf\system\helper\io\log;
 use React\EventLoop\LoopInterface;
 
 class processHandler
 {
-    use cache;
+    use cache, log;
 
     const STATE__NEW = 'new';
     const STATE__RUN = 'run';
@@ -239,7 +240,7 @@ class processHandler
                 }
 
                 if (locker::isWriteLocked($id)) {
-                    error_log("Process {$id} is locked to write");
+                    self::log()->info("Process {$id} is locked to write");
                     continue;
                 }
 
@@ -267,7 +268,7 @@ class processHandler
             'restart' => [],
             'remove' => $newConfig
         ];
-        
+
         locker::unLockWrite(array_keys($newConfig));
 
         /** @var processModel $processModel */
