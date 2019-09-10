@@ -4,6 +4,7 @@ namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
 use Codedungeon\PHPCliColors\Color;
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
+use mpcmf\apps\processHandler\libraries\api\locker;
 use mpcmf\apps\processHandler\libraries\cliMenu\controlItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
@@ -70,11 +71,15 @@ class copyMoveProcessControlItem  extends controlItem
             $agree = $prompt->getAgreement($message);
 
             if ($agree) {
-                $result = apiClient::factory()->call('process', $this->action, ['ids' => array_column($processes, '_id'), 'server' => $serverId]);
+                $ids = array_column($processes, '_id');
+                $result = apiClient::factory()->call('process', $this->action, ['ids' => $ids, 'server' => $serverId]);
                 $errors = [];
                 if ($result['status'] === false) {
                     $errors = isset($result['data']['errors']) ? $result['data']['errors'] : [];
+                } else {
+                    locker::lockWrite($ids);
                 }
+
                 operationResult::notify($result['status'], $errors);
             }
 

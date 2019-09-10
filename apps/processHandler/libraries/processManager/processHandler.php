@@ -2,14 +2,18 @@
 
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
+use mpcmf\apps\processHandler\libraries\api\locker;
 use mpcmf\apps\processHandler\libraries\processManager\config\configStorage;
 use mpcmf\apps\processHandler\libraries\stats\stats;
 use mpcmf\modules\processHandler\mappers\processMapper;
 use mpcmf\modules\processHandler\models\processModel;
+use mpcmf\system\helper\cache\cache;
+use mpcmf\system\helper\io\log;
 use React\EventLoop\LoopInterface;
 
 class processHandler
 {
+    use cache, log;
 
     const STATE__NEW = 'new';
     const STATE__RUN = 'run';
@@ -217,6 +221,7 @@ class processHandler
             error_log("[Exception] on getting config from db {$exception->getMessage()}");
             $newConfig = [];
         }
+
         $changes = $this->compareConfig($newConfig);
 
         $this->processingChanges($changes);
@@ -233,6 +238,12 @@ class processHandler
                     unset($this->processPool[$id]);
                     continue;
                 }
+
+                if (locker::isWriteLocked($id)) {
+                    self::log()->info("Process {$id} is locked to write");
+                    continue;
+                }
+
                 $forksCount = 0;
                 /** @var process $processInstance */
                 foreach ($process['instances'] as $processInstance) {
@@ -257,6 +268,8 @@ class processHandler
             'restart' => [],
             'remove' => $newConfig
         ];
+
+        locker::unLockWrite(array_keys($newConfig));
 
         /** @var processModel $processModel */
         foreach ($newConfig as $id => $processModel) {

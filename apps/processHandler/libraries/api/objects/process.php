@@ -125,7 +125,7 @@ class process
         $processes = $this->getByCriteria([processMapper::FIELD___ID => ['$in' => $mongoIds]]);
         $idsToRemove = [];
         foreach ($processes as $process) {
-            if (!is_int($process[processMapper::FIELD__UPDATED_AT]) || time() - 20 > $process[processMapper::FIELD__UPDATED_AT]) {
+            if (is_int($process[processMapper::FIELD__UPDATED_AT]) && time() - 20 > $process[processMapper::FIELD__UPDATED_AT]) {
                 $idsToRemove[] = $process['_id'];
             }
         }
