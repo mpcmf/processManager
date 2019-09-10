@@ -72,9 +72,9 @@ class itemFilter
             $tmp = '';
             foreach ($haystack as $item) {
                 if ($item instanceof menuItem) {
-                    $tmp .= $item->getValue();
+                    $tmp .= " {$item->getValue()}";
                 } else {
-                    $tmp .= $item;
+                    $tmp .= " {$item}";
                 }
             }
             $haystack = $tmp;
