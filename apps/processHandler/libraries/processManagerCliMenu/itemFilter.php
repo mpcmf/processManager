@@ -64,9 +64,22 @@ class itemFilter
     {
         $haystack = $this->filterBy ? $menuItem->getValue()[$this->filterBy] : $menuItem->getTitle();
 
-        if (is_array($haystack)) {
-            $haystack = json_encode($haystack);
+        if ($haystack instanceof menuItem) {
+            $haystack = $haystack->getValue();
         }
+
+        if (is_array($haystack)) {
+            $tmp = '';
+            foreach ($haystack as $item) {
+                if ($item instanceof menuItem) {
+                    $tmp .= " {$item->getValue()}";
+                } else {
+                    $tmp .= " {$item}";
+                }
+            }
+            $haystack = $tmp;
+        }
+
         if (mb_stripos($haystack, $input) !== false) {
             return true;
         }

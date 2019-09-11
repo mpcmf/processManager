@@ -3,6 +3,7 @@
 namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
 use mpcmf\apps\processHandler\libraries\api\client\apiClient;
+use mpcmf\apps\processHandler\libraries\api\locker;
 use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
@@ -37,6 +38,10 @@ class processEditMenu
             }
 
             $success = $result['status'];
+            if ($success) {
+                locker::lockWrite([$process['_id']]);
+            }
+
             $errors = isset($result['data']['errors']) ? $result['data']['errors'] : [];
 
             operationResult::notify($success, $errors);
