@@ -85,10 +85,6 @@ class filter
     {
         $haystack = !empty($this->filterBy) ? $menuItem->getValue()[$this->filterBy] : $menuItem->getTitle();
 
-        if (is_array($haystack)) {
-            $haystack = json_encode($haystack);
-        }
-
         if (mb_stripos($haystack, $this->searchQuery) !== false) {
             return true;
         }

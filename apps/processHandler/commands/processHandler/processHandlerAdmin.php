@@ -62,10 +62,10 @@ class processHandlerAdmin
 
             $processListMenu = menuFactory::getMenu();
             $processListMenu->setOnRefresh(function (menu $processListMenu) use ($selectedServerMenuItems) {
-                $currentCursor = $processListMenu->getCursorPosition();
-                $processMenuItems = $this->getProcessMenuItems($selectedServerMenuItems);
-                $processListMenu->setMenuItems($processMenuItems);
-                $processListMenu->setCursorPosition($currentCursor);
+                if (empty($processListMenu->getMenuItemsOrigin())) {
+                    $processListMenu->setMenuItems($this->getProcessMenuItems($selectedServerMenuItems));
+                }
+                $processListMenu->setCursorPosition($processListMenu->getCursorPosition());
             });
 
             $processListMenu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $processListMenu) use ($serverListMenu) {
