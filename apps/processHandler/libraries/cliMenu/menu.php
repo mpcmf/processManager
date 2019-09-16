@@ -9,7 +9,7 @@ class menu
     protected $opened = false;
 
     /** @var menuItem[] */
-    protected $menuItemsOrigin;
+    protected $menuItemsOrigin = [];
 
     /** @var array menuItem[] */
     protected $visibleMenuItems = [];
@@ -138,7 +138,7 @@ class menu
         if ($terminal === null) {
             $terminal = new terminal();
         }
-        if ($this->menuItemsOrigin === null) {
+        if (empty($this->menuItemsOrigin)) {
             $this->menuItemsOrigin = $this->visibleMenuItems;
         }
         if ($this->opened) {

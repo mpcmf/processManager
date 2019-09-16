@@ -12,7 +12,6 @@ use mpcmf\apps\processHandler\libraries\menuItem\selectableEditMenuItem;
  */
 class serverMenuItem extends menuItem implements selectableEditMenuItem
 {
-
     public function __construct(array $server, $isVisible = true)
     {
         parent::__construct('server', $server['_id'], helper::formTitle('server', $server['host']), $isVisible);
@@ -21,6 +20,13 @@ class serverMenuItem extends menuItem implements selectableEditMenuItem
     public function getToSelectItems()
     {
         return $this->getServerMenuItems();
+    }
+
+    public static function getHost($serverId)
+    {
+        $server = apiClient::factory()->call('server', 'getById', ['id' => $serverId])['data'];
+
+        return $server['host'];
     }
 
     private function getServerMenuItems()

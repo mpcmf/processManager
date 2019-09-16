@@ -2,8 +2,6 @@
 
 namespace mpcmf\apps\processHandler\libraries\processManagerCliMenu;
 
-use mpcmf\apps\processHandler\libraries\api\client\apiClient;
-use mpcmf\apps\processHandler\libraries\api\locker;
 use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\menu;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuControlItem;
@@ -13,6 +11,7 @@ use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 use mpcmf\apps\processHandler\libraries\communication\prompt;
 use mpcmf\apps\processHandler\libraries\menuItem\arrayEditableMenuItem;
 use mpcmf\apps\processHandler\libraries\menuItem\objectEditMenuItem;
+use mpcmf\apps\processHandler\libraries\menuItem\process\processMenuItem;
 use mpcmf\apps\processHandler\libraries\menuItem\selectableEditMenuItem;
 use mpcmf\apps\processHandler\libraries\communication\operationResult;
 
@@ -23,28 +22,11 @@ class processEditMenu
         $processEditMenu = self::createObjectEditMenu($processListMenu);
 
         $processEditMenu->addControlItem(new menuControlItem(terminal::KEY_F6, 'F6', 'Save', function (menu $processEditMenu) use ($processListMenu)  {
-            $process = $processListMenu->getCurrentItem()->export();
+            $process = $processListMenu->getCurrentItem();
+            /** @var processMenuItem $process */
+            $process->save();
 
-            $updating = false;
-            if (!empty($process['_id'])) {
-                $response = apiClient::factory()->call('process', 'getById', ['id' => $process['_id']]);
-                $updating = $response['status'];
-            }
-
-            if ($updating) {
-                $result = apiClient::factory()->call('process', 'update', ['ids' => [$process['_id']], 'fields_to_update' => $process]);
-            } else {
-                $result = apiClient::factory()->call('process', 'add', ['object' => $process]);
-            }
-
-            $success = $result['status'];
-            if ($success) {
-                locker::lockWrite([$process['_id']]);
-            }
-
-            $errors = isset($result['data']['errors']) ? $result['data']['errors'] : [];
-
-            operationResult::notify($success, $errors);
+            $processListMenu->getCurrentItem()->setTitle($process->formTitle());
 
             $processEditMenu->close();
             $processListMenu->refresh();
@@ -68,15 +50,19 @@ class processEditMenu
         $processEditMenu->refresh();
 
         $processEditMenu->addControlItem(new menuControlItem(terminal::KEY_LEFT, '<--', 'Back:', function (menu $processEditMenu) use ($parentMenu) {
-            $newValues = [];
-            /** @var menuItem $editedItem */
-            foreach ($processEditMenu->getMenuItems() as $editedItem) {
-                $newValues[$editedItem->getKey()] = $editedItem->export();
+            $currentItem = $parentMenu->getCurrentItem();
+            if ($currentItem instanceof processMenuItem) {
+                $ok = $currentItem->reload();
+                if (!$ok) {
+                    operationResult::notify(false, ['Unable to reload process data']);
+                }
+                $newTitle = $currentItem->formTitle();
+            } else {
+                $newTitle = helper::formTitle($currentItem->getKey(), $currentItem->export());
             }
 
-            $currentItem = $parentMenu->getCurrentItem();
-            $currentItem->setTitle(helper::formTitle($currentItem->getKey(), $newValues));
-            $parentMenu->getCurrentItem()->setTitle(helper::formTitle($currentItem->getKey(), $newValues));
+            $currentItem->setTitle($newTitle);
+            $parentMenu->getCurrentItem()->setTitle($newTitle);
             $processEditMenu->close();
             $parentMenu->refresh();
             $parentMenu->open();

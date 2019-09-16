@@ -3,8 +3,11 @@
 namespace mpcmf\apps\processHandler\libraries\menuItem\process;
 
 use Codedungeon\PHPCliColors\Color;
+use mpcmf\apps\processHandler\libraries\api\client\apiClient;
+use mpcmf\apps\processHandler\libraries\api\locker;
 use mpcmf\apps\processHandler\libraries\cliMenu\helper;
 use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
+use mpcmf\apps\processHandler\libraries\communication\operationResult;
 use mpcmf\apps\processHandler\libraries\menuItem\objectEditMenuItem;
 use mpcmf\apps\processHandler\libraries\processManager\processHandler;
 use mpcmf\modules\processHandler\mappers\processMapper;
@@ -76,6 +79,8 @@ class processMenuItem extends menuItem implements objectEditMenuItem
             $process = $this->export();
         }
 
+        $server = isset($process['server']['host']) ? $process['server']['host'] : serverMenuItem::getHost($process['server']);
+
         $isLogged = isset($process['logging']['enabled']) && $process['logging']['enabled'] === true;
         $stopped = $process['state'] === processHandler::STATE__STOP || $process['state'] === processHandler::STATE__STOPPED;
 
@@ -83,10 +88,58 @@ class processMenuItem extends menuItem implements objectEditMenuItem
         $logging = ($isLogged ? Color::GREEN : Color::RED) . 'logging' . Color::RESET;
 
         $title = helper::padding($state, $logging, 20);
-        $title = helper::padding($title, $process['server']['host'], 20);
+        $title = helper::padding($title, $server, 20);
         $title = helper::padding($process['name'], $title, 100);
 
         return $title;
+    }
+
+    public function save()
+    {
+        $process = $this->export();
+
+        $updating = false;
+        if (!empty($process['_id'])) {
+            $response = apiClient::factory()->call('process', 'getById', ['id' => $process['_id']]);
+            $updating = $response['status'];
+        }
+
+        if ($updating) {
+            $result = apiClient::factory()->call('process', 'update', ['ids' => [$process['_id']], 'fields_to_update' => $process]);
+        } else {
+            $result = apiClient::factory()->call('process', 'add', ['object' => $process]);
+        }
+
+        $success = $result['status'];
+        if ($success) {
+            locker::lockWrite([$process['_id']]);
+        }
+
+        $errors = isset($result['data']['errors']) ? $result['data']['errors'] : [];
+
+        operationResult::notify($success, $errors);
+    }
+
+    public function reload()
+    {
+        $process = $this->export();
+        $result = apiClient::factory()->call('process', 'getById', ['id' => $process['_id']]);
+
+        if (!$result['status']) {
+            return false;
+        }
+
+        $process = $result['data'];
+        $result = apiClient::factory()->call('server', 'getById', ['id' => $process['server']]);
+        if (!$result['status']) {
+            return false;
+        }
+
+        $process['server'] = $result['data'];
+
+        self::__construct($process);
+
+        return true;
     }
 
     public function export()
