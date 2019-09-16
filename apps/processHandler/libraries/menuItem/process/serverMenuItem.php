@@ -22,11 +22,6 @@ class serverMenuItem extends menuItem implements selectableEditMenuItem
         return $this->getServerMenuItems();
     }
 
-    public function export()
-    {
-        return $this->value;
-    }
-
     public static function getHost($serverId)
     {
         $server = apiClient::factory()->call('server', 'getById', ['id' => $serverId])['data'];
