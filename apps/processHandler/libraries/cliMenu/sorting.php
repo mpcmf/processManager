@@ -18,6 +18,10 @@ class sorting
                 $value2 = $item2->getValue()[$this->sortBy];
             }
 
+            if($value1 instanceof menuItem) {
+                $value1 = $value1->export();
+                $value2 = $value2->export();
+            }
             if (is_array($value1) || is_array($value2)) {
                 $value1 = count($value1);
                 $value2 = count($value2);
