@@ -10,6 +10,8 @@ use mpcmf\apps\processHandler\libraries\cliMenu\menuItem;
 use mpcmf\apps\processHandler\libraries\cliMenu\terminal;
 use mpcmf\apps\processHandler\libraries\communication\operationResult;
 use mpcmf\apps\processHandler\libraries\communication\prompt;
+use mpcmf\apps\processHandler\libraries\menuItem\process\processMenuItem;
+use mpcmf\apps\processHandler\libraries\menuItem\process\stateMenuItem;
 
 class processManagementControlItem
     extends controlItem
@@ -94,6 +96,12 @@ class processManagementControlItem
             $processes = $result['data'];
             $processedCount = 0;
             foreach ($processes as $process) {
+                /** @var processMenuItem $processMenuItem */
+                $processMenuItem = $processListMenu->getMenuItemByKey($process['_id']);
+                /** @var stateMenuItem $stateMenuItem */
+                $stateMenuItem = $processMenuItem->getValue()['state'];
+                $stateMenuItem->setValue($process['state']);
+                $processMenuItem->setTitle($processMenuItem->formTitle());
                 if ($process['state'] === $this->expectedState) {
                     $processedCount++;
                 }
