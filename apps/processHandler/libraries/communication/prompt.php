@@ -29,9 +29,7 @@ class prompt
     {
         $this->menu->reDraw();
 
-        echo "\n" . Color::YELLOW . $message . Color::RESET;
-        // passing empty string to readline function to disallow deleting prompt message together input string
-        return trim(readline(' '));
+        return trim(readline($message));
     }
 
     /**
@@ -54,13 +52,12 @@ class prompt
         ];
 
         $type = $strict ? 'strict' : 'not_strict';
-        $message = "\n{$message}" . Color::YELLOW . "  [" . implode('/', array_keys($variants[$type])) . ']: ' . Color::RESET;
+        $message = "\n{$message}  [" . implode('/', array_keys($variants[$type])) . ']: ';
 
         for (;;) {
             $this->menu->reDraw();
 
-            echo $message;
-            $answer = trim(readline(' '));
+            $answer = trim(readline($message));
             if (isset($variants[$type][$answer])) {
                 return $variants[$type][$answer];
             }
