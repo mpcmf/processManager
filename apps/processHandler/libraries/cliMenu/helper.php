@@ -15,7 +15,7 @@ class helper
             $titleValue = $value === true ? 'true' : 'false';
         }
 
-        return "{$key} : {$titleValue}";
+        return "{$key}: {$titleValue}";
     }
 
     public static function padding($label, $result, $length = 20, $delimiter = ' ')
