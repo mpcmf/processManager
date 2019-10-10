@@ -144,7 +144,7 @@ class process
         ]);
     }
 
-    public function add(array $params)
+    public function add($params)
     {
         if (isset($params[processMapper::FIELD__LOGGING])) {
             $params[processMapper::FIELD__LOGGING] = json_encode($params[processMapper::FIELD__LOGGING]);
