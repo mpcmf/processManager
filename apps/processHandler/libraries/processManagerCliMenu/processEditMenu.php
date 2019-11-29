@@ -153,6 +153,7 @@ class processEditMenu
             }
 
             $currentItem->setValue($currentMenu->getMenuItems());
+            $currentMenu->setCursorPosition(1);
         }));
 
         $menu->addControlItem(new menuControlItem(terminal::KEY_INSERT, 'Ins', 'add:', function (menu $currentMenu) use ($currentItem) {
