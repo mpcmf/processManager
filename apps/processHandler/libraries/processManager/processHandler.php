@@ -88,7 +88,6 @@ class processHandler
         $this->configStorage = $configStorage;
         $this->loop = $loop;
         pcntl_signal(SIGTERM, [$this, 'signalHandler']);
-        pcntl_signal(SIGINT, [$this, 'signalHandler']);
         $this->server = new server($this->loop);
     }
 
@@ -528,10 +527,6 @@ class processHandler
         switch ($_signal) {
             case SIGTERM:
                 error_log('SigTerm!');
-                $this->stopProcessHandler();
-                break;
-            case SIGINT:
-                error_log('SigInt!');
                 $this->stopProcessHandler();
                 break;
         }

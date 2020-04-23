@@ -144,8 +144,7 @@ class process
             $this->status = self::STATUS__RUNNING;
             $this->startedAt = time();
             $this->pid = $processStatus['pid'];
-            posix_setpgid($processStatus['pid'], $processStatus['pid']);
-            $this->gid = $processStatus['pid'];
+            $this->gid = posix_getpgid($processStatus['pid']);
             $this->exitCode = -1;
             $this->loop->addPeriodicTimer($this->checkEvery, function ($timer) {
                 $this->check();
@@ -199,6 +198,11 @@ class process
         return $this->stdErrorStreamRouter->removeConsumer($destination);
     }
 
+    public function getCommand()
+    {
+        return $this->command;
+    }
+
     protected function kill()
     {
         if ($this->status === self::STATUS__STOPPING) {
@@ -225,7 +229,7 @@ class process
         $this->status = self::STATUS__STOPPING;
         posix_kill(-$this->gid, SIGTERM);
         $this->loop->addPeriodicTimer(1, function ($timer) {
-            static $attempts = 15;
+            static $attempts = 5;
 
             $stopped = false;
             error_log("Sent -15 to group {$this->gid}");
