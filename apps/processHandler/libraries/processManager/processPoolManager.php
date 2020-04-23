@@ -16,10 +16,12 @@ class processPoolManager
     protected $loop;
     protected $onRefresh;
     protected $refreshInterval = 1.0;
+    protected $stopLoopOnEnd = false;
 
     public function __construct(LoopInterface $loop)
     {
         pcntl_signal(SIGTERM, [$this, 'signalHandler']);
+        pcntl_signal(SIGINT, [$this, 'signalHandler']);
         $this->loop = $loop;
     }
 
@@ -36,6 +38,11 @@ class processPoolManager
         $this->queue[] = $process;
         
         return true;
+    }
+
+    public function stopLoopOnEnd($stop)
+    {
+        $this->stopLoopOnEnd = (bool)$stop;
     }
 
     public function call($method, $params = [])
@@ -107,6 +114,7 @@ class processPoolManager
     protected function refreshLoop()
     {
         $this->loop->addPeriodicTimer($this->refreshInterval, function () {
+            pcntl_signal_dispatch();
             /**
              * @note add threads in pool from queue
              */
@@ -117,10 +125,6 @@ class processPoolManager
                 $this->pool[] = $newProcess;
             }
 
-            pcntl_signal_dispatch();
-            if (empty($this->pool)) {
-                self::log()->addInfo('All processes done!');
-            }
             /** @var process $process */
             foreach ($this->pool as $key => $process) {
                 if ($this->onRefresh !== null) {
@@ -133,18 +137,21 @@ class processPoolManager
                     unset($this->pool[$key]);
                 }
             }
+
+            if (empty($this->pool)) {
+                self::log()->addInfo('All processes done!');
+                if ($this->stopLoopOnEnd) {
+                    $this->loop->stop();
+                }
+            }
+
         });
     }
 
     public function stop()
     {
         $this->call('stop');
-        $this->loop->addPeriodicTimer(1, function () {
-            if (empty($this->pool)) {
-                self::log()->addInfo('Stopped!');
-                $this->loop->stop();
-            }
-        });
+        $this->stopLoopOnEnd = true;
     }
 
     /**
@@ -156,6 +163,7 @@ class processPoolManager
     {
         switch ($_signal) {
             case SIGTERM:
+            case SIGINT:
                 error_log('SigTerm!');
                 $this->stop();
                 break;
