@@ -144,7 +144,8 @@ class process
             $this->status = self::STATUS__RUNNING;
             $this->startedAt = time();
             $this->pid = $processStatus['pid'];
-            $this->gid = posix_getpgid($processStatus['pid']);
+            posix_setpgid($processStatus['pid'], $processStatus['pid']);
+            $this->gid = $processStatus['pid'];
             $this->exitCode = -1;
             $this->loop->addPeriodicTimer($this->checkEvery, function ($timer) {
                 $this->check();
