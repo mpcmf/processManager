@@ -122,6 +122,7 @@ class processPoolManager
                 /** @var process $newProcess */
                 $newProcess = array_shift($this->queue);
                 $newProcess->run();
+                $newProcess->setCheckEvery(1.0);
                 $this->pool[] = $newProcess;
             }
 
@@ -150,7 +151,7 @@ class processPoolManager
 
     public function stop()
     {
-        $this->call('stop');
+        $this->call('sigKill');
         $this->stopLoopOnEnd = true;
     }
 

@@ -204,9 +204,14 @@ class process
         return $this->command;
     }
 
-    protected function kill()
+    public function setCheckEvery($checkEvery)
     {
-        if ($this->status === self::STATUS__STOPPING) {
+        $this->checkEvery = $checkEvery;
+    }
+
+    protected function kill($sigKill = false)
+    {
+        if (!$sigKill || $this->status === self::STATUS__STOPPING) {
             return;
         }
 
@@ -227,6 +232,14 @@ class process
         }
         error_log('pd closed');
 
+        if ($sigKill) {
+            posix_kill(-$this->gid, SIGKILL);
+            error_log("Sent -9 to group {$this->gid}");
+            $this->setValuesOnStopped();
+
+            return;
+        }
+
         $this->status = self::STATUS__STOPPING;
         posix_kill(-$this->gid, SIGTERM);
         $this->loop->addPeriodicTimer(1, function ($timer) {
@@ -243,12 +256,22 @@ class process
                 $stopped = true;
             }
             if ($stopped) {
-                $this->status = self::STATUS__STOPPED;
-                $this->stoppedAt = time();
-                $this->pid = -1;
+                $this->setValuesOnStopped();
                 $this->loop->cancelTimer($timer);
             }
         });
+    }
+
+    protected function setValuesOnStopped()
+    {
+        $this->status = self::STATUS__STOPPED;
+        $this->stoppedAt = time();
+        $this->pid = -1;
+    }
+
+    public function sigKill()
+    {
+        $this->kill(true);
     }
 
     public function getStatus()
