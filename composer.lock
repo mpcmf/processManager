@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "977dc9eb05f341fc1f593b6e968f3a80",
+    "content-hash": "279dff1e20cf89a927da7d77418cb5fd",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -70,6 +70,96 @@
                 "mongodb"
             ],
             "time": "2018-03-05T20:40:55+00:00"
+        },
+        {
+            "name": "bramus/ansi-php",
+            "version": "3.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bramus/ansi-php.git",
+                "reference": "f581b2fd322177e5fabd67af240811838c1c8fbc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bramus/ansi-php/zipball/f581b2fd322177e5fabd67af240811838c1c8fbc",
+                "reference": "f581b2fd322177e5fabd67af240811838c1c8fbc",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bramus\\Ansi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bramus Van Damme",
+                    "email": "bramus@bram.us",
+                    "homepage": "https://www.bram.us/"
+                }
+            ],
+            "description": "ANSI Control Functions and ANSI Control Sequences (Colors, Erasing, etc.) for PHP CLI Apps",
+            "support": {
+                "issues": "https://github.com/bramus/ansi-php/issues",
+                "source": "https://github.com/bramus/ansi-php/tree/3.1"
+            },
+            "time": "2021-10-28T10:45:05+00:00"
+        },
+        {
+            "name": "bramus/monolog-colored-line-formatter",
+            "version": "2.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bramus/monolog-colored-line-formatter.git",
+                "reference": "6bff15eee00afe2690642535b0f1541f10852c2b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bramus/monolog-colored-line-formatter/zipball/6bff15eee00afe2690642535b0f1541f10852c2b",
+                "reference": "6bff15eee00afe2690642535b0f1541f10852c2b",
+                "shasum": ""
+            },
+            "require": {
+                "bramus/ansi-php": "~3.0",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "monolog/monolog": "~1.0",
+                "phpunit/phpunit": "~4.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bramus\\Monolog\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bramus Van Damme",
+                    "email": "bramus@bram.us",
+                    "homepage": "https://www.bram.us/"
+                }
+            ],
+            "description": "Colored Line Formatter for Monolog",
+            "support": {
+                "issues": "https://github.com/bramus/monolog-colored-line-formatter/issues",
+                "source": "https://github.com/bramus/monolog-colored-line-formatter/tree/master"
+            },
+            "time": "2015-01-07T22:12:35+00:00"
         },
         {
             "name": "codedungeon/php-cli-colors",
@@ -548,16 +638,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpcmf/mpcmf-core.git",
-                "reference": "d1668acf5b0beadd1a5d37e83d9e6f3d10f8083e"
+                "reference": "e3fb6dc0a969e1d05c387be10d8219cd035c59cb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpcmf/mpcmf-core/zipball/d1668acf5b0beadd1a5d37e83d9e6f3d10f8083e",
-                "reference": "d1668acf5b0beadd1a5d37e83d9e6f3d10f8083e",
+                "url": "https://api.github.com/repos/mpcmf/mpcmf-core/zipball/e3fb6dc0a969e1d05c387be10d8219cd035c59cb",
+                "reference": "e3fb6dc0a969e1d05c387be10d8219cd035c59cb",
                 "shasum": ""
             },
             "require": {
                 "alcaeus/mongo-php-adapter": "^1.1@dev",
+                "bramus/monolog-colored-line-formatter": "2.x",
                 "ext-amqp": "*",
                 "ext-intl": "*",
                 "ext-json": "*",
@@ -565,7 +656,6 @@
                 "ext-memcached": "*",
                 "ext-pcntl": "*",
                 "ext-posix": "*",
-                "ext-pthreads": "*",
                 "ext-sockets": "*",
                 "ext-zlib": "*",
                 "infostars/net-curl": "dev-master",
@@ -577,22 +667,22 @@
                 "phpdocumentor/reflection-docblock": "~2.0",
                 "phpmailer/phpmailer": "~6.0",
                 "slim/slim": "2.*",
-                "smarty/smarty": "3.1.27",
+                "smarty/smarty": "~3.1",
                 "symfony/console": "~2.6",
-                "symfony/filesystem": "~2.6",
-                "wingu/code-generator": "1.0.5"
+                "symfony/filesystem": "~2.6"
             },
             "require-dev": {
                 "phpunit/phpunit": "^4.0@dev"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
-                "psr-4": {
-                    "mpcmf\\system\\": "src/system/"
-                },
                 "files": [
                     "src/loader.php"
-                ]
+                ],
+                "psr-4": {
+                    "mpcmf\\system\\": "src/system/"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -623,7 +713,12 @@
                 "smarty",
                 "threads"
             ],
-            "time": "2018-12-03T14:25:39+00:00"
+            "support": {
+                "email": "greevex@gmail.com",
+                "issues": "https://github.com/greevex/mpcmf-core/issues?state=open",
+                "source": "https://github.com/greevex/mpcmf-core"
+            },
+            "time": "2022-09-14T14:18:57+00:00"
         },
         {
             "name": "mpcmf/mpcmf-signal-handler",
@@ -1814,106 +1909,6 @@
             "time": "2018-09-21T13:07:52+00:00"
         },
         {
-            "name": "wingu/code-generator",
-            "version": "1.0.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Speicher210/CodeGenerator.git",
-                "reference": "3850e788946276208fb7175ee6d29e531320ae13"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Speicher210/CodeGenerator/zipball/3850e788946276208fb7175ee6d29e531320ae13",
-                "reference": "3850e788946276208fb7175ee6d29e531320ae13",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4",
-                "wingu/reflection": "1.*"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "4.1.*"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Wingu\\OctopusCore\\CodeGenerator\\": "src/",
-                    "Wingu\\OctopusCore\\CodeGenerator\\Tests": "tests/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dragos Protung",
-                    "email": "dragos.protung@speicher210.com",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Antoine Verger",
-                    "email": "antoine.verger@speicher210.com",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Wingu OctopusCore CoreGenerator",
-            "keywords": [
-                "code generator",
-                "generation",
-                "generator",
-                "php code generator"
-            ],
-            "time": "2014-06-18T09:14:42+00:00"
-        },
-        {
-            "name": "wingu/reflection",
-            "version": "1.0.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Speicher210/Reflection.git",
-                "reference": "3d0f5033077b6a3f47cebbeded6538caeb0a1909"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Speicher210/Reflection/zipball/3d0f5033077b6a3f47cebbeded6538caeb0a1909",
-                "reference": "3d0f5033077b6a3f47cebbeded6538caeb0a1909",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.4"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "4.*",
-                "scrutinizer/ocular": "~1.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Wingu\\OctopusCore\\Reflection\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Dragos Protung",
-                    "email": "dragos@protung.ro",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Library on top of PHP Reflection with some extra helper methods and a more powerful PHP DocBlock and annotation tags reflection",
-            "homepage": "https://github.com/Speicher210/Reflection",
-            "keywords": [
-                "annotations",
-                "php reflection",
-                "reflection"
-            ],
-            "time": "2017-02-15T09:10:56+00:00"
-        },
-        {
             "name": "wp-cli/php-cli-tools",
             "version": "v0.10.5",
             "source": {
@@ -1975,5 +1970,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "2.1.0"
 }
