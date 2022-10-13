@@ -107,14 +107,34 @@ class processHandler
 
         $this->updateConfig();
         $this->management();
-        $this->invokeHandlers();
+
+        $this->periodic(60, [$this, 'invokeHandlers']);
+    }
+
+    protected function periodic(int $period, callable $callback, array $args = []): void
+    {
+        static $lastStart;
+
+        $currentTime = time();
+
+        $nextStart = $lastStart + $period;
+        if ($nextStart > $currentTime) {
+            return;
+        }
+
+        $lastStart = $currentTime;
+        try {
+            call_user_func_array($callback, $args);
+        } catch (\Throwable $e) {
+            self::log()->addError(__METHOD__ . " " . get_class($e) . " #{$e->getCode()}: {$e->getMessage()}");
+        }
     }
 
     public function registerHandler(string $key, callable $handler, callable $getArgs = null): void
     {
         $this->handelers[$key] = [
             'handler' => $handler,
-            'args' => $getArgs
+            'getArgs' => $getArgs
         ];
     }
 
