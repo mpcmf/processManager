@@ -53,6 +53,7 @@ class processHandler
         process::STATUS__EXITED => self::STATE__STOPPED,
     ];
 
+    protected $handelers = [];
     /**
      * @var configStorage
      */
@@ -102,9 +103,39 @@ class processHandler
 
     protected function mainCycle()
     {
-        pcntl_signal_dispatch();
+        pcntl_async_signals(true);
+
         $this->updateConfig();
         $this->management();
+        $this->invokeHandlers();
+    }
+
+    public function registerHandler(string $key, callable $handler, callable $getArgs = null): void
+    {
+        $this->handelers[$key] = [
+            'handler' => $handler,
+            'args' => $getArgs
+        ];
+    }
+
+    protected function invokeHandlers(): void
+    {
+        foreach ($this->handelers as $key => $handlerData) {
+            $handler = $handlerData['handler'] ?? null;
+            if (!is_callable($handler)) {
+                unset($this->handelers[$key]);
+                self::log()->addError("Removed handler with key [{$key}] due to handler is not callable.");
+
+                continue;
+            }
+
+            $args = [];
+            if (!empty($handlerData['getArgs']) && is_callable($handlerData['getArgs'])) {
+                $args = (array) call_user_func($handlerData['getArgs']);
+            }
+
+            $handlerData['handler'](...$args);
+        }
     }
 
     protected function management()
