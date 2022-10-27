@@ -75,7 +75,7 @@ class runProcessHandler
             return 0;
         }
 
-        $getProcessMemory = "awk '/Pss:/{ sum += $2 } END { print sum/1024 }' ";
+        $getProcessMemory = "awk '/Pss:/{ sum += $2 } END { print sum/1024 }' {$smapsFileName}";
 
         return (float) trim(shell_exec($getProcessMemory));
     }
