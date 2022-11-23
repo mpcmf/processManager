@@ -423,7 +423,7 @@ class processHandler
         foreach ($process['instances'] as $instanceId => $instance) {
             $status = $instance->getStatus();
             if ($status === process::STATUS__STOPPED || $status === process::STATUS__EXITED) {
-                error_log('Instance of process is stopped or exited. Deleting from instances collection');
+                error_log("Instance of process is {$status}. Deleting from instances collection");
                 unset($process['instances'][$instanceId]);
             }
         }
@@ -431,7 +431,6 @@ class processHandler
 
     protected function run($id)
     {
-        $this->setLoggingParams($id);
         $process =& $this->processPool[$id];
         /** @var processModel $config */
         $config =& $process['config'];
@@ -465,6 +464,7 @@ class processHandler
             case processMapper::MODE__REPEATABLE:
                 while (count($process['instances']) < $maxInstances && $this->stopAll === false) {
                     $instance = new process($this->loop, $config->getCommand(), $config->getWorkDir());
+                    $this->setLoggingParams($process, $instance);
                     $instance->run();
 
                     stats::start($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
@@ -479,44 +479,39 @@ class processHandler
         }
     }
 
-    protected function setLoggingParams($id)
+    protected function setLoggingParams(array $processData, process $instance)
     {
-        $process = $this->processPool[$id];
-
         /** @var processModel $config */
-        $config = $process['config'];
+        $config = $processData['config'];
         $params = $config->getLogging();
 
         if (!isset($params['enabled'])) {
             return;
         }
 
-        /** @var process $instance */
-        foreach ($process['instances'] as $instance) {
-            if (!$params['enabled']) {
-                $instance->setStdOut([]);
-                $instance->setStdError([]);
+        if (!$params['enabled']) {
+            $instance->setStdOut([]);
+            $instance->setStdError([]);
 
-                continue;
-            }
+            return;
+        }
 
-            if (in_array('stdout', $params['handlers'])) {
-                $instance->setStdOut([$params['path']]);
-            }
-            if (in_array('stderr', $params['handlers'])) {
-                $instance->setStdError([$params['path']]);
-            }
+        if (in_array('stdout', $params['handlers'])) {
+            $instance->setStdOut([$params['path']]);
+        }
+        if (in_array('stderr', $params['handlers'])) {
+            $instance->setStdError([$params['path']]);
         }
     }
 
-    protected function stopProcessHandler()
+    protected function stopProcessHandler($forceKill = false)
     {
         foreach ($this->processPool as $process) {
             /** @var processModel $config */
             $config = $process['config'];
             /** @var process $instance */
             foreach ($process['instances'] as $instance) {
-                $instance->stop();
+                $instance->stop($forceKill);
                 stats::stop($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
             }
         }
@@ -576,14 +571,19 @@ class processHandler
      */
     public function signalHandler($_signal = SIGTERM)
     {
+        static $signalCounters = [], $limit = 5;
+        if(!isset($signalCounters[$_signal])) {
+            $signalCounters[$_signal] = 0;
+        }
+        $signalCounters[$_signal]++;
         switch ($_signal) {
             case SIGTERM:
                 error_log('SigTerm!');
-                $this->stopProcessHandler();
+                $this->stopProcessHandler($signalCounters[$_signal] > $limit);
                 break;
             case SIGINT:
                 error_log('SigInt!');
-                $this->stopProcessHandler();
+                $this->stopProcessHandler($signalCounters[$_signal] > $limit);
                 break;
         }
     }
