@@ -600,24 +600,25 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpcmf/mpcmf-console.git",
-                "reference": "6d3dfdd3aef3b90ae13204969e8ba809c3e359f7"
+                "reference": "a88d1b3166c9664895bf0a73e8e1ff170d2f1b93"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpcmf/mpcmf-console/zipball/6d3dfdd3aef3b90ae13204969e8ba809c3e359f7",
-                "reference": "6d3dfdd3aef3b90ae13204969e8ba809c3e359f7",
+                "url": "https://api.github.com/repos/mpcmf/mpcmf-console/zipball/a88d1b3166c9664895bf0a73e8e1ff170d2f1b93",
+                "reference": "a88d1b3166c9664895bf0a73e8e1ff170d2f1b93",
                 "shasum": ""
             },
             "require": {
                 "mpcmf/mpcmf-core": "dev-master",
                 "wp-cli/php-cli-tools": "^0.10.4"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "mpcmf\\apps\\mpcmfConsole\\": "src/apps/mpcmfConsole/",
+                    "mpcmf\\system\\": "src/apps/mpcmfConsole/system",
                     "mpcmf\\modules\\": "src/apps/mpcmfConsole/modules",
-                    "mpcmf\\system\\": "src/apps/mpcmfConsole/system"
+                    "mpcmf\\apps\\mpcmfConsole\\": "src/apps/mpcmfConsole/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -634,7 +635,11 @@
                     "email": "gilberg.vrn@gmail.com"
                 }
             ],
-            "time": "2018-03-23T13:32:37+00:00"
+            "support": {
+                "issues": "https://github.com/mpcmf/mpcmf-console/issues",
+                "source": "https://github.com/mpcmf/mpcmf-console/tree/master"
+            },
+            "time": "2022-11-24T08:01:21+00:00"
         },
         {
             "name": "mpcmf/mpcmf-core",
@@ -642,12 +647,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpcmf/mpcmf-core.git",
-                "reference": "e3fb6dc0a969e1d05c387be10d8219cd035c59cb"
+                "reference": "f2b9cee3e24510721bcd4a40ef592b5f2c7ec44c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpcmf/mpcmf-core/zipball/e3fb6dc0a969e1d05c387be10d8219cd035c59cb",
-                "reference": "e3fb6dc0a969e1d05c387be10d8219cd035c59cb",
+                "url": "https://api.github.com/repos/mpcmf/mpcmf-core/zipball/f2b9cee3e24510721bcd4a40ef592b5f2c7ec44c",
+                "reference": "f2b9cee3e24510721bcd4a40ef592b5f2c7ec44c",
                 "shasum": ""
             },
             "require": {
@@ -722,7 +727,7 @@
                 "issues": "https://github.com/greevex/mpcmf-core/issues?state=open",
                 "source": "https://github.com/greevex/mpcmf-core"
             },
-            "time": "2022-09-14T14:18:57+00:00"
+            "time": "2023-01-30T11:23:01+00:00"
         },
         {
             "name": "mpcmf/mpcmf-signal-handler",
@@ -762,12 +767,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mpcmf/mpcmf-web.git",
-                "reference": "51f20a1c09e0d86d8f489f740f3b5100b25ce6a6"
+                "reference": "14041b8575eae295a807f8784b27ff0f471ad9ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mpcmf/mpcmf-web/zipball/51f20a1c09e0d86d8f489f740f3b5100b25ce6a6",
-                "reference": "51f20a1c09e0d86d8f489f740f3b5100b25ce6a6",
+                "url": "https://api.github.com/repos/mpcmf/mpcmf-web/zipball/14041b8575eae295a807f8784b27ff0f471ad9ae",
+                "reference": "14041b8575eae295a807f8784b27ff0f471ad9ae",
                 "shasum": ""
             },
             "require": {
@@ -778,12 +783,13 @@
                 "react/socket": "^0.7@dev",
                 "react/socket-client": "^0.5.0@dev"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "mpcmf\\apps\\mpcmfWeb\\": "src/apps/mpcmfWeb/",
+                    "mpcmf\\system\\": "src/apps/mpcmfWeb/system",
                     "mpcmf\\modules\\": "src/apps/mpcmfWeb/modules",
-                    "mpcmf\\system\\": "src/apps/mpcmfWeb/system"
+                    "mpcmf\\apps\\mpcmfWeb\\": "src/apps/mpcmfWeb/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -800,7 +806,11 @@
                     "email": "gilberg.vrn@gmail.com"
                 }
             ],
-            "time": "2018-11-27T16:13:26+00:00"
+            "support": {
+                "issues": "https://github.com/mpcmf/mpcmf-web/issues",
+                "source": "https://github.com/mpcmf/mpcmf-web/tree/master"
+            },
+            "time": "2022-12-26T14:34:37+00:00"
         },
         {
             "name": "nervetattoo/elasticsearch",
