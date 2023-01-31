@@ -2,10 +2,7 @@
 
 namespace mpcmf\apps\processHandler\libraries\processManager;
 
-use mpcmf\apps\processHandler\libraries\streamRouter\streamRouter;
-use mpcmf\system\configuration\config;
 use React\EventLoop\LoopInterface;
-use React\Stream\Stream;
 
 class process
 {
@@ -47,6 +44,8 @@ class process
     protected $startedAt;
 
     protected $stoppedAt;
+    
+    protected $forceKill = false;
 
     protected $descriptors = [
         0 => ['pipe', 'r'],
@@ -58,28 +57,13 @@ class process
 
     protected $processDescriptor;
 
-    /**
-     * @var $stdout Stream
-     */
-    protected $stdout;
-
-    /**
-     * @var $stderr Stream
-     */
-    protected $stderr;
-
     protected $checkEvery = 2;
-
-    protected $stdOutStreamRouter;
-    protected $stdErrorStreamRouter;
 
     public function __construct(LoopInterface $loop, $command, $workDir = null)
     {
         $this->command = $command;
         $this->workDir = $workDir;
         $this->loop = $loop;
-        $this->stdOutStreamRouter = new streamRouter($loop);
-        $this->stdErrorStreamRouter = new streamRouter($loop);
     }
 
     protected function check()
@@ -153,7 +137,6 @@ class process
                     $this->loop->cancelTimer($timer);
                 }
             });
-            $this->initStreams();
 
             return;
         }
@@ -162,45 +145,38 @@ class process
         $this->pid = -1;
         $this->exitCode = $processStatus['exitcode'];
     }
-
-    protected function initStreams()
-    {
-        $this->stdOutStreamRouter->run($this->pipes[1]);
-        $this->stdErrorStreamRouter->run($this->pipes[2]);
-    }
-
-    public function addStdOut($destination)
-    {
-        return $this->stdOutStreamRouter->addConsumer($destination);
-    }
-
+    
     public function setStdOut(array $destinations)
     {
-        return $this->stdOutStreamRouter->setConsumers($destinations);
-    }
+        if(empty($destinations)) {
+            return;
+        }
+        $parsed = parse_url($destinations[0]);
+        if(!empty($parsed['scheme']) && $parsed['scheme'] !== 'file') {
+            error_log("not using {$destinations[0]} as stdout");
+            return;
+        }
 
-    public function removeStdOut($destination)
-    {
-        return $this->stdOutStreamRouter->removeConsumer($destination);
-    }
-
-    public function addStdError($destination)
-    {
-        return $this->stdErrorStreamRouter->addConsumer($destination);
+        $this->descriptors[1] = fopen($parsed['path'], 'ab');
     }
 
     public function setStdError(array $destinations)
     {
-        return $this->stdErrorStreamRouter->setConsumers($destinations);
+        if(empty($destinations)) {
+            return;
+        }
+        $parsed = parse_url($destinations[0]);
+        if(!empty($parsed['scheme']) && $parsed['scheme'] !== 'file') {
+            error_log("not using {$destinations[0]} as stderr");
+            return;
+        }
+
+        $this->descriptors[2] = fopen($parsed['path'], 'ab');
     }
 
-    public function removeStdError($destination)
+    protected function kill($force = false)
     {
-        return $this->stdErrorStreamRouter->removeConsumer($destination);
-    }
-
-    protected function kill()
-    {
+        $this->forceKill = $force;
         if ($this->status === self::STATUS__STOPPING) {
             return;
         }
@@ -212,13 +188,16 @@ class process
 
         foreach ($this->pipes as $pipe) {
             if (is_resource($pipe)) {
-                fclose($pipe);
+                $closed = fclose($pipe);
+                if(!$closed) {
+                    error_log('pipe not closed!');
+                }
             }
         }
         error_log('pipes closed');
         if (is_resource($this->processDescriptor)) {
             //blocking flow
-            //proc_close($this->processDescriptor);
+            proc_close($this->processDescriptor);
         }
         error_log('pd closed');
 
@@ -226,16 +205,22 @@ class process
         posix_kill(-$this->gid, SIGTERM);
         $this->loop->addPeriodicTimer(1, function ($timer) {
             static $attempts = 15;
-
-            $stopped = false;
-            error_log("Sent -15 to group {$this->gid}");
-            if (!posix_kill(-$this->gid, SIGTERM)) {
-                $stopped = true;
-            }
-            if (!$stopped && --$attempts === 0) {
+            
+            if($this->forceKill) {
+                error_log("FORCE KILLING GROUP {$this->gid}");
                 posix_kill(-$this->gid, SIGKILL);
-                error_log("Sent -9 to group {$this->gid}");
                 $stopped = true;
+            } else {
+                $stopped = false;
+                error_log("Sent -15 to group {$this->gid}");
+                if (!posix_kill(-$this->gid, SIGTERM)) {
+                    $stopped = true;
+                }
+                if (!$stopped && --$attempts === 0) {
+                    posix_kill(-$this->gid, SIGKILL);
+                    error_log("Sent -9 to group {$this->gid}");
+                    $stopped = true;
+                }
             }
             if ($stopped) {
                 $this->status = self::STATUS__STOPPED;
@@ -268,12 +253,16 @@ class process
         $this->check();
     }
 
-    public function stop()
+    public function stop($force = false)
     {
         if ($this->status !== self::STATUS__STOPPING) {
             $this->status = self::STATUS__STOP;
         }
-        $this->check();
+        if(!$force) {
+            $this->check();
+            return;
+        }
+        $this->kill(true);
     }
 
     public function getChildPids($pid = null)

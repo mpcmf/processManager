@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "279dff1e20cf89a927da7d77418cb5fd",
+    "content-hash": "69ff8484343f2e55ab8b37c8fe269f0c",
     "packages": [
         {
             "name": "alcaeus/mongo-php-adapter",
@@ -251,6 +251,10 @@
                 "event-dispatcher",
                 "event-emitter"
             ],
+            "support": {
+                "issues": "https://github.com/igorw/evenement/issues",
+                "source": "https://github.com/igorw/evenement/tree/master"
+            },
             "time": "2017-07-17T17:39:19+00:00"
         },
         {
@@ -1140,7 +1144,7 @@
         },
         {
             "name": "react/event-loop",
-            "version": "v0.4.3",
+            "version": "0.4.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/event-loop.git",
@@ -1178,6 +1182,10 @@
                 "asynchronous",
                 "event-loop"
             ],
+            "support": {
+                "issues": "https://github.com/reactphp/event-loop/issues",
+                "source": "https://github.com/reactphp/event-loop/tree/0.4"
+            },
             "time": "2017-04-27T10:56:23+00:00"
         },
         {
@@ -1461,6 +1469,10 @@
                 "pipe",
                 "stream"
             ],
+            "support": {
+                "issues": "https://github.com/reactphp/stream/issues",
+                "source": "https://github.com/reactphp/stream/tree/v0.4.6"
+            },
             "time": "2017-01-25T14:44:14+00:00"
         },
         {
@@ -1971,5 +1983,5 @@
     "prefer-lowest": false,
     "platform": [],
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
