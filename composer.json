@@ -22,6 +22,10 @@
             "email": "raymanovg@gmail.com"
         }
     ],
+    "repositories": [
+        {"type": "vcs", "url": "git@github.com:pltrm/elasticsearch.git"},
+        {"type": "vcs", "url": "git@github.com:infostars/Slim.git"}
+    ],
     "require": {
         "mpcmf/mpcmf-core": "dev-master",
         "mpcmf/mpcmf-console": "dev-master",
