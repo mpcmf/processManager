@@ -1,8 +1,8 @@
 <?php
 namespace mpcmf\modules\processHandler\controllers;
 
-use greevex\gss\lib\variableAction;
 use mpcmf\modules\moduleBase\controllers\controllerBase;
+use mpcmf\modules\moduleBase\mappers\mapperBase;
 use mpcmf\system\pattern\singleton;
 
 /**
@@ -24,4 +24,41 @@ class processController
 {
 
     use singleton;
+    
+    public function _index() 
+    {
+        return self::success([]);
+    }
+    
+    public function _control() 
+    {
+        $paths = [];
+        $this->getSlim()->response()->header('Content-Type', 'application/json; charset=utf-8');
+
+        foreach (scandir(APP_ROOT . '/apps/processHandler/modules/processHandler/mappers') as $filename) {
+            if ($filename[0] === '.') {
+                continue;
+            }
+            $className = substr($filename, 0, -4);
+            $mapperClass = "mpcmf\\modules\\processHandler\\mappers\\" . $className;
+            /** @var mapperBase $mapper */
+            $mapper = $mapperClass::getInstance();
+
+            foreach ($mapper->getEntityActions()->getActions() as $name => $action) {
+                //if(strpos($name, 'crud.') === 0 || strpos($name, 'api.') === 0) {
+                //    continue;
+                //}
+                $entityName = $mapper->getEntityName();
+                if(!isset($paths[$entityName])) {
+                    $paths[$entityName] = [];
+                }
+                $path = $action->isRelative() ? "{$mapper->getEntity()->getEntityUniqueName()}/{$name}" : $action->getPath();
+                $paths[$entityName][$path] = $action->getName();
+            }
+
+        }
+
+        return self::success($paths);
+    }
+    
 }
