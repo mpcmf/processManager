@@ -83,7 +83,7 @@ class processActions
             'useBase' => false,
             'relative' => true,
             'template' => 'processmanager_control.tpl',
-            'type' => action::TYPE__DEFAULT,
+            'type' => action::TYPE__GLOBAL,
             'acl' => [
                 aclManager::ACL__GROUP_ADMIN,
             ],
