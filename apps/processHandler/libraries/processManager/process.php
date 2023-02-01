@@ -197,7 +197,8 @@ class process
         error_log('pipes closed');
         if (is_resource($this->processDescriptor)) {
             //blocking flow
-            proc_close($this->processDescriptor);
+            //Do not uncomment! it really blocks under certain circumstances, for example when restarting process from gui
+            //proc_close($this->processDescriptor);
         }
         error_log('pd closed');
 
