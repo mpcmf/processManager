@@ -490,8 +490,8 @@ class processHandler
         }
 
         if (!$params['enabled']) {
-            $instance->setStdOut([]);
-            $instance->setStdError([]);
+            $instance->setStdOut(['/dev/null']);
+            $instance->setStdError(['/dev/null']);
 
             return;
         }
