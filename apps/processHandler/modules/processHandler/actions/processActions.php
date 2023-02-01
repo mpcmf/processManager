@@ -46,28 +46,28 @@ class processActions
      */
     public function bind()
     {
-        $this->registerAction('index', new action([
-            'name' => 'Index page',
-            'method' => '_index',
-            'http' => [
-                'GET',
-                'POST',
-            ],
-            'required' => [
-
-            ],
-            'path' => '/',
-            'useBase' => false,
-            'relative' => false,
-            'template' => 'index_page.tpl',
-            'type' => action::TYPE__DEFAULT,
-            'acl' => [
-                aclManager::ACL__GROUP_GUEST,
-                aclManager::ACL__GROUP_USER,
-                aclManager::ACL__GROUP_ADMIN,
-            ],
-
-        ], $this));
+        //$this->registerAction('index', new action([
+        //    'name' => 'Index page',
+        //    'method' => '_index',
+        //    'http' => [
+        //        'GET',
+        //        'POST',
+        //    ],
+        //    'required' => [
+        //
+        //    ],
+        //    'path' => '/',
+        //    'useBase' => false,
+        //    'relative' => false,
+        //    'template' => 'index_page.tpl',
+        //    'type' => action::TYPE__DEFAULT,
+        //    'acl' => [
+        //        aclManager::ACL__GROUP_GUEST,
+        //        aclManager::ACL__GROUP_USER,
+        //        aclManager::ACL__GROUP_ADMIN,
+        //    ],
+        //
+        //], $this));
         
         $this->registerAction('control', new action([
             'name' => 'Process manager control panel',
@@ -81,8 +81,8 @@ class processActions
             ],
             'path' => '/control',
             'useBase' => false,
-            'relative' => false,
-            'template' => 'control.tpl',
+            'relative' => true,
+            'template' => 'processmanager_control.tpl',
             'type' => action::TYPE__DEFAULT,
             'acl' => [
                 aclManager::ACL__GROUP_ADMIN,
