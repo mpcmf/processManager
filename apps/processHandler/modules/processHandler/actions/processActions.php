@@ -82,7 +82,7 @@ class processActions
             'path' => '/control',
             'useBase' => false,
             'relative' => false,
-            'template' => 'json.tpl',
+            'template' => 'control.tpl',
             'type' => action::TYPE__DEFAULT,
             'acl' => [
                 aclManager::ACL__GROUP_ADMIN,
