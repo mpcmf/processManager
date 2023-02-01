@@ -9,7 +9,7 @@
  */
 \mpcmf\system\configuration\config::setConfig(__FILE__, [
     'storage' => [
-        'configSection' => 'localhost',
+        'configSection' => 'default',
         'db' => 'processHandler',
         'collection' => 'processes'
     ]

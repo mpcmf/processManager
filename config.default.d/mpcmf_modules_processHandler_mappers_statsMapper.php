@@ -9,7 +9,7 @@ use mpcmf\modules\processHandler\mappers\statsMapper;
 
 \mpcmf\system\configuration\config::setConfig(__FILE__, [
     'storage' => [
-        'configSection' => 'localhost',
+        'configSection' => 'default',
         'db' => 'processHandler',
         'collection' => 'process_stats',
         'indices' => [
