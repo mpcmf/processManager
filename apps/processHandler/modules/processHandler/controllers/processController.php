@@ -35,7 +35,7 @@ class processController
         $paths = [];
         $this->getSlim()->response()->header('Content-Type', 'application/json; charset=utf-8');
 
-        foreach (scandir(APP_ROOT . '/apps/processHandler/modules/processHandler/mappers') as $filename) {
+        foreach (scandir(__DIR__ . '/../mappers') as $filename) {
             if ($filename[0] === '.') {
                 continue;
             }

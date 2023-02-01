@@ -79,7 +79,7 @@ class processActions
             'required' => [
 
             ],
-            'path' => '/control',
+            'path' => '',
             'useBase' => false,
             'relative' => true,
             'template' => 'processmanager_control.tpl',
