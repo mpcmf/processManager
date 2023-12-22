@@ -485,6 +485,8 @@ class processHandler
         $config = $processData['config'];
         $params = $config->getLogging();
 
+        $instance->setStdIn(['/dev/null']);
+
         if (!isset($params['enabled'])) {
             return;
         }
