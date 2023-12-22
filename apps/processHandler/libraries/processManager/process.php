@@ -146,6 +146,20 @@ class process
         $this->exitCode = $processStatus['exitcode'];
     }
     
+    public function setStdIn(array $destinations)
+    {
+        if(empty($destinations)) {
+            return;
+        }
+        $parsed = parse_url($destinations[0]);
+        if(!empty($parsed['scheme']) && $parsed['scheme'] !== 'file') {
+            error_log("not using {$destinations[0]} as stdin");
+            return;
+        }
+
+        $this->descriptors[0] = fopen($parsed['path'], 'rb');
+    }
+
     public function setStdOut(array $destinations)
     {
         if(empty($destinations)) {
