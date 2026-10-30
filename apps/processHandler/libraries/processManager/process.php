@@ -47,10 +47,11 @@ class process
     
     protected $forceKill = false;
 
+    // nobody reads child pipes: a full pipe blocks the child on write, so streams default to /dev/null
     protected $descriptors = [
-        0 => ['pipe', 'r'],
-        1 => ['pipe', 'w'],
-        2 => ['pipe', 'w']
+        0 => ['file', '/dev/null', 'r'],
+        1 => ['file', '/dev/null', 'a'],
+        2 => ['file', '/dev/null', 'a']
     ];
 
     protected $pipes = [];
@@ -157,7 +158,7 @@ class process
             return;
         }
 
-        $this->descriptors[1] = fopen($parsed['path'], 'ab');
+        $this->setOutputDescriptor(1, $parsed);
     }
 
     public function setStdError(array $destinations)
@@ -171,7 +172,19 @@ class process
             return;
         }
 
-        $this->descriptors[2] = fopen($parsed['path'], 'ab');
+        $this->setOutputDescriptor(2, $parsed);
+    }
+
+    protected function setOutputDescriptor($descriptor, $parsed)
+    {
+        $path = isset($parsed['path']) ? $parsed['path'] : '';
+        $handle = $path !== '' ? @fopen($path, 'ab') : false;
+        if($handle === false) {
+            error_log("unable to open [{$path}] for descriptor {$descriptor}, using /dev/null");
+            return;
+        }
+
+        $this->descriptors[$descriptor] = $handle;
     }
 
     protected function kill($force = false)
