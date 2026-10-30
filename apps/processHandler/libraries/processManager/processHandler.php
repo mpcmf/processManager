@@ -485,22 +485,19 @@ class processHandler
         $config = $processData['config'];
         $params = $config->getLogging();
 
-        if (!isset($params['enabled'])) {
+        // streams that are not routed to a file stay on /dev/null (see process::$descriptors)
+        if (empty($params['enabled'])) {
             return;
         }
 
-        if (!$params['enabled']) {
-            $instance->setStdOut(['/dev/null']);
-            $instance->setStdError(['/dev/null']);
+        $handlers = isset($params['handlers']) && is_array($params['handlers']) ? $params['handlers'] : [];
+        $path = isset($params['path']) ? (string)$params['path'] : '';
 
-            return;
+        if (in_array('stdout', $handlers, true)) {
+            $instance->setStdOut([$path]);
         }
-
-        if (in_array('stdout', $params['handlers'])) {
-            $instance->setStdOut([$params['path']]);
-        }
-        if (in_array('stderr', $params['handlers'])) {
-            $instance->setStdError([$params['path']]);
+        if (in_array('stderr', $handlers, true)) {
+            $instance->setStdError([$path]);
         }
     }
 
