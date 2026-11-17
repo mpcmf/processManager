@@ -4,7 +4,6 @@ namespace mpcmf\apps\processHandler\libraries\processManager;
 
 use mpcmf\apps\processHandler\libraries\api\locker;
 use mpcmf\apps\processHandler\libraries\processManager\config\configStorage;
-use mpcmf\apps\processHandler\libraries\stats\stats;
 use mpcmf\modules\processHandler\mappers\processMapper;
 use mpcmf\modules\processHandler\models\processModel;
 use mpcmf\system\helper\cache\cache;
@@ -467,8 +466,6 @@ class processHandler
                     $this->setLoggingParams($process, $instance);
                     $instance->run();
 
-                    stats::start($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
-
                     $process['instances'][] = $instance;
                     $process['last_started'] = $instance->getStartedAt();
 
@@ -512,7 +509,6 @@ class processHandler
             /** @var process $instance */
             foreach ($process['instances'] as $instance) {
                 $instance->stop($forceKill);
-                stats::stop($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
             }
         }
         $this->stopAll = true;
@@ -550,7 +546,6 @@ class processHandler
         /** @var process $instance */
         foreach ($process['instances'] as $instance) {
             $instance->stop();
-            stats::stop($config->getCommand(), $config->getMode(), $config->getInstances(), $this->server->getHostName());
         }
     }
 
